@@ -27,10 +27,15 @@ export interface MarketRoundResult {
     costYocto: string;
     revealed: boolean;
     score: number;
+    commitTxHash?: string;
+    revealTxHash?: string;
   }[];
+  commitTxHashes?: Record<string, string>;
+  revealTxHashes?: Record<string, string>;
   settleTxHash?: string;
   payoutTxHash?: string;
   payoutStatus: "confirmed" | "refunded" | "local_only";
+  errors?: string[];
 }
 
 export interface SwarmMarketState {

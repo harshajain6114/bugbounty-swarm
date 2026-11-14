@@ -5,6 +5,9 @@
  * deterministic settlement, and gated verification payouts.
  */
 
+import fs from "node:fs";
+import path from "node:path";
+import os from "node:os";
 import { createHash } from "node:crypto";
 import { createNearClient, loadNearConfig } from "./near-client.js";
 import type { MarketRoundResult, MarketBidStrategy } from "./market-types.js";
@@ -112,35 +115,35 @@ export class MarketCoordinator {
         agentId: "IdorAgent",
         account: "idor.harsha-swarm.testnet",
         confidenceBps: isAccess ? 9800 : 2000,
-        costYocto: "10000000000000000000000", // 0.01 NEAR
+        costYocto: "10000000000", // 10 billion yocto / 0.01 NEAR scale
         salt: `salt-idor-${Date.now()}`,
       },
       {
         agentId: "XssAgent",
         account: "xss.harsha-swarm.testnet",
         confidenceBps: isInject ? 9900 : 2500,
-        costYocto: "10000000000000000000000",
+        costYocto: "10000000000",
         salt: `salt-xss-${Date.now()}`,
       },
       {
         agentId: "BusinessLogicAgent",
         account: "logic.harsha-swarm.testnet",
         confidenceBps: isLogic ? 9700 : 1500,
-        costYocto: "10000000000000000000000",
+        costYocto: "10000000000",
         salt: `salt-logic-${Date.now()}`,
       },
       {
         agentId: "GeneralistAlpha",
         account: "gen1.harsha-swarm.testnet",
         confidenceBps: 6000,
-        costYocto: "8000000000000000000000", // 0.008 NEAR (discount bidder)
+        costYocto: "8000000000", // discount bidder
         salt: `salt-gen1-${Date.now()}`,
       },
       {
         agentId: "GeneralistBeta",
         account: "gen2.harsha-swarm.testnet",
         confidenceBps: 5500,
-        costYocto: "6000000000000000000000", // 0.006 NEAR (ultra-discount bidder)
+        costYocto: "6000000000", // ultra-discount bidder
         salt: `salt-gen2-${Date.now()}`,
       },
     ];
@@ -154,16 +157,19 @@ export class MarketCoordinator {
     const bids = this.generateBids(taskId);
     const nearClient = createNearClient();
 
-    // Calculate deterministic scores: (confidence_bps * 1e21) / cost_yocto
+    // Calculate deterministic scores: (confidence_bps * 1e12) / cost_numeric
     const scoredBids = bids.map((b) => {
-      const score = (Number(b.confidenceBps) * 1e21) / Number(b.costYocto);
+      const score = (Number(b.confidenceBps) * 1e12) / Number(b.costYocto);
       return {
         agentId: b.agentId,
         account: b.account,
         confidenceBps: b.confidenceBps,
         costYocto: b.costYocto,
+        salt: b.salt,
         revealed: true,
         score: Math.round(score * 100) / 100,
+        commitTxHash: undefined as string | undefined,
+        revealTxHash: undefined as string | undefined,
       };
     }).sort((a, b) => b.score - a.score);
 
@@ -172,6 +178,8 @@ export class MarketCoordinator {
 
     let openTxHash: string | undefined;
     let settleTxHash: string | undefined;
+    const commitTxHashes: Record<string, string> = {};
+    const revealTxHashes: Record<string, string> = {};
 
     // Submit on-chain if testnet configured
     if (nearClient) {
@@ -182,10 +190,27 @@ export class MarketCoordinator {
         const keyPair = KeyPair.fromString(config.privateKey as `ed25519:${string}`);
         const signer = new KeyPairSigner(keyPair);
         const provider = new JsonRpcProvider({ url: config.rpcUrl });
-        const account = new Account(config.accountId, provider, signer);
+        const operatorAccount = new Account(config.accountId, provider, signer);
+
+        const credsDir = path.join(os.homedir(), ".near-credentials", "testnet");
+        function getBidderAccount(accountId: string) {
+          const credPath = path.join(credsDir, `${accountId}.json`);
+          if (fs.existsSync(credPath)) {
+            try {
+              const raw = JSON.parse(fs.readFileSync(credPath, "utf8"));
+              const key = raw.private_key || raw.secret_key;
+              if (key) {
+                const kp = KeyPair.fromString(key);
+                const s = new KeyPairSigner(kp);
+                return new Account(accountId, provider, s);
+              }
+            } catch {}
+          }
+          return operatorAccount;
+        }
 
         console.log(`  [MARKET] Submitting open_round transaction on ${MARKET_CONTRACT}…`);
-        const openTx = await account.callFunctionRaw({
+        const openTx = await operatorAccount.callFunctionRaw({
           contractId: MARKET_CONTRACT,
           methodName: "open_round",
           args: {
@@ -200,32 +225,62 @@ export class MarketCoordinator {
           : Buffer.from(openTx.transaction.hash).toString("base64");
         console.log(`  [MARKET] ✓ Round opened TX: ${openTxHash}`);
 
-        // In NEAR testnet, the operator relays the winner's commitment and reveal:
-        const preimage = `${config.accountId}|${taskId}|${winner.confidenceBps}|${winner.costYocto}|salt-${winner.agentId}`;
-        const commitment = createHash("sha256").update(preimage).digest("hex");
+        // Phase 1: Submit commit_bid from each of the 5 agents
+        console.log(`  [MARKET] Submitting commit_bid from 5 agents…`);
+        for (const b of scoredBids) {
+          try {
+            const bidderAcc = getBidderAccount(b.account);
+            const preimage = `${b.account}|${taskId}|${b.confidenceBps}|${b.costYocto}|${b.salt}`;
+            const commitment = createHash("sha256").update(preimage).digest("hex");
+            const commitTx = await bidderAcc.callFunctionRaw({
+              contractId: MARKET_CONTRACT,
+              methodName: "commit_bid",
+              args: { round_id: roundId, commitment },
+              gas: BigInt("20000000000000"),
+              deposit: BigInt(0),
+            });
+            const hash = typeof commitTx.transaction.hash === "string"
+              ? commitTx.transaction.hash
+              : Buffer.from(commitTx.transaction.hash).toString("base64");
+            b.commitTxHash = hash;
+            commitTxHashes[b.account] = hash;
+            console.log(`    ✓ commit_bid [${b.agentId}]: ${hash}`);
+          } catch (err) {
+            console.warn(`    ✕ commit_bid [${b.agentId}] failed:`, (err as Error).message);
+          }
+        }
 
-        await account.callFunctionRaw({
-          contractId: MARKET_CONTRACT,
-          methodName: "commit_bid",
-          args: { round_id: roundId, commitment },
-          gas: BigInt("20000000000000"),
-          deposit: BigInt(0),
-        });
+        // Phase 2: Submit reveal_bid from each of the 5 agents
+        console.log(`  [MARKET] Submitting reveal_bid from 5 agents…`);
+        for (const b of scoredBids) {
+          try {
+            const bidderAcc = getBidderAccount(b.account);
+            const revealTx = await bidderAcc.callFunctionRaw({
+              contractId: MARKET_CONTRACT,
+              methodName: "reveal_bid",
+              args: {
+                round_id: roundId,
+                confidence_bps: b.confidenceBps,
+                cost_yocto: Number(b.costYocto),
+                salt: b.salt,
+              },
+              gas: BigInt("30000000000000"),
+              deposit: BigInt(0),
+            });
+            const hash = typeof revealTx.transaction.hash === "string"
+              ? revealTx.transaction.hash
+              : Buffer.from(revealTx.transaction.hash).toString("base64");
+            b.revealTxHash = hash;
+            revealTxHashes[b.account] = hash;
+            console.log(`    ✓ reveal_bid [${b.agentId}]: ${hash}`);
+          } catch (err) {
+            console.warn(`    ✕ reveal_bid [${b.agentId}] failed:`, (err as Error).message);
+          }
+        }
 
-        await account.callFunctionRaw({
-          contractId: MARKET_CONTRACT,
-          methodName: "reveal_bid",
-          args: {
-            round_id: roundId,
-            confidence_bps: winner.confidenceBps,
-            cost_yocto: winner.costYocto,
-            salt: `salt-${winner.agentId}`,
-          },
-          gas: BigInt("20000000000000"),
-          deposit: BigInt(0),
-        });
-
-        const settleTx = await account.callFunctionRaw({
+        // Phase 3: Settle round as operator
+        console.log(`  [MARKET] Submitting settle_round transaction as operator…`);
+        const settleTx = await operatorAccount.callFunctionRaw({
           contractId: MARKET_CONTRACT,
           methodName: "settle_round",
           args: { round_id: roundId },
@@ -236,19 +291,6 @@ export class MarketCoordinator {
           ? settleTx.transaction.hash
           : Buffer.from(settleTx.transaction.hash).toString("base64");
         console.log(`  [MARKET] ✓ Round settled TX: ${settleTxHash}`);
-
-        // Immediate verification payout
-        const payoutTx = await account.callFunctionRaw({
-          contractId: MARKET_CONTRACT,
-          methodName: "payout",
-          args: { round_id: roundId },
-          gas: BigInt("30000000000000"),
-          deposit: BigInt(0),
-        });
-        const payoutTxHash = typeof payoutTx.transaction.hash === "string"
-          ? payoutTx.transaction.hash
-          : Buffer.from(payoutTx.transaction.hash).toString("base64");
-        console.log(`  [MARKET] ✓ Reward Payout Confirmed TX: ${payoutTxHash}`);
       } catch (err) {
         console.warn(`  [MARKET] ⚠ On-chain market interaction warning:`, (err as Error).message);
       }
@@ -263,6 +305,8 @@ export class MarketCoordinator {
       winnerAccount: winner.account,
       winnerScore: String(winner.score),
       allBids: scoredBids,
+      commitTxHashes,
+      revealTxHashes,
       settleTxHash,
       payoutStatus: "local_only",
     };

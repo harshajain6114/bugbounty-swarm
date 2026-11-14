@@ -316,14 +316,101 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "Round must be settled before payout")]
-    fn test_payout_without_settle_fails() {
+    #[should_panic(expected = "Operator only")]
+    fn test_non_operator_payout_rejected() {
         let operator = accounts(0);
-        let mut context = get_context(operator.clone(), NearToken::from_yoctonear(100));
+        let non_operator = accounts(1);
+        let bidder = accounts(2);
+
+        let mut context = get_context(operator.clone(), NearToken::from_yoctonear(10_000_000_000_000_000_000_000));
         testing_env!(context.build());
 
-        let mut contract = BountyMarketContract::new(operator);
-        contract.open_round("round-3".to_string(), "task-logic".to_string());
-        contract.payout("round-3".to_string());
+        let mut contract = BountyMarketContract::new(operator.clone());
+        contract.open_round("round-nop".to_string(), "task-test".to_string());
+
+        // Commit and reveal as bidder
+        let salt = "salt".to_string();
+        let pre = format!("{}|task-test|9000|1000000000|{}", bidder, salt);
+        let commit = hex::encode(near_sdk::env::sha256(pre.as_bytes()));
+
+        context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.commit_bid("round-nop".to_string(), commit);
+        contract.reveal_bid("round-nop".to_string(), 9000, 1000000000, salt);
+
+        // Settle as operator
+        context = get_context(operator, NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.settle_round("round-nop".to_string());
+
+        // Attempt payout as non-operator -> MUST PANIC
+        context = get_context(non_operator, NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        let _ = contract.payout("round-nop".to_string());
+    }
+
+    #[test]
+    #[should_panic(expected = "Round must be settled before payout")]
+    fn test_duplicate_payout_rejected() {
+        let operator = accounts(0);
+        let bidder = accounts(1);
+
+        let mut context = get_context(operator.clone(), NearToken::from_yoctonear(10_000_000_000_000_000_000_000));
+        testing_env!(context.build());
+
+        let mut contract = BountyMarketContract::new(operator.clone());
+        contract.open_round("round-dup".to_string(), "task-test".to_string());
+
+        let salt = "salt".to_string();
+        let pre = format!("{}|task-test|9000|1000000000|{}", bidder, salt);
+        let commit = hex::encode(near_sdk::env::sha256(pre.as_bytes()));
+
+        context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.commit_bid("round-dup".to_string(), commit);
+        contract.reveal_bid("round-dup".to_string(), 9000, 1000000000, salt);
+
+        // Settle as operator
+        context = get_context(operator.clone(), NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.settle_round("round-dup".to_string());
+
+        // First payout succeeds
+        let _ = contract.payout("round-dup".to_string());
+
+        // Duplicate payout -> MUST PANIC
+        let _ = contract.payout("round-dup".to_string());
+    }
+
+    #[test]
+    fn test_reputation_increments_after_payout() {
+        let operator = accounts(0);
+        let bidder = accounts(1);
+
+        let mut context = get_context(operator.clone(), NearToken::from_yoctonear(10_000_000_000_000_000_000_000));
+        testing_env!(context.build());
+
+        let mut contract = BountyMarketContract::new(operator.clone());
+        contract.open_round("round-rep".to_string(), "task-test".to_string());
+
+        assert_eq!(contract.get_agent_reputation(bidder.clone()), 0);
+
+        let salt = "salt".to_string();
+        let pre = format!("{}|task-test|9000|1000000000|{}", bidder, salt);
+        let commit = hex::encode(near_sdk::env::sha256(pre.as_bytes()));
+
+        context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.commit_bid("round-rep".to_string(), commit);
+        contract.reveal_bid("round-rep".to_string(), 9000, 1000000000, salt);
+
+        // Settle as operator
+        context = get_context(operator.clone(), NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.settle_round("round-rep".to_string());
+
+        // Payout increments reputation
+        let _ = contract.payout("round-rep".to_string());
+        assert_eq!(contract.get_agent_reputation(bidder.clone()), 1);
     }
 }

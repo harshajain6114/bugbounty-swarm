@@ -55,6 +55,55 @@ async function main() {
     }
   }
 
+  // 3. Query Auction Rounds & Bids
+  console.log('\n[3/3] Calling view methods: get_round & get_round_bids…');
+  const fs = require('fs');
+  let roundIds = [];
+  try {
+    const missionPath = path.resolve(__dirname, '../apps/server/tests/results/mission-result.json');
+    if (fs.existsSync(missionPath)) {
+      const data = JSON.parse(fs.readFileSync(missionPath, 'utf8'));
+      if (data.marketRounds && data.marketRounds.length > 0) {
+        roundIds = data.marketRounds.map((r) => r.roundId);
+      }
+    }
+  } catch {}
+  if (roundIds.length === 0) {
+    roundIds = ['test-5bids-1794651747986'];
+  }
+
+  for (const rid of roundIds) {
+    try {
+      const round = await provider.callFunction({
+        contractId: MARKET_CONTRACT,
+        method: 'get_round',
+        args: { round_id: rid },
+      });
+      if (round) {
+        console.log(`\n  Round ID   : ${round.round_id}`);
+        console.log(`  Task ID    : ${round.task_id}`);
+        console.log(`  Reward     : ${(Number(round.reward) / 1e24).toFixed(3)} NEAR`);
+        console.log(`  Status     : ${round.status}`);
+        console.log(`  Winner     : ${round.winner || 'None'}`);
+        console.log(`  Paid Flag  : ${round.status === 'Paid' ? 'YES (Confirmed on-chain)' : 'NO'}`);
+
+        const bids = await provider.callFunction({
+          contractId: MARKET_CONTRACT,
+          method: 'get_round_bids',
+          args: { round_id: rid },
+        });
+        console.log(`  Bids (${bids.length} total):`);
+        for (const b of bids) {
+          const conf = b.confidence_bps !== null && b.confidence_bps !== undefined ? `${(b.confidence_bps / 100).toFixed(0)}%` : 'unrevealed';
+          const cost = b.cost_yocto !== null && b.cost_yocto !== undefined ? `${b.cost_yocto}` : 'unrevealed';
+          console.log(`    - ${b.bidder.padEnd(28)}: conf=${conf}, cost=${cost}, revealed=${b.revealed}`);
+        }
+      }
+    } catch (err) {
+      console.error(`  ✕ Round ${rid}:`, err.message);
+    }
+  }
+
   console.log('\n════════════════════════════════════════════════════════════');
   console.log('  MARKET VERIFICATION COMPLETE (Read-only, 0 gas consumed)');
   console.log('════════════════════════════════════════════════════════════');

@@ -224,3 +224,230 @@ impl BugBountySwarmContract {
         );
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Unit tests
+// ─────────────────────────────────────────────────────────────────────────────
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use near_sdk::test_utils::{accounts, VMContextBuilder};
+    use near_sdk::testing_env;
+
+    const VALID_HASH: &str = "a3f1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1";
+    const VALID_HASH_2: &str = "b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2";
+
+    fn get_context(predecessor: AccountId) -> VMContextBuilder {
+        let mut builder = VMContextBuilder::new();
+        builder.predecessor_account_id(predecessor);
+        builder
+    }
+
+    fn new_contract(operator: AccountId) -> BugBountySwarmContract {
+        let context = get_context(operator.clone());
+        testing_env!(context.build());
+        BugBountySwarmContract::new(operator)
+    }
+
+    // ── Initialisation ───────────────────────────────────────────────────────
+
+    #[test]
+    fn test_new_sets_operator() {
+        let operator = accounts(0);
+        let contract = new_contract(operator.clone());
+        assert_eq!(contract.get_operator(), operator);
+    }
+
+    #[test]
+    fn test_initial_mission_count_is_zero() {
+        let contract = new_contract(accounts(0));
+        assert_eq!(contract.get_mission_count(), 0);
+    }
+
+    // ── Mission attestation ──────────────────────────────────────────────────
+
+    #[test]
+    fn test_record_mission_success() {
+        let operator = accounts(0);
+        let mut contract = new_contract(operator.clone());
+
+        let context = get_context(operator);
+        testing_env!(context.build());
+
+        contract.record_mission(
+            "mission-001".to_string(),
+            VALID_HASH.to_string(),
+            VALID_HASH_2.to_string(),
+            3,
+        );
+
+        assert_eq!(contract.get_mission_count(), 1);
+        let att = contract.get_mission("mission-001".to_string()).unwrap();
+        assert_eq!(att.mission_id, "mission-001");
+        assert_eq!(att.verified_finding_count, 3);
+        assert_eq!(att.result_hash, VALID_HASH);
+    }
+
+    #[test]
+    #[should_panic(expected = "Mission 'mission-001' has already been attested")]
+    fn test_record_duplicate_mission_panics() {
+        let operator = accounts(0);
+        let mut contract = new_contract(operator.clone());
+        let context = get_context(operator);
+        testing_env!(context.build());
+
+        contract.record_mission(
+            "mission-001".to_string(),
+            VALID_HASH.to_string(),
+            VALID_HASH_2.to_string(),
+            3,
+        );
+        contract.record_mission(
+            "mission-001".to_string(),
+            VALID_HASH.to_string(),
+            VALID_HASH_2.to_string(),
+            3,
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "Only the operator account may call this method")]
+    fn test_non_operator_cannot_record_mission() {
+        let operator = accounts(0);
+        let non_operator = accounts(1);
+        let mut contract = new_contract(operator);
+
+        let context = get_context(non_operator);
+        testing_env!(context.build());
+
+        contract.record_mission(
+            "mission-002".to_string(),
+            VALID_HASH.to_string(),
+            VALID_HASH_2.to_string(),
+            1,
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "result_hash must be a 64-char hex SHA-256 digest")]
+    fn test_invalid_hash_length_panics() {
+        let operator = accounts(0);
+        let mut contract = new_contract(operator.clone());
+        let context = get_context(operator);
+        testing_env!(context.build());
+
+        contract.record_mission(
+            "mission-003".to_string(),
+            "tooshort".to_string(),
+            VALID_HASH_2.to_string(),
+            1,
+        );
+    }
+
+    #[test]
+    fn test_get_mission_ids() {
+        let operator = accounts(0);
+        let mut contract = new_contract(operator.clone());
+        let context = get_context(operator);
+        testing_env!(context.build());
+
+        contract.record_mission("m-1".to_string(), VALID_HASH.to_string(), VALID_HASH_2.to_string(), 1);
+        contract.record_mission("m-2".to_string(), VALID_HASH_2.to_string(), VALID_HASH.to_string(), 2);
+
+        let ids = contract.get_mission_ids();
+        assert_eq!(ids.len(), 2);
+        assert_eq!(ids[0], "m-1");
+        assert_eq!(ids[1], "m-2");
+    }
+
+    // ── Agent contributions ──────────────────────────────────────────────────
+
+    #[test]
+    fn test_record_agent_contribution_success() {
+        let operator = accounts(0);
+        let mut contract = new_contract(operator.clone());
+        let context = get_context(operator);
+        testing_env!(context.build());
+
+        contract.record_mission("m-1".to_string(), VALID_HASH.to_string(), VALID_HASH_2.to_string(), 2);
+        contract.record_agent_contribution(
+            "m-1".to_string(),
+            "IdorAgent".to_string(),
+            VALID_HASH.to_string(),
+            2,
+        );
+
+        let contributions = contract.get_mission_contributions("m-1".to_string());
+        assert_eq!(contributions.len(), 1);
+        assert_eq!(contributions[0].agent_id, "IdorAgent");
+        assert_eq!(contributions[0].findings_contributed, 2);
+    }
+
+    #[test]
+    #[should_panic(expected = "Mission 'm-999' must be attested before recording agent contributions")]
+    fn test_contribution_requires_existing_mission() {
+        let operator = accounts(0);
+        let mut contract = new_contract(operator.clone());
+        let context = get_context(operator);
+        testing_env!(context.build());
+
+        contract.record_agent_contribution(
+            "m-999".to_string(),
+            "IdorAgent".to_string(),
+            VALID_HASH.to_string(),
+            1,
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "Only the operator account may call this method")]
+    fn test_non_operator_cannot_record_contribution() {
+        let operator = accounts(0);
+        let non_operator = accounts(1);
+        let mut contract = new_contract(operator.clone());
+
+        let context = get_context(operator);
+        testing_env!(context.build());
+        contract.record_mission("m-1".to_string(), VALID_HASH.to_string(), VALID_HASH_2.to_string(), 1);
+
+        let context2 = get_context(non_operator);
+        testing_env!(context2.build());
+        contract.record_agent_contribution(
+            "m-1".to_string(),
+            "IdorAgent".to_string(),
+            VALID_HASH.to_string(),
+            1,
+        );
+    }
+
+    // ── Reputation ───────────────────────────────────────────────────────────
+
+    #[test]
+    fn test_reputation_accumulates() {
+        let operator = accounts(0);
+        let mut contract = new_contract(operator.clone());
+        let context = get_context(operator);
+        testing_env!(context.build());
+
+        contract.record_mission("m-1".to_string(), VALID_HASH.to_string(), VALID_HASH_2.to_string(), 5);
+        contract.record_mission("m-2".to_string(), VALID_HASH_2.to_string(), VALID_HASH.to_string(), 3);
+
+        contract.record_agent_contribution("m-1".to_string(), "XssAgent".to_string(), VALID_HASH.to_string(), 3);
+        contract.record_agent_contribution("m-2".to_string(), "XssAgent".to_string(), VALID_HASH_2.to_string(), 2);
+
+        assert_eq!(contract.get_agent_reputation("XssAgent".to_string()), 5);
+    }
+
+    #[test]
+    fn test_unknown_agent_reputation_is_zero() {
+        let contract = new_contract(accounts(0));
+        assert_eq!(contract.get_agent_reputation("UnknownAgent".to_string()), 0);
+    }
+
+    #[test]
+    fn test_unknown_mission_returns_none() {
+        let contract = new_contract(accounts(0));
+        assert!(contract.get_mission("does-not-exist".to_string()).is_none());
+    }
+}

@@ -29,12 +29,14 @@ export interface MarketRoundResult {
     score: number;
     commitTxHash?: string;
     revealTxHash?: string;
+    relayed?: boolean;
+    signingMode?: "agent_key" | "operator_relayed";
   }[];
   commitTxHashes?: Record<string, string>;
   revealTxHashes?: Record<string, string>;
   settleTxHash?: string;
   payoutTxHash?: string;
-  payoutStatus: "confirmed" | "refunded" | "local_only";
+  payoutStatus: "not_configured" | "simulated" | "pending" | "confirmed" | "failed" | "refunded";
   errors?: string[];
 }
 

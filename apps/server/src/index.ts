@@ -172,7 +172,6 @@ app.post("/api/missions/verify-integrity", async (req: Request, res: Response) =
   }
 
   const { hashMissionResult } = await import("./near/hasher.js");
-  const storedHash = mission.nearAttestation?.resultHash || hashMissionResult(mission);
 
   let evaluatedMission = mission;
   if (tamperedFinding) {
@@ -183,17 +182,62 @@ app.post("/api/missions/verify-integrity", async (req: Request, res: Response) =
   }
 
   const computedHash = hashMissionResult(evaluatedMission);
-  const match = computedHash === storedHash;
+  const contractId = mission.nearAttestation?.contractId || process.env.NEAR_CONTRACT_ID || "harsha-swarm.testnet";
+  const rpcUrl = process.env.NEAR_RPC_URL || "https://test.rpc.fastnear.com";
+
+  let onChainRecord: { mission_id: string; result_hash: string; verified_finding_count: number } | null = null;
+  try {
+    const argsBase64 = Buffer.from(JSON.stringify({ mission_id: targetId })).toString("base64");
+    const rpcRes = await fetch(rpcUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "view-mission",
+        method: "query",
+        params: {
+          request_type: "call_function",
+          finality: "final",
+          account_id: contractId,
+          method_name: "get_mission",
+          args_base64: argsBase64,
+        },
+      }),
+    });
+    const rpcJson = (await rpcRes.json()) as { result?: { result?: number[] } };
+    if (rpcJson.result?.result) {
+      const decoded = Buffer.from(rpcJson.result.result).toString("utf8");
+      onChainRecord = JSON.parse(decoded);
+    }
+  } catch (err) {
+    console.warn("[INTEGRITY] RPC view call get_mission error:", err);
+  }
+
+  if (!onChainRecord) {
+    res.json({
+      missionId: targetId,
+      contractId,
+      storedOnChainHash: "NOT_FOUND_ON_CHAIN",
+      computedLocalHash: computedHash,
+      status: "NO ON-CHAIN RECORD",
+      verifiedOnChain: false,
+      tampered: Boolean(tamperedFinding),
+    });
+    return;
+  }
+
+  const storedOnChainHash = onChainRecord.result_hash;
+  const match = computedHash === storedOnChainHash;
 
   res.json({
     missionId: targetId,
-    contractId: mission.nearAttestation?.contractId || process.env.NEAR_CONTRACT_ID || "harsha-swarm.testnet",
-    storedOnChainHash: storedHash,
+    contractId,
+    storedOnChainHash,
     computedLocalHash: computedHash,
     status: match ? "MATCH" : "MISMATCH",
-    verifiedOnChain: !tamperedFinding,
+    verifiedOnChain: true,
     tampered: Boolean(tamperedFinding),
-    explorerUrl: mission.nearAttestation?.explorerUrl || `https://testnet.nearblocks.io/txns/${mission.nearAttestation?.missionTxHash}`,
+    explorerUrl: mission.nearAttestation?.explorerUrl || (mission.nearAttestation?.missionTxHash ? `https://testnet.nearblocks.io/txns/${mission.nearAttestation.missionTxHash}` : undefined),
   });
 });
 app.get("/api/missions", (_req: Request, res: Response) => {

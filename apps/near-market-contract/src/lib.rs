@@ -201,6 +201,20 @@ impl BountyMarketContract {
         Promise::new(winner).transfer(round.reward)
     }
 
+    /// Phase 4b: Refund round to operator when independent finding verification fails.
+    /// Returns the escrowed reward back to operator without modifying agent reputation.
+    pub fn refund_round(&mut self, round_id: String) -> Promise {
+        self.assert_operator();
+        let mut round = self.rounds.get(&round_id).expect("Round not found");
+        assert_eq!(round.status, RoundStatus::Settled, "Round must be settled before refund");
+
+        round.status = RoundStatus::Refunded;
+        self.rounds.insert(&round_id, &round);
+
+        // Refund escrow back to operator
+        Promise::new(self.operator.clone()).transfer(round.reward)
+    }
+
     // ── Public View Methods ──────────────────────────────────────────────────
 
     pub fn get_round(&self, round_id: String) -> Option<BountyRound> {
@@ -290,7 +304,7 @@ mod tests {
         assert_eq!(winner, bidder2);
 
         // Payout to winner
-        contract.payout("round-1".to_string());
+        let _ = contract.payout("round-1".to_string());
         assert_eq!(contract.get_agent_reputation(bidder2), 1);
     }
 
@@ -412,5 +426,169 @@ mod tests {
         // Payout increments reputation
         let _ = contract.payout("round-rep".to_string());
         assert_eq!(contract.get_agent_reputation(bidder.clone()), 1);
+    }
+
+    #[test]
+    #[should_panic(expected = "Round must be settled before refund")]
+    fn test_refund_once() {
+        let operator = accounts(0);
+        let bidder = accounts(1);
+
+        let mut context = get_context(operator.clone(), NearToken::from_yoctonear(10_000_000_000_000_000_000_000));
+        testing_env!(context.build());
+
+        let mut contract = BountyMarketContract::new(operator.clone());
+        contract.open_round("round-ref-once".to_string(), "task-test".to_string());
+
+        let salt = "salt".to_string();
+        let pre = format!("{}|task-test|9000|1000000000|{}", bidder, salt);
+        let commit = hex::encode(near_sdk::env::sha256(pre.as_bytes()));
+
+        context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.commit_bid("round-ref-once".to_string(), commit);
+        contract.reveal_bid("round-ref-once".to_string(), 9000, 1000000000, salt);
+
+        context = get_context(operator.clone(), NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.settle_round("round-ref-once".to_string());
+
+        // First refund succeeds
+        let _ = contract.refund_round("round-ref-once".to_string());
+        assert_eq!(contract.get_round("round-ref-once".to_string()).unwrap().status, RoundStatus::Refunded);
+
+        // Duplicate refund -> MUST PANIC
+        let _ = contract.refund_round("round-ref-once".to_string());
+    }
+
+    #[test]
+    #[should_panic(expected = "Round must be settled before refund")]
+    fn test_no_refund_after_payout() {
+        let operator = accounts(0);
+        let bidder = accounts(1);
+
+        let mut context = get_context(operator.clone(), NearToken::from_yoctonear(10_000_000_000_000_000_000_000));
+        testing_env!(context.build());
+
+        let mut contract = BountyMarketContract::new(operator.clone());
+        contract.open_round("round-pay-then-ref".to_string(), "task-test".to_string());
+
+        let salt = "salt".to_string();
+        let pre = format!("{}|task-test|9000|1000000000|{}", bidder, salt);
+        let commit = hex::encode(near_sdk::env::sha256(pre.as_bytes()));
+
+        context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.commit_bid("round-pay-then-ref".to_string(), commit);
+        contract.reveal_bid("round-pay-then-ref".to_string(), 9000, 1000000000, salt);
+
+        context = get_context(operator.clone(), NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.settle_round("round-pay-then-ref".to_string());
+
+        // Payout succeeds
+        let _ = contract.payout("round-pay-then-ref".to_string());
+
+        // Attempt refund after payout -> MUST PANIC
+        let _ = contract.refund_round("round-pay-then-ref".to_string());
+    }
+
+    #[test]
+    #[should_panic(expected = "Round must be settled before payout")]
+    fn test_no_payout_after_refund() {
+        let operator = accounts(0);
+        let bidder = accounts(1);
+
+        let mut context = get_context(operator.clone(), NearToken::from_yoctonear(10_000_000_000_000_000_000_000));
+        testing_env!(context.build());
+
+        let mut contract = BountyMarketContract::new(operator.clone());
+        contract.open_round("round-ref-then-pay".to_string(), "task-test".to_string());
+
+        let salt = "salt".to_string();
+        let pre = format!("{}|task-test|9000|1000000000|{}", bidder, salt);
+        let commit = hex::encode(near_sdk::env::sha256(pre.as_bytes()));
+
+        context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.commit_bid("round-ref-then-pay".to_string(), commit);
+        contract.reveal_bid("round-ref-then-pay".to_string(), 9000, 1000000000, salt);
+
+        context = get_context(operator.clone(), NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.settle_round("round-ref-then-pay".to_string());
+
+        // Refund succeeds
+        let _ = contract.refund_round("round-ref-then-pay".to_string());
+
+        // Attempt payout after refund -> MUST PANIC
+        let _ = contract.payout("round-ref-then-pay".to_string());
+    }
+
+    #[test]
+    #[should_panic(expected = "Operator only")]
+    fn test_non_operator_refund_rejected() {
+        let operator = accounts(0);
+        let non_operator = accounts(1);
+        let bidder = accounts(2);
+
+        let mut context = get_context(operator.clone(), NearToken::from_yoctonear(10_000_000_000_000_000_000_000));
+        testing_env!(context.build());
+
+        let mut contract = BountyMarketContract::new(operator.clone());
+        contract.open_round("round-nonop-ref".to_string(), "task-test".to_string());
+
+        let salt = "salt".to_string();
+        let pre = format!("{}|task-test|9000|1000000000|{}", bidder, salt);
+        let commit = hex::encode(near_sdk::env::sha256(pre.as_bytes()));
+
+        context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.commit_bid("round-nonop-ref".to_string(), commit);
+        contract.reveal_bid("round-nonop-ref".to_string(), 9000, 1000000000, salt);
+
+        context = get_context(operator, NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.settle_round("round-nonop-ref".to_string());
+
+        // Attempt refund as non-operator -> MUST PANIC
+        context = get_context(non_operator, NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        let _ = contract.refund_round("round-nonop-ref".to_string());
+    }
+
+    #[test]
+    fn test_reputation_unchanged_on_refund() {
+        let operator = accounts(0);
+        let bidder = accounts(1);
+
+        let mut context = get_context(operator.clone(), NearToken::from_yoctonear(10_000_000_000_000_000_000_000));
+        testing_env!(context.build());
+
+        let mut contract = BountyMarketContract::new(operator.clone());
+        contract.open_round("round-rep-unchanged".to_string(), "task-test".to_string());
+
+        assert_eq!(contract.get_agent_reputation(bidder.clone()), 0);
+
+        let salt = "salt".to_string();
+        let pre = format!("{}|task-test|9000|1000000000|{}", bidder, salt);
+        let commit = hex::encode(near_sdk::env::sha256(pre.as_bytes()));
+
+        context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.commit_bid("round-rep-unchanged".to_string(), commit);
+        contract.reveal_bid("round-rep-unchanged".to_string(), 9000, 1000000000, salt);
+
+        // Settle as operator
+        context = get_context(operator.clone(), NearToken::from_yoctonear(0));
+        testing_env!(context.build());
+        contract.settle_round("round-rep-unchanged".to_string());
+
+        // Refund round
+        let _ = contract.refund_round("round-rep-unchanged".to_string());
+
+        // Reputation must still be 0
+        assert_eq!(contract.get_agent_reputation(bidder.clone()), 0);
+        assert_eq!(contract.get_round("round-rep-unchanged".to_string()).unwrap().status, RoundStatus::Refunded);
     }
 }

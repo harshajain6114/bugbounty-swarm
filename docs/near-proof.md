@@ -1,122 +1,45 @@
-# BUGBOUNTY SWARM — NEAR Protocol Testnet Live Proof
+# NEAR Protocol Testnet Verification Proofs
 
-**Contract ID**: `harsha-swarm.testnet`  
-**Network**: NEAR Testnet (`https://rpc.testnet.near.org`)  
-**Operator Account**: `harsha-swarm.testnet`  
-**Explorer Base**: [https://testnet.nearblocks.io/](https://testnet.nearblocks.io/)
-
----
-
-## 1. Contract Deployment & Initialization
-
-- **Contract Account**: `harsha-swarm.testnet`
-- **Transaction Hash**: `FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8`
-- **Explorer Link**: [https://testnet.nearblocks.io/txns/FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8](https://testnet.nearblocks.io/txns/FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8)
-- **Initialized Operator**: `harsha-swarm.testnet`
+> **Generated from Mission**: `mission-refund-1794685022960`  
+> **Timestamp**: 2026-11-14T19:39:24.315Z  
+> **Status**: COMPLETED  
 
 ---
 
-## 2. Live Autonomous Security Mission Attestation
+## 1. Smart Contracts on NEAR Testnet
 
-**Mission ID**: `test-mission-1794640261981`  
-**Target**: `http://localhost:4000/shop`  
-**Status**: Verified & Confirmed on-chain  
-
-### Transactions Recorded on NEAR Testnet
-
-| Operation | Agent / Record | Transaction Hash | Explorer Link |
-|---|---|---|---|
-| **Mission Attestation** | Master Attestation (3 verified vulns) | `CBx7vSCKqcMTouJSVSjCRP2VaQyNgvEoBqAmq3Bbq9bb` | [View on NearBlocks](https://testnet.nearblocks.io/txns/CBx7vSCKqcMTouJSVSjCRP2VaQyNgvEoBqAmq3Bbq9bb) |
-| **Agent Contribution** | ReconAgent (0 findings, 8 pages/13 endpoints) | `CWrogvhg4QbZsXhdQr9gRWnQnzCaRvjiHKByCY2VpUbz` | [View on NearBlocks](https://testnet.nearblocks.io/txns/CWrogvhg4QbZsXhdQr9gRWnQnzCaRvjiHKByCY2VpUbz) |
-| **Agent Contribution** | IdorAgent (1 verified finding) | `Hx9sDJDPUkjGo8Eu8pSpEAW8SLCK2tv4NEAfBCPbKaVZ` | [View on NearBlocks](https://testnet.nearblocks.io/txns/Hx9sDJDPUkjGo8Eu8pSpEAW8SLCK2tv4NEAfBCPbKaVZ) |
-| **Agent Contribution** | XssAgent (1 verified finding) | `2h7gFw2RwrLLjGxrpT4QuJZUnqC2KgymiJtyM3696jF2` | [View on NearBlocks](https://testnet.nearblocks.io/txns/2h7gFw2RwrLLjGxrpT4QuJZUnqC2KgymiJtyM3696jF2) |
-| **Agent Contribution** | BusinessLogicAgent (1 verified finding) | `5pojRxsyKzm5dSPGYzdLT3tN8wiSsS6JHNcZ8fyTUTQc` | [View on NearBlocks](https://testnet.nearblocks.io/txns/5pojRxsyKzm5dSPGYzdLT3tN8wiSsS6JHNcZ8fyTUTQc) |
+- **Attestation Contract**: [`harsha-swarm.testnet`](https://testnet.nearblocks.io/address/harsha-swarm.testnet)
+- **Bounty Market Contract**: [`market.harsha-swarm.testnet`](https://testnet.nearblocks.io/address/market.harsha-swarm.testnet)
 
 ---
 
-## 3. Read-Back Verification Output
+## 2. Master Mission Attestation
 
-Raw results retrieved directly from `harsha-swarm.testnet` using view calls:
-
-### `get_mission({"mission_id": "test-mission-1794640261981"})`
-```json
-{
-  "mission_id": "test-mission-1794640261981",
-  "result_hash": "f8f7137fd66e53b7709ba4743b81ee58c17c0b2f26416607453185e0f7e801d3",
-  "findings_hash": "fad393c96d1cb0a62d5d2bdd19d9deacd574e059933616ad066ab36ae6ce11e5",
-  "verified_finding_count": 3,
-  "timestamp_ms": 1794640321221,
-  "submitted_by": "harsha-swarm.testnet"
-}
-```
-
-### `get_mission_contributions({"mission_id": "test-mission-1794640261981"})`
-```json
-[
-  {
-    "agent_id": "ReconAgent",
-    "contribution_hash": "94aa48cb199730fd0f9e7a71cdc373bf83535dbdc4c52be68f185dace4db7c41",
-    "findings_contributed": 0,
-    "mission_id": "test-mission-1794640261981",
-    "timestamp_ms": 1794640329089
-  },
-  {
-    "agent_id": "IdorAgent",
-    "contribution_hash": "fcd4c3de439e28b1743fe511b51117ab1bcc12ea7197ff1a9f82226dd169be6a",
-    "findings_contributed": 1,
-    "mission_id": "test-mission-1794640261981",
-    "timestamp_ms": 1794640336831
-  },
-  {
-    "agent_id": "XssAgent",
-    "contribution_hash": "80b00fdcd9e9bdef7770d7920dea9bbcbe8bfc66c996ec27cbe4e228a76f2a48",
-    "findings_contributed": 1,
-    "mission_id": "test-mission-1794640261981",
-    "timestamp_ms": 1794640344216
-  },
-  {
-    "agent_id": "BusinessLogicAgent",
-    "contribution_hash": "323f9d9a32195407f03a6cba822b05cdb0695237d8a155434442793f6c5b6c8c",
-    "findings_contributed": 1,
-    "mission_id": "test-mission-1794640261981",
-    "timestamp_ms": 1794640352028
-  }
-]
-```
-
-### `get_agent_reputation`
-- `IdorAgent`: **5** points
-- `XssAgent`: **5** points
-- `BusinessLogicAgent`: **5** points
-- `ReconAgent`: **0** points
+- **Mission ID**: `mission-refund-1794685022960`
+- **Result Hash (SHA-256)**: `e2a829dc00ffb694488db478811f09fc27d77b4bc2bf33208b6a70159bbe4bc1`
+- **Findings Hash (SHA-256)**: `f067b618085759135a61400783ce4d1957d3621ef392d452f551b8907cae777a`
+- **Verified Vulnerabilities**: 2
+- **Attestation Transaction**: [9BhhHGn9Xo78WX4v9njnrDvA4LYGqRoSVybQ3poF4vx7](https://testnet.nearblocks.io/txns/9BhhHGn9Xo78WX4v9njnrDvA4LYGqRoSVybQ3poF4vx7)
 
 ---
 
-## 4. Swarm Bounty Market Contract Deployment & Auction Proof
+## 3. Swarm Bounty Market Rounds & Commit-Reveal Bids
 
-**Market Contract ID**: `market.harsha-swarm.testnet`  
-**Deploy Transaction**: `2JxwVYH55NTdy39zkQEteZHPd8nTmdonTqJC9Sutunzo`  
-**Explorer Link**: [https://testnet.nearblocks.io/txns/2JxwVYH55NTdy39zkQEteZHPd8nTmdonTqJC9Sutunzo](https://testnet.nearblocks.io/txns/2JxwVYH55NTdy39zkQEteZHPd8nTmdonTqJC9Sutunzo)  
-**Operator**: `harsha-swarm.testnet`  
+| Round ID | Task ID | Winner Sub-Account | Payout Status | Payout / Refund Transaction |
+|---|---|---|---|---|
+| `mission-refund-1794685022960-r1` | `task-access-control` | `idor.harsha-swarm.testnet` | `REFUNDED` | [`3fratm23AqZs…`](https://testnet.nearblocks.io/txns/3fratm23AqZscv778uTAyJAdw7AbRGE8QJoWFBU7F7ii) |
+| `mission-refund-1794685022960-r2` | `task-injection` | `xss.harsha-swarm.testnet` | `CONFIRMED` | [`BzyxkQUaeutu…`](https://testnet.nearblocks.io/txns/BzyxkQUaeutu6qcq4yuwU94vGTo4Q7m3gdwFdCaXwZwD) |
+| `mission-refund-1794685022960-r3` | `task-business-logic` | `logic.harsha-swarm.testnet` | `CONFIRMED` | [`CmYb6NJA8ji4…`](https://testnet.nearblocks.io/txns/CmYb6NJA8ji4bTqFdZFVKMPyzXegH6B7ieBRBC2mdJjk) |
 
-### Participating Agent Accounts
-- `idor.harsha-swarm.testnet` (BOLA / Access Control Specialist)
-- `xss.harsha-swarm.testnet` (Stored XSS Specialist)
-- `logic.harsha-swarm.testnet` (Business Logic Specialist)
-- `gen1.harsha-swarm.testnet` (Generalist Alpha)
-- `gen2.harsha-swarm.testnet` (Generalist Beta)
+---
 
-### Auction Mechanics
-1. **Commit Phase**: Agents submit $H = \text{sha256}(\text{bidder} \mid \text{taskId} \mid \text{confidence} \mid \text{cost} \mid \text{salt})$ preventing front-running.
-2. **Reveal Phase**: Preimages opened; on-chain smart contract deterministically evaluates:
-   $$\text{Score} = \frac{\text{confidence\_bps} \times (1 + \text{reputation}) \times 10^{21}}{\text{cost\_yocto}}$$
-3. **Verification-Gated Payout**: 0.01 NEAR reward is escrowed and released ONLY after independent finding confirmation.
+## 4. How to Verify On-Chain (Zero Gas / Read-Only)
 
-### Live Proof Commands
+Anyone can verify the attestation and market state using the read-only scripts without keys:
 ```bash
-# Read-only verification of mission attestations (harsha-swarm.testnet)
+# 1. Verify master mission attestation, contributions, and reputation
 npm run verify:near
 
-# Read-only verification of market contract and agent accounts (market.harsha-swarm.testnet)
+# 2. Verify market rounds, sealed bids, reveals, and payouts
 npm run verify:market
 ```

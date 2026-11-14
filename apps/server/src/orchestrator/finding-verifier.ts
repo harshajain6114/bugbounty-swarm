@@ -3,8 +3,8 @@
  *
  * Independent Finding Verifier for BUGBOUNTY SWARM.
  * Rigorously inspects raw findings from specialist agents, validates cryptographic /
- * DOM execution / access control evidence, filters unverified claims, and
- * deduplicates findings sharing the same root cause without losing evidence.
+ * DOM execution / access control evidence, and executes independent replay verification
+ * directly against the target without trusting agent-supplied booleans.
  */
 
 import type {
@@ -16,20 +16,31 @@ import type {
 import type { IDORFinding } from "../agents/idor/types.js";
 import type { XSSFinding } from "../agents/xss/types.js";
 import type { BusinessLogicFinding } from "../agents/business-logic/types.js";
+import { ReplayVerifier } from "./replay-verifier.js";
+
+export interface VerificationOptions {
+  targetScope?: string;
+  headless?: boolean;
+  skipReplay?: boolean;
+}
 
 export class FindingVerifier {
   /**
-   * Verifies, validates evidence, and deduplicates raw agent findings.
+   * Verifies, validates evidence, executes independent replays, and deduplicates raw agent findings.
    */
-  public verifyFindings(rawFindings: RawFinding[]): {
+  public async verifyFindings(
+    rawFindings: RawFinding[],
+    options?: VerificationOptions
+  ): Promise<{
     verifiedFindings: VerifiedFinding[];
     rejectedFindings: RejectedFinding[];
     deduplicationSummary: DeduplicationSummary;
-  } {
+  }> {
     const verifiedCandidates: VerifiedFinding[] = [];
     const rejectedFindings: RejectedFinding[] = [];
     const deduplicationDetails: string[] = [];
 
+    const replayVerifier = new ReplayVerifier(options?.targetScope || "http://localhost:4000/shop");
     let counter = 1;
 
     for (const raw of rawFindings) {
@@ -70,6 +81,21 @@ export class FindingVerifier {
           continue;
         }
 
+        // Independent replay verification
+        if (!options?.skipReplay) {
+          const replay = await replayVerifier.verifyIdorReplay();
+          if (!replay.verified) {
+            rejectedFindings.push({
+              originalFindingId: idor.findingId,
+              sourceAgent: "IdorAgent",
+              vulnerabilityType: idor.vulnerabilityType,
+              reason: `Independent replay verification failed: ${replay.reason}`,
+              rawFinding: idor as unknown as Record<string, unknown>,
+            });
+            continue;
+          }
+        }
+
         verifiedCandidates.push({
           findingId: `VF-${String(counter++).padStart(3, "0")}`,
           originalFindingId: idor.findingId,
@@ -79,7 +105,7 @@ export class FindingVerifier {
           severity: idor.severity,
           affectedEndpoint: idor.affectedEndpoint,
           verificationStatus: "VERIFIED_CONFIRMED",
-          verificationRationale: `Differential cross-user access control probe verified: User '${idor.authenticatedUser}' retrieved private object belonging to '${ev.ownershipComparison.actualOwnerInResponse}' with HTTP 200, exposing sensitive fields: [${ev.ownershipComparison.leakedFields.join(", ")}].`,
+          verificationRationale: `Differential cross-user access control probe verified: User '${idor.authenticatedUser}' retrieved private object belonging to '${ev.ownershipComparison.actualOwnerInResponse}' with HTTP 200, exposing sensitive fields: [${ev.ownershipComparison.leakedFields.join(", ")}]. Independently reproduced via fresh session replay.`,
           testedInputsCount: 1,
           evidence: ev as unknown as Record<string, unknown>,
           reproductionSteps: idor.reproductionSteps,
@@ -122,6 +148,21 @@ export class FindingVerifier {
           continue;
         }
 
+        // Independent replay verification
+        if (!options?.skipReplay) {
+          const replay = await replayVerifier.verifyXssReplay(options?.headless !== false);
+          if (!replay.verified) {
+            rejectedFindings.push({
+              originalFindingId: xss.findingId,
+              sourceAgent: "XssAgent",
+              vulnerabilityType: xss.vulnerabilityType,
+              reason: `Independent replay verification failed: ${replay.reason}`,
+              rawFinding: xss as unknown as Record<string, unknown>,
+            });
+            continue;
+          }
+        }
+
         const testedCount = xss.testedInstancesCount || (xss.allEvidence ? xss.allEvidence.length : 1);
         verifiedCandidates.push({
           findingId: `VF-${String(counter++).padStart(3, "0")}`,
@@ -133,7 +174,7 @@ export class FindingVerifier {
           affectedEndpoint: xss.affectedEndpoint,
           affectedPages: xss.affectedPages || [xss.affectedPage],
           verificationStatus: "VERIFIED_CONFIRMED",
-          verificationRationale: `4-way execution proof confirmed: payload persisted verbatim in database, rendered via unescaped innerHTML sink, and executed sentinel handler in Playwright Chromium browser DOM context.`,
+          verificationRationale: `4-way execution proof confirmed: payload persisted verbatim in database, rendered via unescaped innerHTML sink, and executed sentinel handler in Playwright Chromium browser DOM context. Independently confirmed via fresh Chromium execution.`,
           testedInputsCount: testedCount,
           evidence: {
             primaryEvidence: ev,
@@ -183,6 +224,21 @@ export class FindingVerifier {
           continue;
         }
 
+        // Independent replay verification
+        if (!options?.skipReplay) {
+          const replay = await replayVerifier.verifyPriceReplay();
+          if (!replay.verified) {
+            rejectedFindings.push({
+              originalFindingId: biz.findingId,
+              sourceAgent: "BusinessLogicAgent",
+              vulnerabilityType: biz.vulnerabilityType,
+              reason: `Independent replay verification failed: ${replay.reason}`,
+              rawFinding: biz as unknown as Record<string, unknown>,
+            });
+            continue;
+          }
+        }
+
         verifiedCandidates.push({
           findingId: `VF-${String(counter++).padStart(3, "0")}`,
           originalFindingId: biz.findingId,
@@ -192,7 +248,7 @@ export class FindingVerifier {
           severity: biz.severity,
           affectedEndpoint: biz.affectedEndpoint,
           verificationStatus: "VERIFIED_CONFIRMED",
-          verificationRationale: `Price integrity violation confirmed: server trusted client-supplied price (${ev.clientSubmittedPriceCents} cents) over authoritative catalog price (${ev.canonicalCatalogPriceCents} cents), creating order '${ev.createdOrderId}' with an undercharge of ${ev.priceUnderchargeCents} cents.`,
+          verificationRationale: `Price integrity violation confirmed: server trusted client-supplied price (${ev.clientSubmittedPriceCents} cents) over authoritative catalog price (${ev.canonicalCatalogPriceCents} cents), creating order '${ev.createdOrderId}' with an undercharge of ${ev.priceUnderchargeCents} cents. Independently confirmed via checkout parameter replay.`,
           testedInputsCount: 1,
           evidence: ev as unknown as Record<string, unknown>,
           reproductionSteps: biz.reproductionSteps,

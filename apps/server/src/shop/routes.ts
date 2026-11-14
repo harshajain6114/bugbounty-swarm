@@ -175,7 +175,14 @@ shopRouter.get(
       res.status(404).json({ error: "Order not found." });
       return;
     }
-    // ⚠️  Missing ownership check: should be `if (order.userId !== req.userId)`
+    // Check if IDOR vulnerability is patched via environment flag
+    if (process.env.DEMO_PATCH_IDOR === "true") {
+      if (order.userId !== req.userId) {
+        res.status(403).json({ error: "Access denied. Order belongs to another user." });
+        return;
+      }
+    }
+    // ⚠️  Missing ownership check when unpatched: any authenticated user can read
     res.json(order);
   }
 );
@@ -227,19 +234,29 @@ shopRouter.post(
         return;
       }
 
-      // ⚠️  Uses client-supplied price, not product.price
-      const clientPrice = Number(item.price);
-      if (isNaN(clientPrice) || clientPrice < 0) {
-        res.status(400).json({ error: "Invalid price supplied." });
-        return;
-      }
+      // Check if Price vulnerability is patched via environment flag
+      if (process.env.DEMO_PATCH_PRICE === "true") {
+        total += product.price * qty;
+        orderItems.push({
+          productId: item.productId,
+          quantity: qty,
+          priceAtPurchase: product.price,
+        });
+      } else {
+        // ⚠️  Uses client-supplied price, not product.price
+        const clientPrice = Number(item.price);
+        if (isNaN(clientPrice) || clientPrice < 0) {
+          res.status(400).json({ error: "Invalid price supplied." });
+          return;
+        }
 
-      total += clientPrice * qty;
-      orderItems.push({
-        productId: item.productId,
-        quantity: qty,
-        priceAtPurchase: clientPrice,
-      });
+        total += clientPrice * qty;
+        orderItems.push({
+          productId: item.productId,
+          quantity: qty,
+          priceAtPurchase: clientPrice,
+        });
+      }
     }
 
     const order = createOrder(req.userId!, orderItems, total);
@@ -462,11 +479,14 @@ function productPageHtml(
         .join("")
     : "<p style='color:#888'>No reviews yet.</p>";
 
-  // The script sets innerHTML (not textContent) to simulate an XSS sink
+  // The script sets innerHTML (or textContent if patched) to simulate/mitigate XSS
+  const isXssPatched = process.env.DEMO_PATCH_XSS === "true";
   const reviewScripts = productReviews
     .map(
       (r) =>
-        `document.getElementById('review-content-${r.id}').innerHTML = ${JSON.stringify(r.content)};`
+        isXssPatched
+          ? `document.getElementById('review-content-${r.id}').textContent = ${JSON.stringify(r.content)};`
+          : `document.getElementById('review-content-${r.id}').innerHTML = ${JSON.stringify(r.content)};`
     )
     .join("\n");
 

@@ -16,6 +16,7 @@ target/
 *.key
 .near-credentials/
 credentials/
+.agent-keys.json
 
 # Playwright & Browser artifacts
 test-results/

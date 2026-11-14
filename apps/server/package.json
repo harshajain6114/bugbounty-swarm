@@ -16,6 +16,8 @@
     "test:xss-agent": "node node_modules/tsx/dist/cli.mjs tests/xss-agent.test.ts",
     "test:business-logic-agent": "node node_modules/tsx/dist/cli.mjs tests/business-logic-agent.test.ts",
     "test:mission": "node node_modules/tsx/dist/cli.mjs tests/mission-orchestrator.test.ts",
+    "test:fabricated": "node node_modules/tsx/dist/cli.mjs tests/fabricated-finding.test.ts",
+    "demo:refund": "node node_modules/tsx/dist/cli.mjs tests/demo-refund.ts",
     "test:all": "node node_modules/tsx/dist/cli.mjs tests/run-all.ts",
     "typecheck": "node node_modules/typescript/bin/tsc --noEmit"
   },

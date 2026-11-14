@@ -79,6 +79,24 @@ export function loadNearConfig(): NearConfig | null {
 // NEAR client
 // ─────────────────────────────────────────────────────────────────────────────
 
+export function isFinalExecutionSuccessful(outcome: unknown): boolean {
+  if (!outcome || typeof outcome !== "object") return false;
+  const o = outcome as {
+    status?: { SuccessValue?: unknown; SuccessReceiptId?: unknown; Failure?: unknown };
+    receipts_outcome?: { outcome?: { status?: { Failure?: unknown } } }[];
+  };
+  if (o.status && o.status.Failure) return false;
+  if (Array.isArray(o.receipts_outcome)) {
+    for (const ro of o.receipts_outcome) {
+      if (ro?.outcome?.status?.Failure) return false;
+    }
+  }
+  if (o.status && (o.status.SuccessValue !== undefined || o.status.SuccessReceiptId !== undefined)) {
+    return true;
+  }
+  return false;
+}
+
 export class NearClient {
   private config: NearConfig;
 
@@ -145,7 +163,19 @@ export class NearClient {
         ? missionTxResult.transaction.hash
         : Buffer.from(missionTxResult.transaction.hash).toString("base64");
 
-      console.log(`[NEAR] Mission attestation TX: ${missionTxHash}`);
+      const isMissionTxOk = isFinalExecutionSuccessful(missionTxResult);
+      if (!isMissionTxOk) {
+        console.error(`[NEAR] Mission attestation failed on-chain execution:`, missionTxResult.status);
+        return {
+          ...base,
+          status: "failed",
+          missionTxHash,
+          missionTxStatus: "failed",
+          errorMessage: "Transaction failed execution on-chain: " + JSON.stringify(missionTxResult.status),
+        };
+      }
+
+      console.log(`[NEAR] Mission attestation TX confirmed: ${missionTxHash}`);
 
       // ── Submit agent contributions ────────────────────────────────────────
       const contributionTxHashes: string[] = [];
@@ -170,12 +200,21 @@ export class NearClient {
             ? contribResult.transaction.hash
             : Buffer.from(contribResult.transaction.hash).toString("base64");
 
-          contributionTxHashes.push(contribTxHash);
-          contributionTxStatuses.push("confirmed");
-
-          console.log(
-            `[NEAR] Agent contribution TX (${contribution.agentId}): ${contribTxHash}`
-          );
+          const isContribOk = isFinalExecutionSuccessful(contribResult);
+          if (isContribOk) {
+            contributionTxHashes.push(contribTxHash);
+            contributionTxStatuses.push("confirmed");
+            console.log(
+              `[NEAR] Agent contribution TX confirmed (${contribution.agentId}): ${contribTxHash}`
+            );
+          } else {
+            console.error(
+              `[NEAR] Agent contribution failed execution for ${contribution.agentId}:`,
+              contribResult.status
+            );
+            contributionTxHashes.push(contribTxHash);
+            contributionTxStatuses.push("failed");
+          }
         } catch (contribErr) {
           console.error(
             `[NEAR] Agent contribution failed for ${contribution.agentId}:`,

@@ -1,9 +1,11 @@
 /**
  * scripts/verify-market.js
  * Read-only verifier for the Swarm Bounty Market contract on market.harsha-swarm.testnet.
+ * Completely zero-gas, no private keys required.
  */
 
 const path = require('path');
+const fs = require('fs');
 const { JsonRpcProvider } = require(path.resolve(__dirname, '../apps/server/node_modules/near-api-js'));
 
 const MARKET_CONTRACT = process.env.NEAR_MARKET_CONTRACT || 'market.harsha-swarm.testnet';
@@ -20,7 +22,7 @@ async function main() {
   const provider = new JsonRpcProvider({ url: RPC_URL });
 
   // 1. Query Market Operator
-  console.log('[1/3] Calling view method: get_operator…');
+  console.log('[1/4] Calling view method: get_operator…');
   try {
     const op = await provider.callFunction({
       contractId: MARKET_CONTRACT,
@@ -33,7 +35,7 @@ async function main() {
   }
 
   // 2. Query Agent Market Reputation
-  console.log('\n[2/3] Calling view method: get_agent_reputation…');
+  console.log('\n[2/4] Calling view method: get_agent_reputation…');
   const accounts = [
     'idor.harsha-swarm.testnet',
     'xss.harsha-swarm.testnet',
@@ -55,9 +57,40 @@ async function main() {
     }
   }
 
-  // 3. Query Auction Rounds & Bids
-  console.log('\n[3/3] Calling view methods: get_round & get_round_bids…');
-  const fs = require('fs');
+  // 3. Query Agent Sub-Account Access Keys
+  console.log('\n[3/4] Querying agent access keys via view_access_key_list…');
+  for (const acct of accounts) {
+    try {
+      const res = await fetch(RPC_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 'keys',
+          method: 'query',
+          params: { request_type: 'view_access_key_list', finality: 'final', account_id: acct },
+        }),
+      });
+      const data = await res.json();
+      const keys = data.result?.keys || [];
+      console.log(`  Account: ${acct} (${keys.length} key(s))`);
+      for (const k of keys) {
+        const perm = k.access_key.permission;
+        if (perm === 'FullAccess') {
+          console.log(`    - Permission: FullAccess | Key: ${k.public_key.slice(0, 20)}…`);
+        } else if (perm?.FunctionCall) {
+          const fc = perm.FunctionCall;
+          const allow = fc.allowance ? `${(Number(fc.allowance) / 1e24).toFixed(3)} NEAR` : 'unlimited';
+          console.log(`    - Permission: FunctionCall | Receiver: ${fc.receiver_id} | Methods: [${fc.method_names.join(', ')}] | Allowance: ${allow}`);
+        }
+      }
+    } catch (err) {
+      console.error(`  ✕ Failed to fetch keys for ${acct}:`, err.message);
+    }
+  }
+
+  // 4. Query Auction Rounds & Bids
+  console.log('\n[4/4] Calling view methods: get_round & get_round_bids…');
   let roundIds = [];
   try {
     const missionPath = path.resolve(__dirname, '../apps/server/tests/results/mission-result.json');
@@ -69,7 +102,7 @@ async function main() {
     }
   } catch {}
   if (roundIds.length === 0) {
-    roundIds = ['test-5bids-1794651747986'];
+    roundIds = ['test-mission-1794656808360-r1'];
   }
 
   for (const rid of roundIds) {
@@ -85,7 +118,7 @@ async function main() {
         console.log(`  Reward     : ${(Number(round.reward) / 1e24).toFixed(3)} NEAR`);
         console.log(`  Status     : ${round.status}`);
         console.log(`  Winner     : ${round.winner || 'None'}`);
-        console.log(`  Paid Flag  : ${round.status === 'Paid' ? 'YES (Confirmed on-chain)' : 'NO'}`);
+        console.log(`  Paid Flag  : ${round.status === 'Paid' ? 'YES (Confirmed on-chain)' : round.status === 'Refunded' ? 'REFUNDED (Verification failed)' : 'NO'}`);
 
         const bids = await provider.callFunction({
           contractId: MARKET_CONTRACT,

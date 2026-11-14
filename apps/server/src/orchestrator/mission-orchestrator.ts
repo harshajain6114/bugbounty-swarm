@@ -321,22 +321,42 @@ export class MissionOrchestrator {
         console.error(`  ✕ Business Logic Agent failed:`, err);
       }
 
-      // ── Stage 4: Independent Finding Verification & Deduplication ─────────
-      console.log(`\n[Stage 3/4] Independent Finding Verification & Evidence Auditing…`);
+      // ── Stage 4: Independent Finding Verification & Replay Auditing ───────
+      console.log(`\n[Stage 3/4] Independent Finding Verification & Replay Auditing…`);
       const verifier = new FindingVerifier();
       const { verifiedFindings, rejectedFindings, deduplicationSummary } =
-        verifier.verifyFindings(allRawFindings);
+        await verifier.verifyFindings(allRawFindings, {
+          targetScope: targetUrl,
+          headless: options?.headless !== false,
+        });
 
       console.log(`  ✓ Total Raw Findings Ingested       : ${allRawFindings.length}`);
       console.log(`  ✓ Verified Unique Vulnerabilities   : ${verifiedFindings.length}`);
       console.log(`  ✓ Rejected / Unsupported Findings   : ${rejectedFindings.length}`);
       console.log(`  ✓ Deduplicated Secondary Findings   : ${deduplicationSummary.deduplicatedCount}`);
 
-      // ── Stage 4b: Release Verification-Gated Market Payouts ───────────────
-      console.log(`\n[Stage 3b] Processing Verification-Gated Market Payouts…`);
+      // ── Stage 4b: Release Verification-Gated Market Payouts or Refunds ──────
+      console.log(`\n[Stage 3b] Processing Verification-Gated Market Payouts & Refunds…`);
+      const taskAgentMap: Record<string, string> = {
+        "task-access-control": "IdorAgent",
+        "task-injection": "XssAgent",
+        "task-business-logic": "BusinessLogicAgent",
+      };
+
       for (const round of marketCoordinator.getMarketRounds()) {
         if (round.roundId.startsWith(missionId)) {
-          await marketCoordinator.releasePayout(round.roundId);
+          const expectedAgent = taskAgentMap[round.taskId];
+          const hasVerifiedFinding = verifiedFindings.some(
+            (vf) => vf.sourceAgent === expectedAgent
+          );
+
+          if (hasVerifiedFinding) {
+            console.log(`  ✓ Finding verified for ${round.taskId}. Releasing payout to winner (${round.winnerAccount})…`);
+            await marketCoordinator.releasePayout(round.roundId);
+          } else {
+            console.warn(`  ⚠ Finding NOT verified for ${round.taskId}. Verification failed -> Refunding escrow to operator…`);
+            await marketCoordinator.refundRound(round.roundId);
+          }
         }
       }
 

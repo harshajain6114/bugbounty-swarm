@@ -1,4 +1,9 @@
-﻿import express, { type Request, type Response } from "express";
+﻿import path from "node:path";
+import dotenv from "dotenv";
+dotenv.config({ path: path.resolve(process.cwd(), "../../.env") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+
+import express, { type Request, type Response } from "express";
 import cors from "cors";
 import { shopRouter } from "./shop/routes.js";
 import { MissionOrchestrator } from "./orchestrator/index.js";

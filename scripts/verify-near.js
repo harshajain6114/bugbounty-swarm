@@ -8,7 +8,7 @@ const path = require('path');
 const { JsonRpcProvider } = require(path.resolve(__dirname, '../apps/server/node_modules/near-api-js'));
 
 const CONTRACT_ID = process.env.NEAR_CONTRACT_ID || 'harsha-swarm.testnet';
-const RPC_URL = process.env.NEAR_RPC_URL || 'https://rpc.testnet.near.org';
+const RPC_URL = process.env.NEAR_RPC_URL || 'https://test.rpc.fastnear.com';
 const MISSION_ID = process.argv[2] || 'test-mission-1794640261981';
 
 async function main() {

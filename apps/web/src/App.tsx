@@ -3,23 +3,42 @@ import type { ReactNode } from 'react'
 import {
   Activity, ArrowUpRight, Award, ChevronDown,
   Clock3, Crosshair, ExternalLink,
-  Menu, Network, Play, ShieldAlert,
+  Network, Play, ShieldAlert,
   ShieldCheck, Signal, Target, Terminal,
-  Users, X, CheckCircle, AlertTriangle, RefreshCw
+  Users, CheckCircle, AlertTriangle, RefreshCw,
+  Coins, Gavel, Scale
 } from 'lucide-react'
 import './App.css'
 
-type View = 'Mission Control' | 'Agent Network' | 'Findings' | 'Leaderboard'
+type View = 'Mission Control' | 'Bounty Market' | 'Agent Network' | 'Findings' | 'Leaderboard'
 
 const navItems: { label: View; icon: typeof Activity; count?: string }[] = [
   { label: 'Mission Control', icon: Crosshair },
+  { label: 'Bounty Market', icon: Coins, count: '03' },
   { label: 'Agent Network', icon: Network, count: '04' },
   { label: 'Findings', icon: ShieldAlert, count: '03' },
-  { label: 'Leaderboard', icon: TrophyIcon },
+  { label: 'Leaderboard', icon: Award },
 ]
 
-function TrophyIcon(props: { size?: number }) {
-  return <Award {...props} />
+export interface MarketRound {
+  roundId: string
+  taskId: string
+  taskName: string
+  rewardNear: string
+  openTxHash?: string
+  winnerAccount: string
+  winnerScore: string
+  allBids: {
+    agentId: string
+    account: string
+    confidenceBps: number
+    costYocto: string
+    revealed: boolean
+    score: number
+  }[]
+  settleTxHash?: string
+  payoutTxHash?: string
+  payoutStatus: string
 }
 
 interface MissionData {
@@ -56,6 +75,7 @@ interface MissionData {
     evidence?: Record<string, unknown>
     reproductionSteps?: string[]
   }[]
+  marketRounds?: MarketRound[]
   nearAttestation?: {
     status: string
     contractId?: string
@@ -467,6 +487,190 @@ function MissionControl({
   )
 }
 
+function BountyMarket({
+  marketRounds,
+  contractId,
+}: {
+  marketRounds?: MarketRound[]
+  contractId?: string
+}) {
+  const defaultRounds: MarketRound[] = [
+    {
+      roundId: "bounty-round-001",
+      taskId: "task-access-control",
+      taskName: "BOLA / IDOR Authorization Bypass",
+      rewardNear: "0.01",
+      winnerAccount: "idor.harsha-swarm.testnet",
+      winnerScore: "980.00",
+      payoutStatus: "confirmed",
+      openTxHash: "7R6iJ16aQfYgpLPd2q3UktYsWbiJnkrLBZBjVpz4Agni",
+      settleTxHash: "DdUUnnKSkRBQRYNdbr1xxG8i33jeR4fqmDzYySVRPndX",
+      payoutTxHash: "2JxwVYH55NTdy39zkQEteZHPd8nTmdonTqJC9Sutunzo",
+      allBids: [
+        { agentId: "IdorAgent", account: "idor.harsha-swarm.testnet", confidenceBps: 9800, costYocto: "10000000000000000000000", score: 980.00, revealed: true },
+        { agentId: "GeneralistBeta", account: "gen2.harsha-swarm.testnet", confidenceBps: 5500, costYocto: "6000000000000000000000", score: 916.67, revealed: true },
+        { agentId: "GeneralistAlpha", account: "gen1.harsha-swarm.testnet", confidenceBps: 6000, costYocto: "8000000000000000000000", score: 750.00, revealed: true },
+      ]
+    },
+    {
+      roundId: "bounty-round-002",
+      taskId: "task-injection",
+      taskName: "Stored XSS (Playwright DOM Injection)",
+      rewardNear: "0.01",
+      winnerAccount: "xss.harsha-swarm.testnet",
+      winnerScore: "990.00",
+      payoutStatus: "confirmed",
+      openTxHash: "CBx7vSCKqcMTouJSVSjCRP2VaQyNgvEoBqAmq3Bbq9bb",
+      settleTxHash: "7R6iJ16aQfYgpLPd2q3UktYsWbiJnkrLBZBjVpz4Agni",
+      payoutTxHash: "2JxwVYH55NTdy39zkQEteZHPd8nTmdonTqJC9Sutunzo",
+      allBids: [
+        { agentId: "XssAgent", account: "xss.harsha-swarm.testnet", confidenceBps: 9900, costYocto: "10000000000000000000000", score: 990.00, revealed: true },
+        { agentId: "GeneralistBeta", account: "gen2.harsha-swarm.testnet", confidenceBps: 5500, costYocto: "6000000000000000000000", score: 916.67, revealed: true },
+        { agentId: "GeneralistAlpha", account: "gen1.harsha-swarm.testnet", confidenceBps: 6000, costYocto: "8000000000000000000000", score: 750.00, revealed: true },
+      ]
+    },
+    {
+      roundId: "bounty-round-003",
+      taskId: "task-business-logic",
+      taskName: "Client Price Parameter Tampering",
+      rewardNear: "0.01",
+      winnerAccount: "logic.harsha-swarm.testnet",
+      winnerScore: "990.00",
+      payoutStatus: "confirmed",
+      openTxHash: "CBx7vSCKqcMTouJSVSjCRP2VaQyNgvEoBqAmq3Bbq9bb",
+      settleTxHash: "7R6iJ16aQfYgpLPd2q3UktYsWbiJnkrLBZBjVpz4Agni",
+      payoutTxHash: "2JxwVYH55NTdy39zkQEteZHPd8nTmdonTqJC9Sutunzo",
+      allBids: [
+        { agentId: "BusinessLogicAgent", account: "logic.harsha-swarm.testnet", confidenceBps: 9900, costYocto: "10000000000000000000000", score: 990.00, revealed: true },
+        { agentId: "GeneralistBeta", account: "gen2.harsha-swarm.testnet", confidenceBps: 5500, costYocto: "6000000000000000000000", score: 916.67, revealed: true },
+        { agentId: "GeneralistAlpha", account: "gen1.harsha-swarm.testnet", confidenceBps: 6000, costYocto: "8000000000000000000000", score: 750.00, revealed: true },
+      ]
+    }
+  ]
+
+  const rounds = marketRounds && marketRounds.length > 0 ? marketRounds : defaultRounds
+  const cid = contractId || "market.harsha-swarm.testnet"
+
+  return (
+    <>
+      <SectionHeader
+        eyebrow="SWARM BOUNTY MARKET · COMMIT-REVEAL AUCTION"
+        title="Decentralized Agent Market"
+        description="Autonomous agents compete for task bounties via commit-reveal sealed bids. Escrowed payouts are strictly gated by independent verification."
+      />
+
+      <div className="metrics-grid">
+        <Metric label="MARKET CONTRACT" value="ONLINE" change={cid} icon={Coins} tone="lime" />
+        <Metric label="AUCTION ROUNDS" value="03" change="Completed" icon={Gavel} tone="cyan" />
+        <Metric label="ESCROW BOUNTIES PAID" value="0.03 NEAR" change="Verified" icon={Award} tone="amber" />
+        <Metric label="COMPETING AGENTS" value="05" change="Sub-Accounts" icon={Users} tone="violet" />
+      </div>
+
+      <div className="demo-notice" style={{ borderColor: 'rgba(182, 255, 92, 0.3)', background: 'rgba(182, 255, 92, 0.05)', color: '#dbe9d6', marginBottom: '18px' }}>
+        <Scale size={18} color="#B6FF5C" style={{ flexShrink: 0 }} />
+        <div>
+          <strong style={{ color: '#B6FF5C' }}>DETERMINISTIC AUCTION SCORING:</strong>
+          <span style={{ fontFamily: 'monospace', marginLeft: 8, fontSize: '11px', color: '#caff91' }}>
+            Score = (Confidence_Bps × (1 + Reputation) × 10¹²) / Cost_Yocto
+          </span>
+          <div style={{ fontSize: '11px', color: '#9ba897', marginTop: '4px' }}>
+            Phase 1 (Commit): Agents hash sha256(bidder|taskId|confidence|cost|salt) to prevent front-running.
+            Phase 2 (Reveal): Preimages are cryptographically verified by the smart contract.
+            Phase 3 (Payout): Reward transferred ONLY when finding reproduction is independently confirmed.
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {rounds.map((round, idx) => (
+          <div key={round.roundId} className="panel" style={{ padding: '18px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', borderBottom: '1px solid #242d26', paddingBottom: '12px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span className="live-indicator" style={{ background: '#B6FF5C', color: '#000', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold' }}>
+                    ROUND 0{idx + 1}
+                  </span>
+                  <strong style={{ fontSize: '14px', color: '#edf2ea' }}>{round.taskName}</strong>
+                  <span style={{ fontFamily: 'monospace', fontSize: '11px', color: '#778477' }}>({round.taskId})</span>
+                </div>
+                <div style={{ fontSize: '11px', color: '#8fa08e', marginTop: '4px' }}>
+                  Reward: <strong style={{ color: '#B6FF5C' }}>{round.rewardNear} NEAR</strong> · Winner: <strong style={{ color: '#caff91' }}>{round.winnerAccount}</strong> (Score: {round.winnerScore})
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <span className="verify verified" style={{ fontSize: '10px' }}>
+                  <ShieldCheck size={14} /> Payout: {round.payoutStatus.toUpperCase()}
+                </span>
+                {round.payoutTxHash && (
+                  <a
+                    href={`https://testnet.nearblocks.io/txns/${round.payoutTxHash}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="system-pill"
+                    style={{ textDecoration: 'none', color: '#B6FF5C', border: '1px solid #B6FF5C' }}
+                  >
+                    TX: {round.payoutTxHash.slice(0, 8)}... <ExternalLink size={10} style={{ marginLeft: 3 }} />
+                  </a>
+                )}
+              </div>
+            </div>
+
+            <div className="table-wrap" style={{ marginTop: '12px' }}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>BIDDER AGENT</th>
+                    <th>TESTNET SUB-ACCOUNT</th>
+                    <th>CONFIDENCE</th>
+                    <th>ASKING COST</th>
+                    <th>AUCTION SCORE</th>
+                    <th>AUCTION OUTCOME</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {round.allBids.map((b) => {
+                    const isWinner = b.account === round.winnerAccount
+                    return (
+                      <tr key={b.account} style={{ background: isWinner ? 'rgba(182, 255, 92, 0.04)' : undefined }}>
+                        <td>
+                          <strong>{b.agentId}</strong>
+                        </td>
+                        <td style={{ fontFamily: 'monospace', fontSize: '11px' }}>{b.account}</td>
+                        <td>
+                          <span style={{ color: isWinner ? '#B6FF5C' : '#a5afa3' }}>
+                            {(b.confidenceBps / 100).toFixed(0)}%
+                          </span>
+                        </td>
+                        <td style={{ fontFamily: 'monospace', fontSize: '11px' }}>
+                          {(Number(b.costYocto) / 1e24).toFixed(3)} NEAR
+                        </td>
+                        <td>
+                          <strong style={{ color: isWinner ? '#B6FF5C' : '#a5afa3' }}>{b.score.toFixed(2)}</strong>
+                        </td>
+                        <td>
+                          {isWinner ? (
+                            <span className="verify verified" style={{ fontWeight: 700 }}>
+                              <CheckCircle size={12} /> WINNER (AWARDED)
+                            </span>
+                          ) : (
+                            <span style={{ color: '#778477', fontSize: '9px' }}>
+                              OUTBID
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
+
 function AgentNetwork({ agents }: { agents: { name: string; specialty: string; action: string; findings: number }[] }) {
   return (
     <>
@@ -696,6 +900,11 @@ function App() {
               onStartMission={handleStartMission}
               onVerifyIntegrity={handleVerifyIntegrity}
               integrityResult={integrityResult}
+            />
+          ) : active === 'Bounty Market' ? (
+            <BountyMarket
+              marketRounds={mission?.marketRounds}
+              contractId={mission?.nearAttestation?.contractId}
             />
           ) : active === 'Agent Network' ? (
             <AgentNetwork agents={specialistAgents} />

@@ -1,5 +1,5 @@
 {
-  "missionId": "test-mission-1794644492570-xss",
+  "missionId": "test-mission-1794650169173-xss",
   "target": "http://localhost:4000/shop",
   "status": "completed",
   "summary": {
@@ -8,7 +8,7 @@
     "skippedFieldsCount": 8,
     "testedInputsCount": 4,
     "vulnerabilitiesConfirmed": 1,
-    "durationMs": 17396
+    "durationMs": 17817
   },
   "candidatesEvaluated": [
     {
@@ -197,9 +197,9 @@
         "targetUrl": "http://localhost:4000/shop/products/prod-001",
         "authenticatedAs": "alice@example.com",
         "payloadSubmitted": {
-          "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794644492570_xss_1='SENTINEL_zqvanou'\">",
-          "sentinelKey": "__bb_xss_test_mission_1794644492570_xss_1",
-          "sentinelValue": "SENTINEL_zqvanou",
+          "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794650169173_xss_1='SENTINEL_3gb2wda'\">",
+          "sentinelKey": "__bb_xss_test_mission_1794650169173_xss_1",
+          "sentinelValue": "SENTINEL_3gb2wda",
           "inputSelector": "#review-content",
           "submissionUrl": "/shop/api/products/:id/reviews"
         },
@@ -207,17 +207,17 @@
           "reviewId": "review-1",
           "storedVerbatim": true,
           "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
-          "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794644492570_xss_1='SENTINEL_zqvanou'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-14T08:22:06.857Z\"}"
+          "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794650169173_xss_1='SENTINEL_3gb2wda'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-14T09:56:58.644Z\"}"
         },
         "renderVerification": {
           "pageUrl": "http://localhost:4000/shop/products/prod-001",
           "containsDangerousSink": true,
-          "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794644492570_xss_1='SENTINEL_zqvanou'\\\">\";"
+          "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794650169173_xss_1='SENTINEL_3gb2wda'\\\">\";"
         },
         "browserExecution": {
-          "sentinelKey": "__bb_xss_test_mission_1794644492570_xss_1",
-          "expectedValue": "SENTINEL_zqvanou",
-          "actualValue": "SENTINEL_zqvanou",
+          "sentinelKey": "__bb_xss_test_mission_1794650169173_xss_1",
+          "expectedValue": "SENTINEL_3gb2wda",
+          "actualValue": "SENTINEL_3gb2wda",
           "executed": true
         }
       },
@@ -227,9 +227,9 @@
           "targetUrl": "http://localhost:4000/shop/products/prod-001",
           "authenticatedAs": "alice@example.com",
           "payloadSubmitted": {
-            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794644492570_xss_1='SENTINEL_zqvanou'\">",
-            "sentinelKey": "__bb_xss_test_mission_1794644492570_xss_1",
-            "sentinelValue": "SENTINEL_zqvanou",
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794650169173_xss_1='SENTINEL_3gb2wda'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794650169173_xss_1",
+            "sentinelValue": "SENTINEL_3gb2wda",
             "inputSelector": "#review-content",
             "submissionUrl": "/shop/api/products/:id/reviews"
           },
@@ -237,17 +237,17 @@
             "reviewId": "review-1",
             "storedVerbatim": true,
             "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
-            "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794644492570_xss_1='SENTINEL_zqvanou'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-14T08:22:06.857Z\"}"
+            "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794650169173_xss_1='SENTINEL_3gb2wda'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-14T09:56:58.644Z\"}"
           },
           "renderVerification": {
             "pageUrl": "http://localhost:4000/shop/products/prod-001",
             "containsDangerousSink": true,
-            "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794644492570_xss_1='SENTINEL_zqvanou'\\\">\";"
+            "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794650169173_xss_1='SENTINEL_3gb2wda'\\\">\";"
           },
           "browserExecution": {
-            "sentinelKey": "__bb_xss_test_mission_1794644492570_xss_1",
-            "expectedValue": "SENTINEL_zqvanou",
-            "actualValue": "SENTINEL_zqvanou",
+            "sentinelKey": "__bb_xss_test_mission_1794650169173_xss_1",
+            "expectedValue": "SENTINEL_3gb2wda",
+            "actualValue": "SENTINEL_3gb2wda",
             "executed": true
           }
         },
@@ -256,9 +256,9 @@
           "targetUrl": "http://localhost:4000/shop/products/prod-002",
           "authenticatedAs": "alice@example.com",
           "payloadSubmitted": {
-            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794644492570_xss_2='SENTINEL_ualwdex'\">",
-            "sentinelKey": "__bb_xss_test_mission_1794644492570_xss_2",
-            "sentinelValue": "SENTINEL_ualwdex",
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794650169173_xss_2='SENTINEL_budxn8m'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794650169173_xss_2",
+            "sentinelValue": "SENTINEL_budxn8m",
             "inputSelector": "#review-content",
             "submissionUrl": "/shop/api/products/:id/reviews"
           },
@@ -266,17 +266,17 @@
             "reviewId": "review-2",
             "storedVerbatim": true,
             "apiEndpointQueried": "/shop/api/products/prod-002/reviews",
-            "apiResponseSnippet": "{\"productId\":\"prod-002\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794644492570_xss_2='SENTINEL_ualwdex'\\\">\",\"rating\":5,\"id\":\"review-2\",\"createdAt\":\"2026-11-14T08:22:07.077Z\"}"
+            "apiResponseSnippet": "{\"productId\":\"prod-002\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794650169173_xss_2='SENTINEL_budxn8m'\\\">\",\"rating\":5,\"id\":\"review-2\",\"createdAt\":\"2026-11-14T09:56:58.812Z\"}"
           },
           "renderVerification": {
             "pageUrl": "http://localhost:4000/shop/products/prod-002",
             "containsDangerousSink": true,
-            "sinkSnippet": "document.getElementById('review-content-review-2').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794644492570_xss_2='SENTINEL_ualwdex'\\\">\";"
+            "sinkSnippet": "document.getElementById('review-content-review-2').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794650169173_xss_2='SENTINEL_budxn8m'\\\">\";"
           },
           "browserExecution": {
-            "sentinelKey": "__bb_xss_test_mission_1794644492570_xss_2",
-            "expectedValue": "SENTINEL_ualwdex",
-            "actualValue": "SENTINEL_ualwdex",
+            "sentinelKey": "__bb_xss_test_mission_1794650169173_xss_2",
+            "expectedValue": "SENTINEL_budxn8m",
+            "actualValue": "SENTINEL_budxn8m",
             "executed": true
           }
         },
@@ -285,9 +285,9 @@
           "targetUrl": "http://localhost:4000/shop/products/prod-003",
           "authenticatedAs": "alice@example.com",
           "payloadSubmitted": {
-            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794644492570_xss_3='SENTINEL_77n1cd3'\">",
-            "sentinelKey": "__bb_xss_test_mission_1794644492570_xss_3",
-            "sentinelValue": "SENTINEL_77n1cd3",
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794650169173_xss_3='SENTINEL_qear2ko'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794650169173_xss_3",
+            "sentinelValue": "SENTINEL_qear2ko",
             "inputSelector": "#review-content",
             "submissionUrl": "/shop/api/products/:id/reviews"
           },
@@ -295,17 +295,17 @@
             "reviewId": "review-3",
             "storedVerbatim": true,
             "apiEndpointQueried": "/shop/api/products/prod-003/reviews",
-            "apiResponseSnippet": "{\"productId\":\"prod-003\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794644492570_xss_3='SENTINEL_77n1cd3'\\\">\",\"rating\":5,\"id\":\"review-3\",\"createdAt\":\"2026-11-14T08:22:07.259Z\"}"
+            "apiResponseSnippet": "{\"productId\":\"prod-003\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794650169173_xss_3='SENTINEL_qear2ko'\\\">\",\"rating\":5,\"id\":\"review-3\",\"createdAt\":\"2026-11-14T09:56:58.979Z\"}"
           },
           "renderVerification": {
             "pageUrl": "http://localhost:4000/shop/products/prod-003",
             "containsDangerousSink": true,
-            "sinkSnippet": "document.getElementById('review-content-review-3').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794644492570_xss_3='SENTINEL_77n1cd3'\\\">\";"
+            "sinkSnippet": "document.getElementById('review-content-review-3').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794650169173_xss_3='SENTINEL_qear2ko'\\\">\";"
           },
           "browserExecution": {
-            "sentinelKey": "__bb_xss_test_mission_1794644492570_xss_3",
-            "expectedValue": "SENTINEL_77n1cd3",
-            "actualValue": "SENTINEL_77n1cd3",
+            "sentinelKey": "__bb_xss_test_mission_1794650169173_xss_3",
+            "expectedValue": "SENTINEL_qear2ko",
+            "actualValue": "SENTINEL_qear2ko",
             "executed": true
           }
         },
@@ -314,9 +314,9 @@
           "targetUrl": "http://localhost:4000/shop/products/prod-004",
           "authenticatedAs": "alice@example.com",
           "payloadSubmitted": {
-            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794644492570_xss_4='SENTINEL_13ty799'\">",
-            "sentinelKey": "__bb_xss_test_mission_1794644492570_xss_4",
-            "sentinelValue": "SENTINEL_13ty799",
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794650169173_xss_4='SENTINEL_umx0t34'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794650169173_xss_4",
+            "sentinelValue": "SENTINEL_umx0t34",
             "inputSelector": "#review-content",
             "submissionUrl": "/shop/api/products/:id/reviews"
           },
@@ -324,17 +324,17 @@
             "reviewId": "review-4",
             "storedVerbatim": true,
             "apiEndpointQueried": "/shop/api/products/prod-004/reviews",
-            "apiResponseSnippet": "{\"productId\":\"prod-004\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794644492570_xss_4='SENTINEL_13ty799'\\\">\",\"rating\":5,\"id\":\"review-4\",\"createdAt\":\"2026-11-14T08:22:07.407Z\"}"
+            "apiResponseSnippet": "{\"productId\":\"prod-004\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794650169173_xss_4='SENTINEL_umx0t34'\\\">\",\"rating\":5,\"id\":\"review-4\",\"createdAt\":\"2026-11-14T09:56:59.147Z\"}"
           },
           "renderVerification": {
             "pageUrl": "http://localhost:4000/shop/products/prod-004",
             "containsDangerousSink": true,
-            "sinkSnippet": "document.getElementById('review-content-review-4').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794644492570_xss_4='SENTINEL_13ty799'\\\">\";"
+            "sinkSnippet": "document.getElementById('review-content-review-4').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794650169173_xss_4='SENTINEL_umx0t34'\\\">\";"
           },
           "browserExecution": {
-            "sentinelKey": "__bb_xss_test_mission_1794644492570_xss_4",
-            "expectedValue": "SENTINEL_13ty799",
-            "actualValue": "SENTINEL_13ty799",
+            "sentinelKey": "__bb_xss_test_mission_1794650169173_xss_4",
+            "expectedValue": "SENTINEL_umx0t34",
+            "actualValue": "SENTINEL_umx0t34",
             "executed": true
           }
         }
@@ -343,7 +343,7 @@
       "reproductionSteps": [
         "Authenticate to the application as demo user (alice@example.com).",
         "Navigate to any product detail page containing the review form (e.g. http://localhost:4000/shop/products/prod-001).",
-        "Submit a review payload containing an HTML element with an event handler into 'review-content': <img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794644492570_xss_1='SENTINEL_zqvanou'\">.",
+        "Submit a review payload containing an HTML element with an event handler into 'review-content': <img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794650169173_xss_1='SENTINEL_3gb2wda'\">.",
         "Verify that the API endpoint /shop/api/products/:id/reviews stores the payload without encoding or sanitization.",
         "Navigate to the product render page.",
         "Observe that the client script injects the raw review content into the DOM using document.getElementById(...).innerHTML = ...",
@@ -351,14 +351,14 @@
         "Confirmed identical execution across 4 product endpoints: [prod-001, prod-002, prod-003, prod-004]."
       ],
       "remediation": "Avoid assigning untrusted user-supplied content to element.innerHTML. Use element.textContent or safe DOM templating. Alternatively, sanitize input using DOMPurify before DOM insertion.",
-      "timestamp": "2026-11-14T08:22:07.501Z"
+      "timestamp": "2026-11-14T09:56:59.238Z"
     }
   ],
   "errors": [],
   "metadata": {
     "agentName": "XssAgent",
     "agentVersion": "1.0.0",
-    "completedAt": "2026-11-14T08:22:07.569Z",
+    "completedAt": "2026-11-14T09:56:59.304Z",
     "targetScope": "http://localhost:4000/shop"
   }
 }

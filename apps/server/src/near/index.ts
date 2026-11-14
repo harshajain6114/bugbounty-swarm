@@ -27,3 +27,6 @@ export {
   NearClient,
   createNearClient,
 } from "./near-client.js";
+
+export { MarketCoordinator } from "./market-coordinator.js";
+export type { MarketBidStrategy, MarketRoundResult, SwarmMarketState } from "./market-types.js";

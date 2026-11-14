@@ -55,7 +55,7 @@ async function getNearApi(): Promise<NearApiJs | null> {
 export function loadNearConfig(): NearConfig | null {
   const networkId = process.env["NEAR_NETWORK_ID"] || "testnet";
   const rpcUrl =
-    process.env["NEAR_RPC_URL"] || "https://rpc.testnet.near.org";
+    process.env["NEAR_RPC_URL"] || "https://test.rpc.fastnear.com";
   const accountId = process.env["NEAR_ACCOUNT_ID"];
   const contractId = process.env["NEAR_CONTRACT_ID"];
   const privateKey = process.env["NEAR_PRIVATE_KEY"];

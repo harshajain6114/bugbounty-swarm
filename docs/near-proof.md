@@ -85,6 +85,38 @@ Raw results retrieved directly from `harsha-swarm.testnet` using view calls:
 ```
 
 ### `get_agent_reputation`
-- `IdorAgent`: **1**
-- `XssAgent`: **1**
-- `BusinessLogicAgent`: **1**
+- `IdorAgent`: **5** points
+- `XssAgent`: **5** points
+- `BusinessLogicAgent`: **5** points
+- `ReconAgent`: **0** points
+
+---
+
+## 4. Swarm Bounty Market Contract Deployment & Auction Proof
+
+**Market Contract ID**: `market.harsha-swarm.testnet`  
+**Deploy Transaction**: `2JxwVYH55NTdy39zkQEteZHPd8nTmdonTqJC9Sutunzo`  
+**Explorer Link**: [https://testnet.nearblocks.io/txns/2JxwVYH55NTdy39zkQEteZHPd8nTmdonTqJC9Sutunzo](https://testnet.nearblocks.io/txns/2JxwVYH55NTdy39zkQEteZHPd8nTmdonTqJC9Sutunzo)  
+**Operator**: `harsha-swarm.testnet`  
+
+### Participating Agent Accounts
+- `idor.harsha-swarm.testnet` (BOLA / Access Control Specialist)
+- `xss.harsha-swarm.testnet` (Stored XSS Specialist)
+- `logic.harsha-swarm.testnet` (Business Logic Specialist)
+- `gen1.harsha-swarm.testnet` (Generalist Alpha)
+- `gen2.harsha-swarm.testnet` (Generalist Beta)
+
+### Auction Mechanics
+1. **Commit Phase**: Agents submit $H = \text{sha256}(\text{bidder} \mid \text{taskId} \mid \text{confidence} \mid \text{cost} \mid \text{salt})$ preventing front-running.
+2. **Reveal Phase**: Preimages opened; on-chain smart contract deterministically evaluates:
+   $$\text{Score} = \frac{\text{confidence\_bps} \times (1 + \text{reputation}) \times 10^{21}}{\text{cost\_yocto}}$$
+3. **Verification-Gated Payout**: 0.01 NEAR reward is escrowed and released ONLY after independent finding confirmation.
+
+### Live Proof Commands
+```bash
+# Read-only verification of mission attestations (harsha-swarm.testnet)
+npm run verify:near
+
+# Read-only verification of market contract and agent accounts (market.harsha-swarm.testnet)
+npm run verify:market
+```

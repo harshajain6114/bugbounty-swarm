@@ -121,6 +121,8 @@ export interface MissionResult {
   };
   /** NEAR blockchain attestation record — present when NEAR is configured */
   nearAttestation?: NearAttestationRecord;
+  /** Swarm Bounty Market auction rounds data */
+  marketRounds?: import("../near/market-types.js").MarketRoundResult[];
 }
 
 export interface MissionSummaryItem {

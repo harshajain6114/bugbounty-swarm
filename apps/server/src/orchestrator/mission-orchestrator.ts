@@ -20,6 +20,7 @@ import {
   hashMissionResult,
   hashFindings,
   hashAgentFindings,
+  MarketCoordinator,
 } from "../near/index.js";
 import type {
   AgentExecutionRecord,
@@ -197,11 +198,13 @@ export class MissionOrchestrator {
         throw new Error(`Reconnaissance agent failed: ${String(err)}`);
       }
 
-      // ── Stage 3: Sequential Specialist Agent Execution ─────────────────────
-      console.log(`\n[Stage 2/4] Executing Specialist Security Agents (Sequential)…`);
+      // ── Stage 3: Sequential Specialist Agent Execution via Bounty Market ───
+      console.log(`\n[Stage 2/4] Executing Specialist Security Agents via Swarm Bounty Market…`);
+      const marketCoordinator = MarketCoordinator.getInstance();
 
       // 1. IDOR / BOLA Agent
-      console.log(`\n  → [1/3] Executing IDOR / BOLA Agent…`);
+      console.log(`\n  → [1/3] Running Bounty Auction for: task-access-control…`);
+      const idorRound = await marketCoordinator.runMarketRound("task-access-control", "BOLA / IDOR Authorization Bypass", `${missionId}-r1`);
       const idorStart = Date.now();
       const idorStartedAt = new Date().toISOString();
       try {
@@ -234,7 +237,8 @@ export class MissionOrchestrator {
       }
 
       // 2. Stored XSS Agent
-      console.log(`\n  → [2/3] Executing Stored XSS Agent…`);
+      console.log(`\n  → [2/3] Running Bounty Auction for: task-injection…`);
+      const xssRound = await marketCoordinator.runMarketRound("task-injection", "Stored XSS (Playwright DOM Injection)", `${missionId}-r2`);
       const xssStart = Date.now();
       const xssStartedAt = new Date().toISOString();
       try {
@@ -268,7 +272,8 @@ export class MissionOrchestrator {
       }
 
       // 3. Business Logic Agent
-      console.log(`\n  → [3/3] Executing Business Logic / Price Manipulation Agent…`);
+      console.log(`\n  → [3/3] Running Bounty Auction for: task-business-logic…`);
+      const logicRound = await marketCoordinator.runMarketRound("task-business-logic", "Client Price Parameter Tampering", `${missionId}-r3`);
       const bizStart = Date.now();
       const bizStartedAt = new Date().toISOString();
       try {
@@ -318,6 +323,14 @@ export class MissionOrchestrator {
       console.log(`  ✓ Rejected / Unsupported Findings   : ${rejectedFindings.length}`);
       console.log(`  ✓ Deduplicated Secondary Findings   : ${deduplicationSummary.deduplicatedCount}`);
 
+      // ── Stage 4b: Release Verification-Gated Market Payouts ───────────────
+      console.log(`\n[Stage 3b] Processing Verification-Gated Market Payouts…`);
+      for (const round of marketCoordinator.getMarketRounds()) {
+        if (round.roundId.startsWith(missionId)) {
+          await marketCoordinator.releasePayout(round.roundId);
+        }
+      }
+
       // ── Stage 5: Synthesis & Summary Statistics ────────────────────────────
       console.log(`\n[Stage 4/4] Synthesizing Final Mission Artifacts…`);
       const completedAt = new Date().toISOString();
@@ -365,6 +378,7 @@ export class MissionOrchestrator {
           targetScope: targetUrl,
           completedAt,
         },
+        marketRounds: marketCoordinator.getMarketRounds().filter((r) => r.roundId.startsWith(missionId)),
       };
 
       // ── Stage 5b: NEAR Blockchain Attestation (optional) ──────────────────

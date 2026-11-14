@@ -7,7 +7,7 @@ import express, { type Request, type Response } from "express";
 import cors from "cors";
 import { shopRouter } from "./shop/routes.js";
 import { MissionOrchestrator } from "./orchestrator/index.js";
-import { createNearClient } from "./near/index.js";
+import { createNearClient, MarketCoordinator } from "./near/index.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
@@ -86,7 +86,22 @@ app.get("/api/missions/latest", (_req: Request, res: Response) => {
   const sorted = [...missions].sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
   const latestSummary = sorted[0];
   const latestMission = orchestrator.getMission(latestSummary.missionId);
+  if (latestMission && (!latestMission.marketRounds || latestMission.marketRounds.length === 0)) {
+    latestMission.marketRounds = MarketCoordinator.getInstance().getMarketRounds();
+  }
   res.json(latestMission);
+});
+
+/**
+ * GET /api/market/rounds
+ * Fetches all auction rounds from the Swarm Bounty Market.
+ */
+app.get("/api/market/rounds", (_req: Request, res: Response) => {
+  const coordinator = MarketCoordinator.getInstance();
+  res.json({
+    contractId: process.env.NEAR_MARKET_CONTRACT || "market.harsha-swarm.testnet",
+    rounds: coordinator.getMarketRounds(),
+  });
 });
 
 /**

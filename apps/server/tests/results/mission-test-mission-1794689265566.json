@@ -1,0 +1,2168 @@
+{
+  "missionId": "test-mission-1794689265566",
+  "target": "http://localhost:4000/shop",
+  "status": "completed",
+  "startedAt": "2026-11-14T20:47:45.576Z",
+  "completedAt": "2026-11-14T20:50:14.722Z",
+  "durationMs": 149146,
+  "reconSummary": {
+    "pagesDiscovered": 8,
+    "endpointsDiscovered": 13,
+    "formsDiscovered": 7,
+    "authenticatedPages": 1,
+    "crawlDurationMs": 17884
+  },
+  "agentsExecuted": [
+    {
+      "agentName": "ReconAgent",
+      "startedAt": "2026-11-14T20:47:45.576Z",
+      "completedAt": "2026-11-14T20:48:03.539Z",
+      "durationMs": 17963,
+      "status": "completed",
+      "findingsCount": 0
+    },
+    {
+      "agentName": "IdorAgent",
+      "startedAt": "2026-11-14T20:48:32.779Z",
+      "completedAt": "2026-11-14T20:48:32.797Z",
+      "durationMs": 18,
+      "status": "completed",
+      "findingsCount": 1
+    },
+    {
+      "agentName": "XssAgent",
+      "startedAt": "2026-11-14T20:49:00.482Z",
+      "completedAt": "2026-11-14T20:49:19.199Z",
+      "durationMs": 18717,
+      "status": "completed",
+      "findingsCount": 1
+    },
+    {
+      "agentName": "BusinessLogicAgent",
+      "startedAt": "2026-11-14T20:49:47.433Z",
+      "completedAt": "2026-11-14T20:49:47.448Z",
+      "durationMs": 15,
+      "status": "completed",
+      "findingsCount": 1
+    }
+  ],
+  "agentResults": {
+    "recon": {
+      "missionId": "test-mission-1794689265566-recon",
+      "target": "http://localhost:4000/shop",
+      "status": "completed",
+      "summary": {
+        "pagesDiscovered": 8,
+        "endpointsDiscovered": 13,
+        "formsDiscovered": 7,
+        "authenticatedPages": 1,
+        "crawlDurationMs": 17884
+      },
+      "pages": [
+        {
+          "url": "http://localhost:4000/shop",
+          "path": "/shop",
+          "title": "VulnShop — VulnShop",
+          "authRequired": false,
+          "statusCode": 200,
+          "linksDiscovered": [
+            "http://localhost:4000/shop",
+            "http://localhost:4000/shop/products",
+            "http://localhost:4000/shop/orders",
+            "http://localhost:4000/shop/checkout"
+          ],
+          "formsDiscovered": 1,
+          "discoveredAt": "2026-11-14T20:48:02.863Z"
+        },
+        {
+          "url": "http://localhost:4000/shop/products",
+          "path": "/shop/products",
+          "title": "Products — VulnShop",
+          "authRequired": false,
+          "statusCode": 200,
+          "linksDiscovered": [
+            "http://localhost:4000/shop",
+            "http://localhost:4000/shop/products",
+            "http://localhost:4000/shop/orders",
+            "http://localhost:4000/shop/checkout",
+            "http://localhost:4000/shop/products/prod-001",
+            "http://localhost:4000/shop/products/prod-002",
+            "http://localhost:4000/shop/products/prod-003",
+            "http://localhost:4000/shop/products/prod-004"
+          ],
+          "formsDiscovered": 0,
+          "discoveredAt": "2026-11-14T20:48:02.925Z"
+        },
+        {
+          "url": "http://localhost:4000/shop/orders",
+          "path": "/shop/orders",
+          "title": "My Orders — VulnShop",
+          "authRequired": true,
+          "statusCode": 200,
+          "linksDiscovered": [
+            "http://localhost:4000/shop",
+            "http://localhost:4000/shop/products",
+            "http://localhost:4000/shop/orders",
+            "http://localhost:4000/shop/checkout"
+          ],
+          "formsDiscovered": 1,
+          "discoveredAt": "2026-11-14T20:48:02.975Z"
+        },
+        {
+          "url": "http://localhost:4000/shop/checkout",
+          "path": "/shop/checkout",
+          "title": "Checkout — VulnShop",
+          "authRequired": false,
+          "statusCode": 200,
+          "linksDiscovered": [
+            "http://localhost:4000/shop",
+            "http://localhost:4000/shop/products",
+            "http://localhost:4000/shop/orders",
+            "http://localhost:4000/shop/checkout"
+          ],
+          "formsDiscovered": 0,
+          "discoveredAt": "2026-11-14T20:48:03.021Z"
+        },
+        {
+          "url": "http://localhost:4000/shop/products/prod-001",
+          "path": "/shop/products/prod-001",
+          "title": "Wireless Headphones — VulnShop",
+          "authRequired": false,
+          "statusCode": 200,
+          "linksDiscovered": [
+            "http://localhost:4000/shop",
+            "http://localhost:4000/shop/products",
+            "http://localhost:4000/shop/orders",
+            "http://localhost:4000/shop/checkout"
+          ],
+          "formsDiscovered": 1,
+          "discoveredAt": "2026-11-14T20:48:03.077Z"
+        },
+        {
+          "url": "http://localhost:4000/shop/products/prod-002",
+          "path": "/shop/products/prod-002",
+          "title": "Mechanical Keyboard — VulnShop",
+          "authRequired": false,
+          "statusCode": 200,
+          "linksDiscovered": [
+            "http://localhost:4000/shop",
+            "http://localhost:4000/shop/products",
+            "http://localhost:4000/shop/orders",
+            "http://localhost:4000/shop/checkout"
+          ],
+          "formsDiscovered": 1,
+          "discoveredAt": "2026-11-14T20:48:03.122Z"
+        },
+        {
+          "url": "http://localhost:4000/shop/products/prod-003",
+          "path": "/shop/products/prod-003",
+          "title": "USB-C Hub — VulnShop",
+          "authRequired": false,
+          "statusCode": 200,
+          "linksDiscovered": [
+            "http://localhost:4000/shop",
+            "http://localhost:4000/shop/products",
+            "http://localhost:4000/shop/orders",
+            "http://localhost:4000/shop/checkout"
+          ],
+          "formsDiscovered": 1,
+          "discoveredAt": "2026-11-14T20:48:03.162Z"
+        },
+        {
+          "url": "http://localhost:4000/shop/products/prod-004",
+          "path": "/shop/products/prod-004",
+          "title": "Webcam 1080p — VulnShop",
+          "authRequired": false,
+          "statusCode": 200,
+          "linksDiscovered": [
+            "http://localhost:4000/shop",
+            "http://localhost:4000/shop/products",
+            "http://localhost:4000/shop/orders",
+            "http://localhost:4000/shop/checkout"
+          ],
+          "formsDiscovered": 1,
+          "discoveredAt": "2026-11-14T20:48:03.200Z"
+        }
+      ],
+      "endpoints": [
+        {
+          "url": "http://localhost:4000/shop",
+          "path": "/shop",
+          "method": "GET",
+          "statusCode": 200,
+          "authRequired": false,
+          "parameters": [],
+          "discoverySource": "network-observation",
+          "discoveredOnPage": "http://localhost:4000/shop"
+        },
+        {
+          "url": "http://localhost:4000/shop/products",
+          "path": "/shop/products",
+          "method": "GET",
+          "statusCode": 200,
+          "authRequired": false,
+          "parameters": [],
+          "discoverySource": "network-observation",
+          "discoveredOnPage": "http://localhost:4000/shop"
+        },
+        {
+          "url": "http://localhost:4000/shop/orders",
+          "path": "/shop/orders",
+          "method": "GET",
+          "statusCode": 200,
+          "authRequired": true,
+          "parameters": [],
+          "discoverySource": "network-observation",
+          "discoveredOnPage": "http://localhost:4000/shop"
+        },
+        {
+          "url": "http://localhost:4000/shop/checkout",
+          "path": "/shop/checkout",
+          "method": "GET",
+          "statusCode": 200,
+          "authRequired": true,
+          "parameters": [],
+          "discoverySource": "network-observation",
+          "discoveredOnPage": "http://localhost:4000/shop/orders"
+        },
+        {
+          "url": "http://localhost:4000/shop/products/:id",
+          "path": "/shop/products/:id",
+          "method": "GET",
+          "statusCode": 200,
+          "authRequired": false,
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "type": "string"
+            }
+          ],
+          "discoverySource": "network-observation",
+          "discoveredOnPage": "http://localhost:4000/shop/products/prod-003"
+        },
+        {
+          "url": "http://localhost:4000/shop/api/auth/login",
+          "path": "/shop/api/auth/login",
+          "method": "POST",
+          "statusCode": 200,
+          "authRequired": false,
+          "parameters": [],
+          "discoverySource": "network-observation",
+          "discoveredOnPage": "http://localhost:4000/shop"
+        },
+        {
+          "url": "http://localhost:4000/shop/api/auth/me",
+          "path": "/shop/api/auth/me",
+          "method": "GET",
+          "statusCode": 200,
+          "authRequired": true,
+          "parameters": [],
+          "discoverySource": "network-observation",
+          "discoveredOnPage": "http://localhost:4000/shop/checkout"
+        },
+        {
+          "url": "http://localhost:4000/shop/api/orders",
+          "path": "/shop/api/orders",
+          "method": "GET",
+          "statusCode": 200,
+          "authRequired": true,
+          "parameters": [],
+          "discoverySource": "network-observation",
+          "discoveredOnPage": "http://localhost:4000/shop/orders"
+        },
+        {
+          "url": "http://localhost:4000/shop/api/orders/:id",
+          "path": "/shop/api/orders/:id",
+          "method": "GET",
+          "statusCode": 401,
+          "authRequired": true,
+          "parameters": [
+            {
+              "name": "order-id-input",
+              "in": "body",
+              "type": "text"
+            },
+            {
+              "name": "id",
+              "in": "path",
+              "type": "string"
+            }
+          ],
+          "discoverySource": "form-action",
+          "discoveredOnPage": "http://localhost:4000/shop/orders"
+        },
+        {
+          "url": "http://localhost:4000/shop/api/products/:id/reviews",
+          "path": "/shop/api/products/:id/reviews",
+          "method": "POST",
+          "statusCode": null,
+          "authRequired": true,
+          "parameters": [
+            {
+              "name": "review-content",
+              "in": "body",
+              "type": "textarea"
+            },
+            {
+              "name": "review-rating",
+              "in": "body",
+              "type": "select"
+            }
+          ],
+          "discoverySource": "form-action",
+          "discoveredOnPage": "http://localhost:4000/shop/products/prod-001"
+        },
+        {
+          "url": "http://localhost:4000/shop/api/auth/logout",
+          "path": "/shop/api/auth/logout",
+          "method": "POST",
+          "statusCode": null,
+          "authRequired": false,
+          "parameters": [],
+          "discoverySource": "page-script",
+          "discoveredOnPage": "http://localhost:4000/shop"
+        },
+        {
+          "url": "http://localhost:4000/shop/api/checkout",
+          "path": "/shop/api/checkout",
+          "method": "POST",
+          "statusCode": null,
+          "authRequired": true,
+          "parameters": [],
+          "discoverySource": "page-script",
+          "discoveredOnPage": "http://localhost:4000/shop/checkout"
+        },
+        {
+          "url": "http://localhost:4000/shop/api/products",
+          "path": "/shop/api/products",
+          "method": "GET",
+          "statusCode": 200,
+          "authRequired": false,
+          "parameters": [],
+          "discoverySource": "page-script",
+          "discoveredOnPage": "http://localhost:4000/shop/products/prod-001"
+        }
+      ],
+      "forms": [
+        {
+          "id": "login-section",
+          "formAction": "/shop/api/auth/login",
+          "method": "POST",
+          "fields": [
+            {
+              "name": "email",
+              "id": "email",
+              "type": "email",
+              "placeholder": "Email",
+              "required": false,
+              "defaultValue": "alice@example.com"
+            },
+            {
+              "name": "password",
+              "id": "password",
+              "type": "password",
+              "placeholder": "Password",
+              "required": false,
+              "defaultValue": "[REDACTED]"
+            }
+          ],
+          "submitButton": {
+            "text": "Login",
+            "actionDescription": "login()"
+          },
+          "pageUrl": "http://localhost:4000/shop"
+        },
+        {
+          "id": "panel-card-1",
+          "formAction": "/shop/api/orders/:id",
+          "method": "GET",
+          "fields": [
+            {
+              "name": "order-id-input",
+              "id": "order-id-input",
+              "type": "text",
+              "placeholder": "e.g. order-bob-001",
+              "required": false
+            }
+          ],
+          "submitButton": {
+            "text": "Fetch Order",
+            "actionDescription": "lookupOrder()"
+          },
+          "pageUrl": "http://localhost:4000/shop/orders"
+        },
+        {
+          "id": "panel-card-2",
+          "formAction": "/shop/api/products/:id/reviews",
+          "method": "POST",
+          "fields": [
+            {
+              "name": "review-content",
+              "id": "review-content",
+              "type": "textarea",
+              "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+              "required": false
+            },
+            {
+              "name": "review-rating",
+              "id": "review-rating",
+              "type": "select",
+              "required": false,
+              "defaultValue": "5"
+            }
+          ],
+          "submitButton": {
+            "text": "Submit Review",
+            "actionDescription": "submitReview('prod-001')"
+          },
+          "pageUrl": "http://localhost:4000/shop/products/prod-001"
+        },
+        {
+          "id": "panel-card-2",
+          "formAction": "/shop/api/products/:id/reviews",
+          "method": "POST",
+          "fields": [
+            {
+              "name": "review-content",
+              "id": "review-content",
+              "type": "textarea",
+              "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+              "required": false
+            },
+            {
+              "name": "review-rating",
+              "id": "review-rating",
+              "type": "select",
+              "required": false,
+              "defaultValue": "5"
+            }
+          ],
+          "submitButton": {
+            "text": "Submit Review",
+            "actionDescription": "submitReview('prod-002')"
+          },
+          "pageUrl": "http://localhost:4000/shop/products/prod-002"
+        },
+        {
+          "id": "panel-card-2",
+          "formAction": "/shop/api/products/:id/reviews",
+          "method": "POST",
+          "fields": [
+            {
+              "name": "review-content",
+              "id": "review-content",
+              "type": "textarea",
+              "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+              "required": false
+            },
+            {
+              "name": "review-rating",
+              "id": "review-rating",
+              "type": "select",
+              "required": false,
+              "defaultValue": "5"
+            }
+          ],
+          "submitButton": {
+            "text": "Submit Review",
+            "actionDescription": "submitReview('prod-003')"
+          },
+          "pageUrl": "http://localhost:4000/shop/products/prod-003"
+        },
+        {
+          "id": "panel-card-2",
+          "formAction": "/shop/api/products/:id/reviews",
+          "method": "POST",
+          "fields": [
+            {
+              "name": "review-content",
+              "id": "review-content",
+              "type": "textarea",
+              "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+              "required": false
+            },
+            {
+              "name": "review-rating",
+              "id": "review-rating",
+              "type": "select",
+              "required": false,
+              "defaultValue": "5"
+            }
+          ],
+          "submitButton": {
+            "text": "Submit Review",
+            "actionDescription": "submitReview('prod-004')"
+          },
+          "pageUrl": "http://localhost:4000/shop/products/prod-004"
+        },
+        {
+          "id": "panel-card-2",
+          "formAction": "/shop/api/orders/:id",
+          "method": "GET",
+          "fields": [
+            {
+              "name": "order-id-input",
+              "id": "order-id-input",
+              "type": "text",
+              "placeholder": "e.g. order-bob-001",
+              "required": false
+            }
+          ],
+          "submitButton": {
+            "text": "Fetch Order",
+            "actionDescription": "lookupOrder()"
+          },
+          "pageUrl": "http://localhost:4000/shop/orders"
+        }
+      ],
+      "errors": [],
+      "metadata": {
+        "agentName": "ReconAgent",
+        "agentVersion": "1.0.0",
+        "completedAt": "2026-11-14T20:48:03.461Z",
+        "externalOriginsVisited": []
+      }
+    },
+    "idor": {
+      "missionId": "test-mission-1794689265566-idor",
+      "target": "http://localhost:4000/shop",
+      "status": "completed",
+      "summary": {
+        "totalDiscoveredEndpoints": 13,
+        "candidateEndpointsEvaluated": 1,
+        "skippedEndpointsCount": 12,
+        "vulnerabilitiesConfirmed": 1,
+        "durationMs": 15
+      },
+      "candidatesEvaluated": [
+        "/shop/api/orders/:id"
+      ],
+      "skippedEndpoints": [
+        {
+          "path": "/shop",
+          "method": "GET",
+          "reason": "Frontend HTML page, not an API resource endpoint."
+        },
+        {
+          "path": "/shop/products",
+          "method": "GET",
+          "reason": "Frontend HTML page, not an API resource endpoint."
+        },
+        {
+          "path": "/shop/orders",
+          "method": "GET",
+          "reason": "Frontend HTML page, not an API resource endpoint."
+        },
+        {
+          "path": "/shop/checkout",
+          "method": "GET",
+          "reason": "Frontend HTML page, not an API resource endpoint."
+        },
+        {
+          "path": "/shop/products/:id",
+          "method": "GET",
+          "reason": "Frontend HTML page, not an API resource endpoint."
+        },
+        {
+          "path": "/shop/api/auth/login",
+          "method": "POST",
+          "reason": "Authentication / session endpoint without object-level resource ownership."
+        },
+        {
+          "path": "/shop/api/auth/me",
+          "method": "GET",
+          "reason": "Authentication / session endpoint without object-level resource ownership."
+        },
+        {
+          "path": "/shop/api/orders",
+          "method": "GET",
+          "reason": "Collection endpoint returning current user's items; used to discover resource IDs rather than direct object lookup."
+        },
+        {
+          "path": "/shop/api/products/:id/reviews",
+          "method": "POST",
+          "reason": "State-modifying POST mutation endpoint; skipped to preserve read-only test safety."
+        },
+        {
+          "path": "/shop/api/auth/logout",
+          "method": "POST",
+          "reason": "Authentication / session endpoint without object-level resource ownership."
+        },
+        {
+          "path": "/shop/api/checkout",
+          "method": "POST",
+          "reason": "State-modifying POST mutation endpoint; skipped to preserve read-only test safety."
+        },
+        {
+          "path": "/shop/api/products",
+          "method": "GET",
+          "reason": "Public catalog entity without per-user ownership boundaries."
+        }
+      ],
+      "findings": [
+        {
+          "findingId": "idor-finding-1",
+          "vulnerabilityType": "Insecure Direct Object Reference (IDOR / BOLA)",
+          "title": "BOLA / IDOR Authorization Bypass on /shop/api/orders/:id",
+          "severity": "High",
+          "affectedEndpoint": "/shop/api/orders/:id",
+          "httpMethod": "GET",
+          "authenticatedUser": "Alice (alice@example.com)",
+          "resourceOwner": "Bob (bob@example.com)",
+          "testResult": "VULNERABILITY_CONFIRMED",
+          "reproducible": true,
+          "evidence": {
+            "authenticatedUser": {
+              "id": "user-alice",
+              "name": "Alice",
+              "email": "alice@example.com"
+            },
+            "resourceOwner": {
+              "id": "user-bob",
+              "name": "Bob",
+              "email": "bob@example.com"
+            },
+            "aliceOwnResource": {
+              "resourceId": "order-alice-001",
+              "httpStatus": 200,
+              "responseBody": {
+                "id": "order-alice-001",
+                "userId": "user-alice",
+                "items": [
+                  {
+                    "productId": "prod-001",
+                    "quantity": 1,
+                    "priceAtPurchase": 7999
+                  }
+                ],
+                "total": 7999,
+                "createdAt": "2026-11-01T10:00:00Z"
+              }
+            },
+            "crossUserAccessAttempt": {
+              "targetResourceId": "order-bob-001",
+              "httpStatus": 200,
+              "responseBody": {
+                "id": "order-bob-001",
+                "userId": "user-bob",
+                "items": [
+                  {
+                    "productId": "prod-002",
+                    "quantity": 1,
+                    "priceAtPurchase": 11999
+                  }
+                ],
+                "total": 11999,
+                "createdAt": "2026-11-02T12:30:00Z"
+              }
+            },
+            "ownershipComparison": {
+              "expectedOwnerId": "user-bob",
+              "actualOwnerInResponse": "user-bob",
+              "crossUserLeakageConfirmed": true,
+              "leakedFields": [
+                "items",
+                "total",
+                "createdAt",
+                "userId"
+              ]
+            }
+          },
+          "reproductionSteps": [
+            "1. Authenticate as alice@example.com via POST /shop/api/auth/login.",
+            "2. Obtain session Bearer token for alice@example.com.",
+            "3. Verify legitimate baseline: GET /shop/api/orders/order-alice-001 returns HTTP 200 with Alice's order.",
+            "4. Send cross-user request: GET /shop/api/orders/order-bob-001 with Alice's Bearer token.",
+            "5. Observe that HTTP 200 is returned with Bob's private data (userId=\"user-bob\") — no ownership validation enforced."
+          ],
+          "remediation": "Implement server-side object ownership authorization. Verify that the requested order's userId matches the authenticated session's userId (req.userId). If mismatched, return HTTP 403 Forbidden.",
+          "timestamp": "2026-11-14T20:48:32.795Z"
+        }
+      ],
+      "errors": [],
+      "metadata": {
+        "agentName": "IdorAgent",
+        "agentVersion": "1.0.0",
+        "completedAt": "2026-11-14T20:48:32.795Z",
+        "targetScope": "http://localhost:4000/shop"
+      }
+    },
+    "xss": {
+      "missionId": "test-mission-1794689265566-xss",
+      "target": "http://localhost:4000/shop",
+      "status": "completed",
+      "summary": {
+        "totalDiscoveredForms": 7,
+        "candidateInputsEvaluated": 4,
+        "skippedFieldsCount": 8,
+        "testedInputsCount": 4,
+        "vulnerabilitiesConfirmed": 1,
+        "durationMs": 18713
+      },
+      "candidatesEvaluated": [
+        {
+          "candidateId": "xss-cand-1",
+          "formId": "panel-card-2",
+          "pageUrl": "http://localhost:4000/shop/products/prod-001",
+          "submissionEndpoint": "/shop/api/products/:id/reviews",
+          "httpMethod": "POST",
+          "targetField": {
+            "name": "review-content",
+            "id": "review-content",
+            "type": "textarea",
+            "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+            "required": false
+          },
+          "secondaryFields": [
+            {
+              "name": "review-rating",
+              "id": "review-rating",
+              "type": "select",
+              "required": false,
+              "defaultValue": "5"
+            }
+          ],
+          "submitButtonText": "Submit Review",
+          "expectedRenderUrl": "http://localhost:4000/shop/products/prod-001",
+          "rationale": "Discovered interactive textarea field 'review-content' submitted via POST to '/shop/api/products/:id/reviews' and rendered at 'http://localhost:4000/shop/products/prod-001'."
+        },
+        {
+          "candidateId": "xss-cand-2",
+          "formId": "panel-card-2",
+          "pageUrl": "http://localhost:4000/shop/products/prod-002",
+          "submissionEndpoint": "/shop/api/products/:id/reviews",
+          "httpMethod": "POST",
+          "targetField": {
+            "name": "review-content",
+            "id": "review-content",
+            "type": "textarea",
+            "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+            "required": false
+          },
+          "secondaryFields": [
+            {
+              "name": "review-rating",
+              "id": "review-rating",
+              "type": "select",
+              "required": false,
+              "defaultValue": "5"
+            }
+          ],
+          "submitButtonText": "Submit Review",
+          "expectedRenderUrl": "http://localhost:4000/shop/products/prod-002",
+          "rationale": "Discovered interactive textarea field 'review-content' submitted via POST to '/shop/api/products/:id/reviews' and rendered at 'http://localhost:4000/shop/products/prod-002'."
+        },
+        {
+          "candidateId": "xss-cand-3",
+          "formId": "panel-card-2",
+          "pageUrl": "http://localhost:4000/shop/products/prod-003",
+          "submissionEndpoint": "/shop/api/products/:id/reviews",
+          "httpMethod": "POST",
+          "targetField": {
+            "name": "review-content",
+            "id": "review-content",
+            "type": "textarea",
+            "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+            "required": false
+          },
+          "secondaryFields": [
+            {
+              "name": "review-rating",
+              "id": "review-rating",
+              "type": "select",
+              "required": false,
+              "defaultValue": "5"
+            }
+          ],
+          "submitButtonText": "Submit Review",
+          "expectedRenderUrl": "http://localhost:4000/shop/products/prod-003",
+          "rationale": "Discovered interactive textarea field 'review-content' submitted via POST to '/shop/api/products/:id/reviews' and rendered at 'http://localhost:4000/shop/products/prod-003'."
+        },
+        {
+          "candidateId": "xss-cand-4",
+          "formId": "panel-card-2",
+          "pageUrl": "http://localhost:4000/shop/products/prod-004",
+          "submissionEndpoint": "/shop/api/products/:id/reviews",
+          "httpMethod": "POST",
+          "targetField": {
+            "name": "review-content",
+            "id": "review-content",
+            "type": "textarea",
+            "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+            "required": false
+          },
+          "secondaryFields": [
+            {
+              "name": "review-rating",
+              "id": "review-rating",
+              "type": "select",
+              "required": false,
+              "defaultValue": "5"
+            }
+          ],
+          "submitButtonText": "Submit Review",
+          "expectedRenderUrl": "http://localhost:4000/shop/products/prod-004",
+          "rationale": "Discovered interactive textarea field 'review-content' submitted via POST to '/shop/api/products/:id/reviews' and rendered at 'http://localhost:4000/shop/products/prod-004'."
+        }
+      ],
+      "skippedFields": [
+        {
+          "formId": "login-section",
+          "pageUrl": "http://localhost:4000/shop",
+          "fieldName": "email",
+          "fieldType": "email",
+          "reason": "Authentication credential field; verified for identity and not persisted as renderable rich user content."
+        },
+        {
+          "formId": "login-section",
+          "pageUrl": "http://localhost:4000/shop",
+          "fieldName": "password",
+          "fieldType": "password",
+          "reason": "Authentication credential field; verified for identity and not persisted as renderable rich user content."
+        },
+        {
+          "formId": "panel-card-1",
+          "pageUrl": "http://localhost:4000/shop/orders",
+          "fieldName": "order-id-input",
+          "fieldType": "text",
+          "reason": "Field belongs to a read-only GET query form (/shop/api/orders/:id); not a persistent content storage sink."
+        },
+        {
+          "formId": "panel-card-2",
+          "pageUrl": "http://localhost:4000/shop/products/prod-001",
+          "fieldName": "review-rating",
+          "fieldType": "select",
+          "reason": "Auxiliary form field (select); skipped in favor of primary rich-text field 'review-content'."
+        },
+        {
+          "formId": "panel-card-2",
+          "pageUrl": "http://localhost:4000/shop/products/prod-002",
+          "fieldName": "review-rating",
+          "fieldType": "select",
+          "reason": "Auxiliary form field (select); skipped in favor of primary rich-text field 'review-content'."
+        },
+        {
+          "formId": "panel-card-2",
+          "pageUrl": "http://localhost:4000/shop/products/prod-003",
+          "fieldName": "review-rating",
+          "fieldType": "select",
+          "reason": "Auxiliary form field (select); skipped in favor of primary rich-text field 'review-content'."
+        },
+        {
+          "formId": "panel-card-2",
+          "pageUrl": "http://localhost:4000/shop/products/prod-004",
+          "fieldName": "review-rating",
+          "fieldType": "select",
+          "reason": "Auxiliary form field (select); skipped in favor of primary rich-text field 'review-content'."
+        },
+        {
+          "formId": "panel-card-2",
+          "pageUrl": "http://localhost:4000/shop/orders",
+          "fieldName": "order-id-input",
+          "fieldType": "text",
+          "reason": "Field belongs to a read-only GET query form (/shop/api/orders/:id); not a persistent content storage sink."
+        }
+      ],
+      "findings": [
+        {
+          "findingId": "xss-find-001",
+          "vulnerabilityType": "Stored Cross-Site Scripting (Stored XSS)",
+          "title": "Stored XSS in Review Content Rendered via Unescaped innerHTML Sink",
+          "severity": "High",
+          "affectedPage": "/shop/products/:id",
+          "affectedPages": [
+            "http://localhost:4000/shop/products/prod-001",
+            "http://localhost:4000/shop/products/prod-002",
+            "http://localhost:4000/shop/products/prod-003",
+            "http://localhost:4000/shop/products/prod-004"
+          ],
+          "affectedEndpoint": "/shop/api/products/:id/reviews",
+          "inputField": "review-content",
+          "payloadType": "IMG_ONERROR_SENTINEL",
+          "testResult": "VULNERABILITY_CONFIRMED",
+          "reproducible": true,
+          "evidence": {
+            "browserEngine": "Chromium (Playwright)",
+            "targetUrl": "http://localhost:4000/shop/products/prod-001",
+            "authenticatedAs": "alice@example.com",
+            "payloadSubmitted": {
+              "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\">",
+              "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_1",
+              "sentinelValue": "SENTINEL_5d5jv2f",
+              "inputSelector": "#review-content",
+              "submissionUrl": "/shop/api/products/:id/reviews"
+            },
+            "storageVerification": {
+              "reviewId": "review-1",
+              "storedVerbatim": true,
+              "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
+              "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-14T20:49:18.529Z\"}"
+            },
+            "renderVerification": {
+              "pageUrl": "http://localhost:4000/shop/products/prod-001",
+              "containsDangerousSink": true,
+              "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\\\">\";"
+            },
+            "browserExecution": {
+              "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_1",
+              "expectedValue": "SENTINEL_5d5jv2f",
+              "actualValue": "SENTINEL_5d5jv2f",
+              "executed": true
+            }
+          },
+          "allEvidence": [
+            {
+              "browserEngine": "Chromium (Playwright)",
+              "targetUrl": "http://localhost:4000/shop/products/prod-001",
+              "authenticatedAs": "alice@example.com",
+              "payloadSubmitted": {
+                "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\">",
+                "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_1",
+                "sentinelValue": "SENTINEL_5d5jv2f",
+                "inputSelector": "#review-content",
+                "submissionUrl": "/shop/api/products/:id/reviews"
+              },
+              "storageVerification": {
+                "reviewId": "review-1",
+                "storedVerbatim": true,
+                "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
+                "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-14T20:49:18.529Z\"}"
+              },
+              "renderVerification": {
+                "pageUrl": "http://localhost:4000/shop/products/prod-001",
+                "containsDangerousSink": true,
+                "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\\\">\";"
+              },
+              "browserExecution": {
+                "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_1",
+                "expectedValue": "SENTINEL_5d5jv2f",
+                "actualValue": "SENTINEL_5d5jv2f",
+                "executed": true
+              }
+            },
+            {
+              "browserEngine": "Chromium (Playwright)",
+              "targetUrl": "http://localhost:4000/shop/products/prod-002",
+              "authenticatedAs": "alice@example.com",
+              "payloadSubmitted": {
+                "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_2='SENTINEL_u4oh672'\">",
+                "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_2",
+                "sentinelValue": "SENTINEL_u4oh672",
+                "inputSelector": "#review-content",
+                "submissionUrl": "/shop/api/products/:id/reviews"
+              },
+              "storageVerification": {
+                "reviewId": "review-2",
+                "storedVerbatim": true,
+                "apiEndpointQueried": "/shop/api/products/prod-002/reviews",
+                "apiResponseSnippet": "{\"productId\":\"prod-002\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_2='SENTINEL_u4oh672'\\\">\",\"rating\":5,\"id\":\"review-2\",\"createdAt\":\"2026-11-14T20:49:18.728Z\"}"
+              },
+              "renderVerification": {
+                "pageUrl": "http://localhost:4000/shop/products/prod-002",
+                "containsDangerousSink": true,
+                "sinkSnippet": "document.getElementById('review-content-review-2').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_2='SENTINEL_u4oh672'\\\">\";"
+              },
+              "browserExecution": {
+                "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_2",
+                "expectedValue": "SENTINEL_u4oh672",
+                "actualValue": "SENTINEL_u4oh672",
+                "executed": true
+              }
+            },
+            {
+              "browserEngine": "Chromium (Playwright)",
+              "targetUrl": "http://localhost:4000/shop/products/prod-003",
+              "authenticatedAs": "alice@example.com",
+              "payloadSubmitted": {
+                "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_3='SENTINEL_d6szz09'\">",
+                "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_3",
+                "sentinelValue": "SENTINEL_d6szz09",
+                "inputSelector": "#review-content",
+                "submissionUrl": "/shop/api/products/:id/reviews"
+              },
+              "storageVerification": {
+                "reviewId": "review-3",
+                "storedVerbatim": true,
+                "apiEndpointQueried": "/shop/api/products/prod-003/reviews",
+                "apiResponseSnippet": "{\"productId\":\"prod-003\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_3='SENTINEL_d6szz09'\\\">\",\"rating\":5,\"id\":\"review-3\",\"createdAt\":\"2026-11-14T20:49:18.878Z\"}"
+              },
+              "renderVerification": {
+                "pageUrl": "http://localhost:4000/shop/products/prod-003",
+                "containsDangerousSink": true,
+                "sinkSnippet": "document.getElementById('review-content-review-3').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_3='SENTINEL_d6szz09'\\\">\";"
+              },
+              "browserExecution": {
+                "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_3",
+                "expectedValue": "SENTINEL_d6szz09",
+                "actualValue": "SENTINEL_d6szz09",
+                "executed": true
+              }
+            },
+            {
+              "browserEngine": "Chromium (Playwright)",
+              "targetUrl": "http://localhost:4000/shop/products/prod-004",
+              "authenticatedAs": "alice@example.com",
+              "payloadSubmitted": {
+                "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_4='SENTINEL_8biaqk4'\">",
+                "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_4",
+                "sentinelValue": "SENTINEL_8biaqk4",
+                "inputSelector": "#review-content",
+                "submissionUrl": "/shop/api/products/:id/reviews"
+              },
+              "storageVerification": {
+                "reviewId": "review-4",
+                "storedVerbatim": true,
+                "apiEndpointQueried": "/shop/api/products/prod-004/reviews",
+                "apiResponseSnippet": "{\"productId\":\"prod-004\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_4='SENTINEL_8biaqk4'\\\">\",\"rating\":5,\"id\":\"review-4\",\"createdAt\":\"2026-11-14T20:49:19.044Z\"}"
+              },
+              "renderVerification": {
+                "pageUrl": "http://localhost:4000/shop/products/prod-004",
+                "containsDangerousSink": true,
+                "sinkSnippet": "document.getElementById('review-content-review-4').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_4='SENTINEL_8biaqk4'\\\">\";"
+              },
+              "browserExecution": {
+                "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_4",
+                "expectedValue": "SENTINEL_8biaqk4",
+                "actualValue": "SENTINEL_8biaqk4",
+                "executed": true
+              }
+            }
+          ],
+          "testedInstancesCount": 4,
+          "reproductionSteps": [
+            "Authenticate to the application as demo user (alice@example.com).",
+            "Navigate to any product detail page containing the review form (e.g. http://localhost:4000/shop/products/prod-001).",
+            "Submit a review payload containing an HTML element with an event handler into 'review-content': <img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\">.",
+            "Verify that the API endpoint /shop/api/products/:id/reviews stores the payload without encoding or sanitization.",
+            "Navigate to the product render page.",
+            "Observe that the client script injects the raw review content into the DOM using document.getElementById(...).innerHTML = ...",
+            "Verify that the browser triggers the event handler and executes JavaScript in the page execution context.",
+            "Confirmed identical execution across 4 product endpoints: [prod-001, prod-002, prod-003, prod-004]."
+          ],
+          "remediation": "Avoid assigning untrusted user-supplied content to element.innerHTML. Use element.textContent or safe DOM templating. Alternatively, sanitize input using DOMPurify before DOM insertion.",
+          "timestamp": "2026-11-14T20:49:19.135Z"
+        }
+      ],
+      "errors": [],
+      "metadata": {
+        "agentName": "XssAgent",
+        "agentVersion": "1.0.0",
+        "completedAt": "2026-11-14T20:49:19.197Z",
+        "targetScope": "http://localhost:4000/shop"
+      }
+    },
+    "businessLogic": {
+      "missionId": "test-mission-1794689265566-bizlogic",
+      "target": "http://localhost:4000/shop",
+      "status": "completed",
+      "summary": {
+        "totalDiscoveredEndpoints": 13,
+        "checkoutCandidatesEvaluated": 1,
+        "skippedEndpointsCount": 12,
+        "vulnerabilitiesConfirmed": 1,
+        "priceDiscrepancyCents": 7998,
+        "durationMs": 12
+      },
+      "candidatesEvaluated": [
+        {
+          "endpoint": "/shop/api/checkout",
+          "method": "POST",
+          "authRequired": true,
+          "rationale": "State-changing financial mutation endpoint (POST /shop/api/checkout) identified for price validation and transaction integrity probing."
+        }
+      ],
+      "skippedEndpoints": [
+        {
+          "endpoint": "/shop",
+          "method": "GET",
+          "reason": "Frontend UI route, not an API transaction endpoint."
+        },
+        {
+          "endpoint": "/shop/products",
+          "method": "GET",
+          "reason": "Frontend UI route, not an API transaction endpoint."
+        },
+        {
+          "endpoint": "/shop/orders",
+          "method": "GET",
+          "reason": "Frontend UI route, not an API transaction endpoint."
+        },
+        {
+          "endpoint": "/shop/checkout",
+          "method": "GET",
+          "reason": "Frontend UI route, not an API transaction endpoint."
+        },
+        {
+          "endpoint": "/shop/products/:id",
+          "method": "GET",
+          "reason": "Frontend UI route, not an API transaction endpoint."
+        },
+        {
+          "endpoint": "/shop/api/auth/login",
+          "method": "POST",
+          "reason": "Authentication / session endpoint without transactional commerce logic."
+        },
+        {
+          "endpoint": "/shop/api/auth/me",
+          "method": "GET",
+          "reason": "Authentication / session endpoint without transactional commerce logic."
+        },
+        {
+          "endpoint": "/shop/api/orders",
+          "method": "GET",
+          "reason": "Endpoint does not process monetary checkout transactions."
+        },
+        {
+          "endpoint": "/shop/api/orders/:id",
+          "method": "GET",
+          "reason": "Read-only order retrieval endpoint; subject to IDOR analysis rather than price manipulation."
+        },
+        {
+          "endpoint": "/shop/api/products/:id/reviews",
+          "method": "POST",
+          "reason": "Content submission endpoint (product review); evaluated for injection/XSS flaws."
+        },
+        {
+          "endpoint": "/shop/api/auth/logout",
+          "method": "POST",
+          "reason": "Authentication / session endpoint without transactional commerce logic."
+        },
+        {
+          "endpoint": "/shop/api/products",
+          "method": "GET",
+          "reason": "Catalog retrieval endpoint; used as authoritative price reference."
+        }
+      ],
+      "findings": [
+        {
+          "findingId": "bizlogic-find-001",
+          "vulnerabilityType": "Business Logic Flaw: Client-Side Price Manipulation",
+          "title": "Client-Side Price Parameter Trusted During Checkout",
+          "severity": "High",
+          "affectedEndpoint": "/shop/api/checkout",
+          "testResult": "VULNERABILITY_CONFIRMED",
+          "reproducible": true,
+          "evidence": {
+            "targetEndpoint": "/shop/api/checkout",
+            "productId": "prod-001",
+            "productName": "Wireless Headphones",
+            "canonicalCatalogPriceCents": 7999,
+            "clientSubmittedPriceCents": 1,
+            "serverRecordedPriceCents": 1,
+            "serverRecordedTotalCents": 1,
+            "priceUnderchargeCents": 7998,
+            "createdOrderId": "order-alice-100",
+            "httpStatus": 201,
+            "requestPayload": {
+              "items": [
+                {
+                  "productId": "prod-001",
+                  "quantity": 1,
+                  "price": 1
+                }
+              ]
+            },
+            "responseSnippet": {
+              "message": "Order placed successfully.",
+              "order": {
+                "id": "order-alice-100",
+                "userId": "user-alice",
+                "items": [
+                  {
+                    "productId": "prod-001",
+                    "quantity": 1,
+                    "priceAtPurchase": 1
+                  }
+                ],
+                "total": 1,
+                "createdAt": "2026-11-14T20:49:47.442Z"
+              },
+              "warning": "[VULN] Price was accepted from client payload — no server-side validation."
+            },
+            "vulnerabilityConfirmed": true
+          },
+          "reproductionSteps": [
+            "Authenticate to the store API using user credentials (alice@example.com).",
+            "Query the authoritative product catalog (GET /shop/api/products/prod-001) and record the canonical price (7999 cents).",
+            "Construct a checkout payload targeting /shop/api/checkout overriding the price parameter with an arbitrary lower value (1 cent).",
+            "Send the checkout request: POST /shop/api/checkout.",
+            "Observe that the server accepts the client-supplied price without validating against the product database, creating order order-alice-100 for 1 cent(s) instead of 7999 cents."
+          ],
+          "remediation": "Never accept product price fields from client-side checkout payloads. When processing orders, ignore any client-supplied price and look up the authoritative price server-side directly from the database using productId.",
+          "timestamp": "2026-11-14T20:49:47.443Z"
+        }
+      ],
+      "errors": [],
+      "metadata": {
+        "agentName": "BusinessLogicAgent",
+        "agentVersion": "1.0.0",
+        "completedAt": "2026-11-14T20:49:47.446Z",
+        "targetScope": "http://localhost:4000/shop"
+      }
+    }
+  },
+  "allFindings": [
+    {
+      "findingId": "idor-finding-1",
+      "vulnerabilityType": "Insecure Direct Object Reference (IDOR / BOLA)",
+      "title": "BOLA / IDOR Authorization Bypass on /shop/api/orders/:id",
+      "severity": "High",
+      "affectedEndpoint": "/shop/api/orders/:id",
+      "httpMethod": "GET",
+      "authenticatedUser": "Alice (alice@example.com)",
+      "resourceOwner": "Bob (bob@example.com)",
+      "testResult": "VULNERABILITY_CONFIRMED",
+      "reproducible": true,
+      "evidence": {
+        "authenticatedUser": {
+          "id": "user-alice",
+          "name": "Alice",
+          "email": "alice@example.com"
+        },
+        "resourceOwner": {
+          "id": "user-bob",
+          "name": "Bob",
+          "email": "bob@example.com"
+        },
+        "aliceOwnResource": {
+          "resourceId": "order-alice-001",
+          "httpStatus": 200,
+          "responseBody": {
+            "id": "order-alice-001",
+            "userId": "user-alice",
+            "items": [
+              {
+                "productId": "prod-001",
+                "quantity": 1,
+                "priceAtPurchase": 7999
+              }
+            ],
+            "total": 7999,
+            "createdAt": "2026-11-01T10:00:00Z"
+          }
+        },
+        "crossUserAccessAttempt": {
+          "targetResourceId": "order-bob-001",
+          "httpStatus": 200,
+          "responseBody": {
+            "id": "order-bob-001",
+            "userId": "user-bob",
+            "items": [
+              {
+                "productId": "prod-002",
+                "quantity": 1,
+                "priceAtPurchase": 11999
+              }
+            ],
+            "total": 11999,
+            "createdAt": "2026-11-02T12:30:00Z"
+          }
+        },
+        "ownershipComparison": {
+          "expectedOwnerId": "user-bob",
+          "actualOwnerInResponse": "user-bob",
+          "crossUserLeakageConfirmed": true,
+          "leakedFields": [
+            "items",
+            "total",
+            "createdAt",
+            "userId"
+          ]
+        }
+      },
+      "reproductionSteps": [
+        "1. Authenticate as alice@example.com via POST /shop/api/auth/login.",
+        "2. Obtain session Bearer token for alice@example.com.",
+        "3. Verify legitimate baseline: GET /shop/api/orders/order-alice-001 returns HTTP 200 with Alice's order.",
+        "4. Send cross-user request: GET /shop/api/orders/order-bob-001 with Alice's Bearer token.",
+        "5. Observe that HTTP 200 is returned with Bob's private data (userId=\"user-bob\") — no ownership validation enforced."
+      ],
+      "remediation": "Implement server-side object ownership authorization. Verify that the requested order's userId matches the authenticated session's userId (req.userId). If mismatched, return HTTP 403 Forbidden.",
+      "timestamp": "2026-11-14T20:48:32.795Z"
+    },
+    {
+      "findingId": "xss-find-001",
+      "vulnerabilityType": "Stored Cross-Site Scripting (Stored XSS)",
+      "title": "Stored XSS in Review Content Rendered via Unescaped innerHTML Sink",
+      "severity": "High",
+      "affectedPage": "/shop/products/:id",
+      "affectedPages": [
+        "http://localhost:4000/shop/products/prod-001",
+        "http://localhost:4000/shop/products/prod-002",
+        "http://localhost:4000/shop/products/prod-003",
+        "http://localhost:4000/shop/products/prod-004"
+      ],
+      "affectedEndpoint": "/shop/api/products/:id/reviews",
+      "inputField": "review-content",
+      "payloadType": "IMG_ONERROR_SENTINEL",
+      "testResult": "VULNERABILITY_CONFIRMED",
+      "reproducible": true,
+      "evidence": {
+        "browserEngine": "Chromium (Playwright)",
+        "targetUrl": "http://localhost:4000/shop/products/prod-001",
+        "authenticatedAs": "alice@example.com",
+        "payloadSubmitted": {
+          "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\">",
+          "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_1",
+          "sentinelValue": "SENTINEL_5d5jv2f",
+          "inputSelector": "#review-content",
+          "submissionUrl": "/shop/api/products/:id/reviews"
+        },
+        "storageVerification": {
+          "reviewId": "review-1",
+          "storedVerbatim": true,
+          "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
+          "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-14T20:49:18.529Z\"}"
+        },
+        "renderVerification": {
+          "pageUrl": "http://localhost:4000/shop/products/prod-001",
+          "containsDangerousSink": true,
+          "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\\\">\";"
+        },
+        "browserExecution": {
+          "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_1",
+          "expectedValue": "SENTINEL_5d5jv2f",
+          "actualValue": "SENTINEL_5d5jv2f",
+          "executed": true
+        }
+      },
+      "allEvidence": [
+        {
+          "browserEngine": "Chromium (Playwright)",
+          "targetUrl": "http://localhost:4000/shop/products/prod-001",
+          "authenticatedAs": "alice@example.com",
+          "payloadSubmitted": {
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_1",
+            "sentinelValue": "SENTINEL_5d5jv2f",
+            "inputSelector": "#review-content",
+            "submissionUrl": "/shop/api/products/:id/reviews"
+          },
+          "storageVerification": {
+            "reviewId": "review-1",
+            "storedVerbatim": true,
+            "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
+            "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-14T20:49:18.529Z\"}"
+          },
+          "renderVerification": {
+            "pageUrl": "http://localhost:4000/shop/products/prod-001",
+            "containsDangerousSink": true,
+            "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\\\">\";"
+          },
+          "browserExecution": {
+            "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_1",
+            "expectedValue": "SENTINEL_5d5jv2f",
+            "actualValue": "SENTINEL_5d5jv2f",
+            "executed": true
+          }
+        },
+        {
+          "browserEngine": "Chromium (Playwright)",
+          "targetUrl": "http://localhost:4000/shop/products/prod-002",
+          "authenticatedAs": "alice@example.com",
+          "payloadSubmitted": {
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_2='SENTINEL_u4oh672'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_2",
+            "sentinelValue": "SENTINEL_u4oh672",
+            "inputSelector": "#review-content",
+            "submissionUrl": "/shop/api/products/:id/reviews"
+          },
+          "storageVerification": {
+            "reviewId": "review-2",
+            "storedVerbatim": true,
+            "apiEndpointQueried": "/shop/api/products/prod-002/reviews",
+            "apiResponseSnippet": "{\"productId\":\"prod-002\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_2='SENTINEL_u4oh672'\\\">\",\"rating\":5,\"id\":\"review-2\",\"createdAt\":\"2026-11-14T20:49:18.728Z\"}"
+          },
+          "renderVerification": {
+            "pageUrl": "http://localhost:4000/shop/products/prod-002",
+            "containsDangerousSink": true,
+            "sinkSnippet": "document.getElementById('review-content-review-2').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_2='SENTINEL_u4oh672'\\\">\";"
+          },
+          "browserExecution": {
+            "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_2",
+            "expectedValue": "SENTINEL_u4oh672",
+            "actualValue": "SENTINEL_u4oh672",
+            "executed": true
+          }
+        },
+        {
+          "browserEngine": "Chromium (Playwright)",
+          "targetUrl": "http://localhost:4000/shop/products/prod-003",
+          "authenticatedAs": "alice@example.com",
+          "payloadSubmitted": {
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_3='SENTINEL_d6szz09'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_3",
+            "sentinelValue": "SENTINEL_d6szz09",
+            "inputSelector": "#review-content",
+            "submissionUrl": "/shop/api/products/:id/reviews"
+          },
+          "storageVerification": {
+            "reviewId": "review-3",
+            "storedVerbatim": true,
+            "apiEndpointQueried": "/shop/api/products/prod-003/reviews",
+            "apiResponseSnippet": "{\"productId\":\"prod-003\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_3='SENTINEL_d6szz09'\\\">\",\"rating\":5,\"id\":\"review-3\",\"createdAt\":\"2026-11-14T20:49:18.878Z\"}"
+          },
+          "renderVerification": {
+            "pageUrl": "http://localhost:4000/shop/products/prod-003",
+            "containsDangerousSink": true,
+            "sinkSnippet": "document.getElementById('review-content-review-3').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_3='SENTINEL_d6szz09'\\\">\";"
+          },
+          "browserExecution": {
+            "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_3",
+            "expectedValue": "SENTINEL_d6szz09",
+            "actualValue": "SENTINEL_d6szz09",
+            "executed": true
+          }
+        },
+        {
+          "browserEngine": "Chromium (Playwright)",
+          "targetUrl": "http://localhost:4000/shop/products/prod-004",
+          "authenticatedAs": "alice@example.com",
+          "payloadSubmitted": {
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_4='SENTINEL_8biaqk4'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_4",
+            "sentinelValue": "SENTINEL_8biaqk4",
+            "inputSelector": "#review-content",
+            "submissionUrl": "/shop/api/products/:id/reviews"
+          },
+          "storageVerification": {
+            "reviewId": "review-4",
+            "storedVerbatim": true,
+            "apiEndpointQueried": "/shop/api/products/prod-004/reviews",
+            "apiResponseSnippet": "{\"productId\":\"prod-004\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_4='SENTINEL_8biaqk4'\\\">\",\"rating\":5,\"id\":\"review-4\",\"createdAt\":\"2026-11-14T20:49:19.044Z\"}"
+          },
+          "renderVerification": {
+            "pageUrl": "http://localhost:4000/shop/products/prod-004",
+            "containsDangerousSink": true,
+            "sinkSnippet": "document.getElementById('review-content-review-4').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_4='SENTINEL_8biaqk4'\\\">\";"
+          },
+          "browserExecution": {
+            "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_4",
+            "expectedValue": "SENTINEL_8biaqk4",
+            "actualValue": "SENTINEL_8biaqk4",
+            "executed": true
+          }
+        }
+      ],
+      "testedInstancesCount": 4,
+      "reproductionSteps": [
+        "Authenticate to the application as demo user (alice@example.com).",
+        "Navigate to any product detail page containing the review form (e.g. http://localhost:4000/shop/products/prod-001).",
+        "Submit a review payload containing an HTML element with an event handler into 'review-content': <img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\">.",
+        "Verify that the API endpoint /shop/api/products/:id/reviews stores the payload without encoding or sanitization.",
+        "Navigate to the product render page.",
+        "Observe that the client script injects the raw review content into the DOM using document.getElementById(...).innerHTML = ...",
+        "Verify that the browser triggers the event handler and executes JavaScript in the page execution context.",
+        "Confirmed identical execution across 4 product endpoints: [prod-001, prod-002, prod-003, prod-004]."
+      ],
+      "remediation": "Avoid assigning untrusted user-supplied content to element.innerHTML. Use element.textContent or safe DOM templating. Alternatively, sanitize input using DOMPurify before DOM insertion.",
+      "timestamp": "2026-11-14T20:49:19.135Z"
+    },
+    {
+      "findingId": "bizlogic-find-001",
+      "vulnerabilityType": "Business Logic Flaw: Client-Side Price Manipulation",
+      "title": "Client-Side Price Parameter Trusted During Checkout",
+      "severity": "High",
+      "affectedEndpoint": "/shop/api/checkout",
+      "testResult": "VULNERABILITY_CONFIRMED",
+      "reproducible": true,
+      "evidence": {
+        "targetEndpoint": "/shop/api/checkout",
+        "productId": "prod-001",
+        "productName": "Wireless Headphones",
+        "canonicalCatalogPriceCents": 7999,
+        "clientSubmittedPriceCents": 1,
+        "serverRecordedPriceCents": 1,
+        "serverRecordedTotalCents": 1,
+        "priceUnderchargeCents": 7998,
+        "createdOrderId": "order-alice-100",
+        "httpStatus": 201,
+        "requestPayload": {
+          "items": [
+            {
+              "productId": "prod-001",
+              "quantity": 1,
+              "price": 1
+            }
+          ]
+        },
+        "responseSnippet": {
+          "message": "Order placed successfully.",
+          "order": {
+            "id": "order-alice-100",
+            "userId": "user-alice",
+            "items": [
+              {
+                "productId": "prod-001",
+                "quantity": 1,
+                "priceAtPurchase": 1
+              }
+            ],
+            "total": 1,
+            "createdAt": "2026-11-14T20:49:47.442Z"
+          },
+          "warning": "[VULN] Price was accepted from client payload — no server-side validation."
+        },
+        "vulnerabilityConfirmed": true
+      },
+      "reproductionSteps": [
+        "Authenticate to the store API using user credentials (alice@example.com).",
+        "Query the authoritative product catalog (GET /shop/api/products/prod-001) and record the canonical price (7999 cents).",
+        "Construct a checkout payload targeting /shop/api/checkout overriding the price parameter with an arbitrary lower value (1 cent).",
+        "Send the checkout request: POST /shop/api/checkout.",
+        "Observe that the server accepts the client-supplied price without validating against the product database, creating order order-alice-100 for 1 cent(s) instead of 7999 cents."
+      ],
+      "remediation": "Never accept product price fields from client-side checkout payloads. When processing orders, ignore any client-supplied price and look up the authoritative price server-side directly from the database using productId.",
+      "timestamp": "2026-11-14T20:49:47.443Z"
+    }
+  ],
+  "verifiedFindings": [
+    {
+      "findingId": "VF-001",
+      "originalFindingId": "idor-finding-1",
+      "sourceAgent": "IdorAgent",
+      "vulnerabilityType": "Insecure Direct Object Reference (IDOR / BOLA)",
+      "title": "BOLA / IDOR Authorization Bypass on /shop/api/orders/:id",
+      "severity": "High",
+      "affectedEndpoint": "/shop/api/orders/:id",
+      "verificationStatus": "VERIFIED_CONFIRMED",
+      "verificationRationale": "Differential cross-user access control probe verified: User 'Alice (alice@example.com)' retrieved private object belonging to 'user-bob' with HTTP 200, exposing sensitive fields: [items, total, createdAt, userId]. Independently reproduced via fresh session replay.",
+      "testedInputsCount": 1,
+      "evidence": {
+        "authenticatedUser": {
+          "id": "user-alice",
+          "name": "Alice",
+          "email": "alice@example.com"
+        },
+        "resourceOwner": {
+          "id": "user-bob",
+          "name": "Bob",
+          "email": "bob@example.com"
+        },
+        "aliceOwnResource": {
+          "resourceId": "order-alice-001",
+          "httpStatus": 200,
+          "responseBody": {
+            "id": "order-alice-001",
+            "userId": "user-alice",
+            "items": [
+              {
+                "productId": "prod-001",
+                "quantity": 1,
+                "priceAtPurchase": 7999
+              }
+            ],
+            "total": 7999,
+            "createdAt": "2026-11-01T10:00:00Z"
+          }
+        },
+        "crossUserAccessAttempt": {
+          "targetResourceId": "order-bob-001",
+          "httpStatus": 200,
+          "responseBody": {
+            "id": "order-bob-001",
+            "userId": "user-bob",
+            "items": [
+              {
+                "productId": "prod-002",
+                "quantity": 1,
+                "priceAtPurchase": 11999
+              }
+            ],
+            "total": 11999,
+            "createdAt": "2026-11-02T12:30:00Z"
+          }
+        },
+        "ownershipComparison": {
+          "expectedOwnerId": "user-bob",
+          "actualOwnerInResponse": "user-bob",
+          "crossUserLeakageConfirmed": true,
+          "leakedFields": [
+            "items",
+            "total",
+            "createdAt",
+            "userId"
+          ]
+        }
+      },
+      "reproductionSteps": [
+        "1. Authenticate as alice@example.com via POST /shop/api/auth/login.",
+        "2. Obtain session Bearer token for alice@example.com.",
+        "3. Verify legitimate baseline: GET /shop/api/orders/order-alice-001 returns HTTP 200 with Alice's order.",
+        "4. Send cross-user request: GET /shop/api/orders/order-bob-001 with Alice's Bearer token.",
+        "5. Observe that HTTP 200 is returned with Bob's private data (userId=\"user-bob\") — no ownership validation enforced."
+      ],
+      "remediation": "Implement server-side object ownership authorization. Verify that the requested order's userId matches the authenticated session's userId (req.userId). If mismatched, return HTTP 403 Forbidden.",
+      "timestamp": "2026-11-14T20:48:32.795Z"
+    },
+    {
+      "findingId": "VF-002",
+      "originalFindingId": "xss-find-001",
+      "sourceAgent": "XssAgent",
+      "vulnerabilityType": "Stored Cross-Site Scripting (Stored XSS)",
+      "title": "Stored XSS in Review Content Rendered via Unescaped innerHTML Sink",
+      "severity": "High",
+      "affectedEndpoint": "/shop/api/products/:id/reviews",
+      "affectedPages": [
+        "http://localhost:4000/shop/products/prod-001",
+        "http://localhost:4000/shop/products/prod-002",
+        "http://localhost:4000/shop/products/prod-003",
+        "http://localhost:4000/shop/products/prod-004"
+      ],
+      "verificationStatus": "VERIFIED_CONFIRMED",
+      "verificationRationale": "4-way execution proof confirmed: payload persisted verbatim in database, rendered via unescaped innerHTML sink, and executed sentinel handler in Playwright Chromium browser DOM context. Independently confirmed via fresh Chromium execution.",
+      "testedInputsCount": 4,
+      "evidence": {
+        "primaryEvidence": {
+          "browserEngine": "Chromium (Playwright)",
+          "targetUrl": "http://localhost:4000/shop/products/prod-001",
+          "authenticatedAs": "alice@example.com",
+          "payloadSubmitted": {
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_1",
+            "sentinelValue": "SENTINEL_5d5jv2f",
+            "inputSelector": "#review-content",
+            "submissionUrl": "/shop/api/products/:id/reviews"
+          },
+          "storageVerification": {
+            "reviewId": "review-1",
+            "storedVerbatim": true,
+            "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
+            "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-14T20:49:18.529Z\"}"
+          },
+          "renderVerification": {
+            "pageUrl": "http://localhost:4000/shop/products/prod-001",
+            "containsDangerousSink": true,
+            "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\\\">\";"
+          },
+          "browserExecution": {
+            "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_1",
+            "expectedValue": "SENTINEL_5d5jv2f",
+            "actualValue": "SENTINEL_5d5jv2f",
+            "executed": true
+          }
+        },
+        "allEvidence": [
+          {
+            "browserEngine": "Chromium (Playwright)",
+            "targetUrl": "http://localhost:4000/shop/products/prod-001",
+            "authenticatedAs": "alice@example.com",
+            "payloadSubmitted": {
+              "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\">",
+              "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_1",
+              "sentinelValue": "SENTINEL_5d5jv2f",
+              "inputSelector": "#review-content",
+              "submissionUrl": "/shop/api/products/:id/reviews"
+            },
+            "storageVerification": {
+              "reviewId": "review-1",
+              "storedVerbatim": true,
+              "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
+              "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-14T20:49:18.529Z\"}"
+            },
+            "renderVerification": {
+              "pageUrl": "http://localhost:4000/shop/products/prod-001",
+              "containsDangerousSink": true,
+              "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\\\">\";"
+            },
+            "browserExecution": {
+              "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_1",
+              "expectedValue": "SENTINEL_5d5jv2f",
+              "actualValue": "SENTINEL_5d5jv2f",
+              "executed": true
+            }
+          },
+          {
+            "browserEngine": "Chromium (Playwright)",
+            "targetUrl": "http://localhost:4000/shop/products/prod-002",
+            "authenticatedAs": "alice@example.com",
+            "payloadSubmitted": {
+              "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_2='SENTINEL_u4oh672'\">",
+              "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_2",
+              "sentinelValue": "SENTINEL_u4oh672",
+              "inputSelector": "#review-content",
+              "submissionUrl": "/shop/api/products/:id/reviews"
+            },
+            "storageVerification": {
+              "reviewId": "review-2",
+              "storedVerbatim": true,
+              "apiEndpointQueried": "/shop/api/products/prod-002/reviews",
+              "apiResponseSnippet": "{\"productId\":\"prod-002\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_2='SENTINEL_u4oh672'\\\">\",\"rating\":5,\"id\":\"review-2\",\"createdAt\":\"2026-11-14T20:49:18.728Z\"}"
+            },
+            "renderVerification": {
+              "pageUrl": "http://localhost:4000/shop/products/prod-002",
+              "containsDangerousSink": true,
+              "sinkSnippet": "document.getElementById('review-content-review-2').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_2='SENTINEL_u4oh672'\\\">\";"
+            },
+            "browserExecution": {
+              "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_2",
+              "expectedValue": "SENTINEL_u4oh672",
+              "actualValue": "SENTINEL_u4oh672",
+              "executed": true
+            }
+          },
+          {
+            "browserEngine": "Chromium (Playwright)",
+            "targetUrl": "http://localhost:4000/shop/products/prod-003",
+            "authenticatedAs": "alice@example.com",
+            "payloadSubmitted": {
+              "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_3='SENTINEL_d6szz09'\">",
+              "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_3",
+              "sentinelValue": "SENTINEL_d6szz09",
+              "inputSelector": "#review-content",
+              "submissionUrl": "/shop/api/products/:id/reviews"
+            },
+            "storageVerification": {
+              "reviewId": "review-3",
+              "storedVerbatim": true,
+              "apiEndpointQueried": "/shop/api/products/prod-003/reviews",
+              "apiResponseSnippet": "{\"productId\":\"prod-003\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_3='SENTINEL_d6szz09'\\\">\",\"rating\":5,\"id\":\"review-3\",\"createdAt\":\"2026-11-14T20:49:18.878Z\"}"
+            },
+            "renderVerification": {
+              "pageUrl": "http://localhost:4000/shop/products/prod-003",
+              "containsDangerousSink": true,
+              "sinkSnippet": "document.getElementById('review-content-review-3').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_3='SENTINEL_d6szz09'\\\">\";"
+            },
+            "browserExecution": {
+              "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_3",
+              "expectedValue": "SENTINEL_d6szz09",
+              "actualValue": "SENTINEL_d6szz09",
+              "executed": true
+            }
+          },
+          {
+            "browserEngine": "Chromium (Playwright)",
+            "targetUrl": "http://localhost:4000/shop/products/prod-004",
+            "authenticatedAs": "alice@example.com",
+            "payloadSubmitted": {
+              "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_4='SENTINEL_8biaqk4'\">",
+              "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_4",
+              "sentinelValue": "SENTINEL_8biaqk4",
+              "inputSelector": "#review-content",
+              "submissionUrl": "/shop/api/products/:id/reviews"
+            },
+            "storageVerification": {
+              "reviewId": "review-4",
+              "storedVerbatim": true,
+              "apiEndpointQueried": "/shop/api/products/prod-004/reviews",
+              "apiResponseSnippet": "{\"productId\":\"prod-004\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_4='SENTINEL_8biaqk4'\\\">\",\"rating\":5,\"id\":\"review-4\",\"createdAt\":\"2026-11-14T20:49:19.044Z\"}"
+            },
+            "renderVerification": {
+              "pageUrl": "http://localhost:4000/shop/products/prod-004",
+              "containsDangerousSink": true,
+              "sinkSnippet": "document.getElementById('review-content-review-4').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794689265566_xss_4='SENTINEL_8biaqk4'\\\">\";"
+            },
+            "browserExecution": {
+              "sentinelKey": "__bb_xss_test_mission_1794689265566_xss_4",
+              "expectedValue": "SENTINEL_8biaqk4",
+              "actualValue": "SENTINEL_8biaqk4",
+              "executed": true
+            }
+          }
+        ]
+      },
+      "reproductionSteps": [
+        "Authenticate to the application as demo user (alice@example.com).",
+        "Navigate to any product detail page containing the review form (e.g. http://localhost:4000/shop/products/prod-001).",
+        "Submit a review payload containing an HTML element with an event handler into 'review-content': <img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794689265566_xss_1='SENTINEL_5d5jv2f'\">.",
+        "Verify that the API endpoint /shop/api/products/:id/reviews stores the payload without encoding or sanitization.",
+        "Navigate to the product render page.",
+        "Observe that the client script injects the raw review content into the DOM using document.getElementById(...).innerHTML = ...",
+        "Verify that the browser triggers the event handler and executes JavaScript in the page execution context.",
+        "Confirmed identical execution across 4 product endpoints: [prod-001, prod-002, prod-003, prod-004]."
+      ],
+      "remediation": "Avoid assigning untrusted user-supplied content to element.innerHTML. Use element.textContent or safe DOM templating. Alternatively, sanitize input using DOMPurify before DOM insertion.",
+      "timestamp": "2026-11-14T20:49:19.135Z"
+    },
+    {
+      "findingId": "VF-003",
+      "originalFindingId": "bizlogic-find-001",
+      "sourceAgent": "BusinessLogicAgent",
+      "vulnerabilityType": "Business Logic Flaw: Client-Side Price Manipulation",
+      "title": "Client-Side Price Parameter Trusted During Checkout",
+      "severity": "High",
+      "affectedEndpoint": "/shop/api/checkout",
+      "verificationStatus": "VERIFIED_CONFIRMED",
+      "verificationRationale": "Price integrity violation confirmed: server trusted client-supplied price (1 cents) over authoritative catalog price (7999 cents), creating order 'order-alice-100' with an undercharge of 7998 cents. Independently confirmed via checkout parameter replay.",
+      "testedInputsCount": 1,
+      "evidence": {
+        "targetEndpoint": "/shop/api/checkout",
+        "productId": "prod-001",
+        "productName": "Wireless Headphones",
+        "canonicalCatalogPriceCents": 7999,
+        "clientSubmittedPriceCents": 1,
+        "serverRecordedPriceCents": 1,
+        "serverRecordedTotalCents": 1,
+        "priceUnderchargeCents": 7998,
+        "createdOrderId": "order-alice-100",
+        "httpStatus": 201,
+        "requestPayload": {
+          "items": [
+            {
+              "productId": "prod-001",
+              "quantity": 1,
+              "price": 1
+            }
+          ]
+        },
+        "responseSnippet": {
+          "message": "Order placed successfully.",
+          "order": {
+            "id": "order-alice-100",
+            "userId": "user-alice",
+            "items": [
+              {
+                "productId": "prod-001",
+                "quantity": 1,
+                "priceAtPurchase": 1
+              }
+            ],
+            "total": 1,
+            "createdAt": "2026-11-14T20:49:47.442Z"
+          },
+          "warning": "[VULN] Price was accepted from client payload — no server-side validation."
+        },
+        "vulnerabilityConfirmed": true
+      },
+      "reproductionSteps": [
+        "Authenticate to the store API using user credentials (alice@example.com).",
+        "Query the authoritative product catalog (GET /shop/api/products/prod-001) and record the canonical price (7999 cents).",
+        "Construct a checkout payload targeting /shop/api/checkout overriding the price parameter with an arbitrary lower value (1 cent).",
+        "Send the checkout request: POST /shop/api/checkout.",
+        "Observe that the server accepts the client-supplied price without validating against the product database, creating order order-alice-100 for 1 cent(s) instead of 7999 cents."
+      ],
+      "remediation": "Never accept product price fields from client-side checkout payloads. When processing orders, ignore any client-supplied price and look up the authoritative price server-side directly from the database using productId.",
+      "timestamp": "2026-11-14T20:49:47.443Z"
+    }
+  ],
+  "rejectedFindings": [],
+  "deduplicationSummary": {
+    "rawFindingsCount": 3,
+    "deduplicatedCount": 0,
+    "distinctRootCauses": 3,
+    "details": []
+  },
+  "summary": {
+    "totalDiscoveredPages": 8,
+    "totalDiscoveredEndpoints": 13,
+    "totalDiscoveredForms": 7,
+    "totalAgentsRun": 4,
+    "totalRawFindings": 3,
+    "totalVerifiedVulnerabilities": 3,
+    "totalRejectedFindings": 0,
+    "totalTestedInputs": 6,
+    "allAgentsSucceeded": true
+  },
+  "metadata": {
+    "orchestratorVersion": "1.0.0",
+    "targetScope": "http://localhost:4000/shop",
+    "completedAt": "2026-11-14T20:50:14.722Z"
+  },
+  "marketRounds": [
+    {
+      "roundId": "test-mission-1794689265566-r1",
+      "taskId": "task-access-control",
+      "taskName": "BOLA / IDOR Authorization Bypass",
+      "rewardNear": "0.01",
+      "openTxHash": "FQaYoQWNjrBtCdY3H41LbfFxPNoqAmPh8CXLrd5p36v4",
+      "winnerAccount": "idor.harsha-swarm.testnet",
+      "winnerScore": "980000",
+      "allBids": [
+        {
+          "agentId": "IdorAgent",
+          "account": "idor.harsha-swarm.testnet",
+          "confidenceBps": 9800,
+          "costYocto": "10000000000",
+          "salt": "salt-idor-1794689283540",
+          "revealed": true,
+          "score": 980000,
+          "commitTxHash": "4XBPtjfYMgNYwYNZSiBDCMgyBhh8UmPYb8LxCaW3Rt2F",
+          "revealTxHash": "BAXKiLoHJvgsfMpgt3e7ajZmP67fUGQtZvSuZcq1k5zF",
+          "relayed": false,
+          "signingMode": "agent_key"
+        },
+        {
+          "agentId": "GeneralistBeta",
+          "account": "gen2.harsha-swarm.testnet",
+          "confidenceBps": 5500,
+          "costYocto": "6000000000",
+          "salt": "salt-gen2-1794689283540",
+          "revealed": true,
+          "score": 916666.67,
+          "commitTxHash": "5Lxn7QcTDPTf3sGBWmWQmc2i7LYRudgZQU82xopMwaaR",
+          "revealTxHash": "Ck8dXAu8bCRgHkxAgyBiNGJnuXiQNzqKj271hNY5U4mZ",
+          "relayed": false,
+          "signingMode": "agent_key"
+        },
+        {
+          "agentId": "GeneralistAlpha",
+          "account": "gen1.harsha-swarm.testnet",
+          "confidenceBps": 6000,
+          "costYocto": "8000000000",
+          "salt": "salt-gen1-1794689283540",
+          "revealed": true,
+          "score": 750000,
+          "commitTxHash": "8TsbGkH2xHq1GArpQtw4TumNXGsbjoCk98mR7YNzb5iP",
+          "revealTxHash": "8yvYqCVsRkqn3RvY51jAn3n56eVP9WHoKKqER2jAPizx",
+          "relayed": false,
+          "signingMode": "agent_key"
+        },
+        {
+          "agentId": "XssAgent",
+          "account": "xss.harsha-swarm.testnet",
+          "confidenceBps": 2500,
+          "costYocto": "10000000000",
+          "salt": "salt-xss-1794689283540",
+          "revealed": true,
+          "score": 250000,
+          "commitTxHash": "BUHgshDRKaWaTpAJ4hndQAhxWjypHN94msM3Z5DJ6etc",
+          "revealTxHash": "8aKF4d3PD8EkZsmrnSBiCPUJYyKYZY3igsqaUcsCuRJ7",
+          "relayed": false,
+          "signingMode": "agent_key"
+        },
+        {
+          "agentId": "BusinessLogicAgent",
+          "account": "logic.harsha-swarm.testnet",
+          "confidenceBps": 1500,
+          "costYocto": "10000000000",
+          "salt": "salt-logic-1794689283540",
+          "revealed": true,
+          "score": 150000,
+          "commitTxHash": "HLKcNTzDkqH9T1AQQtyKdkYsTxqdSN4EVj7iP1G6A3Xj",
+          "revealTxHash": "48mdyLqu1tDQY6pn6hPT5PK1h7njNSGz6bBKZoLJkyak",
+          "relayed": false,
+          "signingMode": "agent_key"
+        }
+      ],
+      "commitTxHashes": {
+        "IdorAgent": "4XBPtjfYMgNYwYNZSiBDCMgyBhh8UmPYb8LxCaW3Rt2F",
+        "GeneralistBeta": "5Lxn7QcTDPTf3sGBWmWQmc2i7LYRudgZQU82xopMwaaR",
+        "GeneralistAlpha": "8TsbGkH2xHq1GArpQtw4TumNXGsbjoCk98mR7YNzb5iP",
+        "XssAgent": "BUHgshDRKaWaTpAJ4hndQAhxWjypHN94msM3Z5DJ6etc",
+        "BusinessLogicAgent": "HLKcNTzDkqH9T1AQQtyKdkYsTxqdSN4EVj7iP1G6A3Xj"
+      },
+      "revealTxHashes": {
+        "IdorAgent": "BAXKiLoHJvgsfMpgt3e7ajZmP67fUGQtZvSuZcq1k5zF",
+        "GeneralistBeta": "Ck8dXAu8bCRgHkxAgyBiNGJnuXiQNzqKj271hNY5U4mZ",
+        "GeneralistAlpha": "8yvYqCVsRkqn3RvY51jAn3n56eVP9WHoKKqER2jAPizx",
+        "XssAgent": "8aKF4d3PD8EkZsmrnSBiCPUJYyKYZY3igsqaUcsCuRJ7",
+        "BusinessLogicAgent": "48mdyLqu1tDQY6pn6hPT5PK1h7njNSGz6bBKZoLJkyak"
+      },
+      "settleTxHash": "D3b6uLvZpjZvJ6DFqH4eoELZMwPr8kXfYa93bXgKq6yy",
+      "payoutStatus": "confirmed",
+      "payoutTxHash": "H57XyzTpQzN69ynUYwXg28C3GAndyyLDAFPP3vc9eJP7"
+    },
+    {
+      "roundId": "test-mission-1794689265566-r2",
+      "taskId": "task-injection",
+      "taskName": "Stored XSS (Playwright DOM Injection)",
+      "rewardNear": "0.01",
+      "openTxHash": "7XDSC6aLRZBSHbPEj4dgKM1HXBa9pErFgWP4nmXRWGhJ",
+      "winnerAccount": "xss.harsha-swarm.testnet",
+      "winnerScore": "990000",
+      "allBids": [
+        {
+          "agentId": "XssAgent",
+          "account": "xss.harsha-swarm.testnet",
+          "confidenceBps": 9900,
+          "costYocto": "10000000000",
+          "salt": "salt-xss-1794689312797",
+          "revealed": true,
+          "score": 990000,
+          "commitTxHash": "ZzuDvAixoPXRFchqE8TqdkyqrZmEPxVp9HAU2AUAzbv",
+          "revealTxHash": "8rK2MG6EAAmBqKvRwvmeEV1isEYfC786RrfpWwrtJs4i",
+          "relayed": false,
+          "signingMode": "agent_key"
+        },
+        {
+          "agentId": "GeneralistBeta",
+          "account": "gen2.harsha-swarm.testnet",
+          "confidenceBps": 5500,
+          "costYocto": "6000000000",
+          "salt": "salt-gen2-1794689312797",
+          "revealed": true,
+          "score": 916666.67,
+          "commitTxHash": "STY5EUvYUzmhyUmwVthpT7McFxebfVGhgeWKgNepaVq",
+          "revealTxHash": "BZVJ1L2em9LwrRP3dCHQfkUsHj6AjV6ezysg5d8sAQU6",
+          "relayed": false,
+          "signingMode": "agent_key"
+        },
+        {
+          "agentId": "GeneralistAlpha",
+          "account": "gen1.harsha-swarm.testnet",
+          "confidenceBps": 6000,
+          "costYocto": "8000000000",
+          "salt": "salt-gen1-1794689312797",
+          "revealed": true,
+          "score": 750000,
+          "commitTxHash": "B6ALt9N2NRULSmgDey11AFPPURgFAjZCvDWoemcbi25D",
+          "revealTxHash": "F9dsZQTmJgLwBhsGCBejXie8KxggrAhCXshAZZdJTSxc",
+          "relayed": false,
+          "signingMode": "agent_key"
+        },
+        {
+          "agentId": "IdorAgent",
+          "account": "idor.harsha-swarm.testnet",
+          "confidenceBps": 2000,
+          "costYocto": "10000000000",
+          "salt": "salt-idor-1794689312797",
+          "revealed": true,
+          "score": 200000,
+          "commitTxHash": "36Wjri2FtLdLqnRAcwghTeWwdocXf8BeuCo3KvUv1XcC",
+          "revealTxHash": "2pBm8isWEgLAxdM7p4Whd3eG4R2Vcgiy2YTzanJVQq7E",
+          "relayed": false,
+          "signingMode": "agent_key"
+        },
+        {
+          "agentId": "BusinessLogicAgent",
+          "account": "logic.harsha-swarm.testnet",
+          "confidenceBps": 1500,
+          "costYocto": "10000000000",
+          "salt": "salt-logic-1794689312797",
+          "revealed": true,
+          "score": 150000,
+          "commitTxHash": "GHJgtVM43GYUb6wAe77NZ6yKgJZ6YAfemGPRtSmNewzy",
+          "revealTxHash": "8DRwPu7Rp5EBZPYpsZk8JyJebkNfQLmPYmo4jjK6EtZc",
+          "relayed": false,
+          "signingMode": "agent_key"
+        }
+      ],
+      "commitTxHashes": {
+        "XssAgent": "ZzuDvAixoPXRFchqE8TqdkyqrZmEPxVp9HAU2AUAzbv",
+        "GeneralistBeta": "STY5EUvYUzmhyUmwVthpT7McFxebfVGhgeWKgNepaVq",
+        "GeneralistAlpha": "B6ALt9N2NRULSmgDey11AFPPURgFAjZCvDWoemcbi25D",
+        "IdorAgent": "36Wjri2FtLdLqnRAcwghTeWwdocXf8BeuCo3KvUv1XcC",
+        "BusinessLogicAgent": "GHJgtVM43GYUb6wAe77NZ6yKgJZ6YAfemGPRtSmNewzy"
+      },
+      "revealTxHashes": {
+        "XssAgent": "8rK2MG6EAAmBqKvRwvmeEV1isEYfC786RrfpWwrtJs4i",
+        "GeneralistBeta": "BZVJ1L2em9LwrRP3dCHQfkUsHj6AjV6ezysg5d8sAQU6",
+        "GeneralistAlpha": "F9dsZQTmJgLwBhsGCBejXie8KxggrAhCXshAZZdJTSxc",
+        "IdorAgent": "2pBm8isWEgLAxdM7p4Whd3eG4R2Vcgiy2YTzanJVQq7E",
+        "BusinessLogicAgent": "8DRwPu7Rp5EBZPYpsZk8JyJebkNfQLmPYmo4jjK6EtZc"
+      },
+      "settleTxHash": "3jmdoawSaeQKbouspU5K5ag1thgFzKyQZFnBqkANZHnH",
+      "payoutStatus": "confirmed",
+      "payoutTxHash": "DdANaEPZFE8bD2x53gtGNuGr1trn8VbNQvHB4uf5XqMi"
+    },
+    {
+      "roundId": "test-mission-1794689265566-r3",
+      "taskId": "task-business-logic",
+      "taskName": "Client Price Parameter Tampering",
+      "rewardNear": "0.01",
+      "openTxHash": "3JJPXuA8vokxPYHhY1qrR8VzH5c8HNRERWbwLs6Hh467",
+      "winnerAccount": "logic.harsha-swarm.testnet",
+      "winnerScore": "970000",
+      "allBids": [
+        {
+          "agentId": "BusinessLogicAgent",
+          "account": "logic.harsha-swarm.testnet",
+          "confidenceBps": 9700,
+          "costYocto": "10000000000",
+          "salt": "salt-logic-1794689359199",
+          "revealed": true,
+          "score": 970000,
+          "commitTxHash": "9tF4SGumgsH9P9rGj4zwWjR79hng2tAHgjAZV7UMfwt2",
+          "revealTxHash": "G1c5g9VPizk64upEFVYAbUrxHrqW98uhHxxS1z3qMZrB",
+          "relayed": false,
+          "signingMode": "agent_key"
+        },
+        {
+          "agentId": "GeneralistBeta",
+          "account": "gen2.harsha-swarm.testnet",
+          "confidenceBps": 5500,
+          "costYocto": "6000000000",
+          "salt": "salt-gen2-1794689359199",
+          "revealed": true,
+          "score": 916666.67,
+          "commitTxHash": "7ZeandCZKnDg3WYYZAzvFu8JbfujNsLfZG334WspkCQP",
+          "revealTxHash": "CsYwdrDPR3QX1VYr1xEcn4Xn13wGh6iHj4crUgHNXRjr",
+          "relayed": false,
+          "signingMode": "agent_key"
+        },
+        {
+          "agentId": "GeneralistAlpha",
+          "account": "gen1.harsha-swarm.testnet",
+          "confidenceBps": 6000,
+          "costYocto": "8000000000",
+          "salt": "salt-gen1-1794689359199",
+          "revealed": true,
+          "score": 750000,
+          "commitTxHash": "GJETLZT2rLfWXgHHz1J4giYNyhLbBq34nWenHSc47Wjw",
+          "revealTxHash": "EqNPfNcumeRC8vLaWhGLLkb974FrXtuZUmMhoANj5Afv",
+          "relayed": false,
+          "signingMode": "agent_key"
+        },
+        {
+          "agentId": "XssAgent",
+          "account": "xss.harsha-swarm.testnet",
+          "confidenceBps": 2500,
+          "costYocto": "10000000000",
+          "salt": "salt-xss-1794689359199",
+          "revealed": true,
+          "score": 250000,
+          "commitTxHash": "AcQR6SVfmZKGhg6gZ8nsBDBNnQ23c2ZgEASruDphDB1U",
+          "revealTxHash": "3LgSA8yXXQpkgpjzZ4p3yGVRmVeeofuGnySAo9eK2nHf",
+          "relayed": false,
+          "signingMode": "agent_key"
+        },
+        {
+          "agentId": "IdorAgent",
+          "account": "idor.harsha-swarm.testnet",
+          "confidenceBps": 2000,
+          "costYocto": "10000000000",
+          "salt": "salt-idor-1794689359199",
+          "revealed": true,
+          "score": 200000,
+          "commitTxHash": "FWMDX1BNsRHC8UP4SxU42iNDEaXEk1UsrPPYLPo6mSaB",
+          "revealTxHash": "4MQ6vei1qf2ypdjkeWn4rm16Mh2L51ZM6w3tN8VmagbY",
+          "relayed": false,
+          "signingMode": "agent_key"
+        }
+      ],
+      "commitTxHashes": {
+        "BusinessLogicAgent": "9tF4SGumgsH9P9rGj4zwWjR79hng2tAHgjAZV7UMfwt2",
+        "GeneralistBeta": "7ZeandCZKnDg3WYYZAzvFu8JbfujNsLfZG334WspkCQP",
+        "GeneralistAlpha": "GJETLZT2rLfWXgHHz1J4giYNyhLbBq34nWenHSc47Wjw",
+        "XssAgent": "AcQR6SVfmZKGhg6gZ8nsBDBNnQ23c2ZgEASruDphDB1U",
+        "IdorAgent": "FWMDX1BNsRHC8UP4SxU42iNDEaXEk1UsrPPYLPo6mSaB"
+      },
+      "revealTxHashes": {
+        "BusinessLogicAgent": "G1c5g9VPizk64upEFVYAbUrxHrqW98uhHxxS1z3qMZrB",
+        "GeneralistBeta": "CsYwdrDPR3QX1VYr1xEcn4Xn13wGh6iHj4crUgHNXRjr",
+        "GeneralistAlpha": "EqNPfNcumeRC8vLaWhGLLkb974FrXtuZUmMhoANj5Afv",
+        "XssAgent": "3LgSA8yXXQpkgpjzZ4p3yGVRmVeeofuGnySAo9eK2nHf",
+        "IdorAgent": "4MQ6vei1qf2ypdjkeWn4rm16Mh2L51ZM6w3tN8VmagbY"
+      },
+      "settleTxHash": "8e9bYrYGjxTBzLuAMFFrPFRMc3VXubDqZA4DNUZ6UQQJ",
+      "payoutStatus": "confirmed",
+      "payoutTxHash": "J3341z3UHtyhDDwhR3qRuyBdjcL3CJfaXHsJJwz35fqr"
+    }
+  ],
+  "nearAttestation": {
+    "status": "confirmed",
+    "contractId": "harsha-swarm.testnet",
+    "networkId": "testnet",
+    "missionId": "test-mission-1794689265566",
+    "resultHash": "7af4f8d7dc4faf81406ec4a88a9cf51b86a4c79898f2656fba3d87bca10261c2",
+    "findingsHash": "fad393c96d1cb0a62d5d2bdd19d9deacd574e059933616ad066ab36ae6ce11e5",
+    "verifiedFindingCount": 3,
+    "missionTxHash": "5Rm2QdHDAYNFeZMsoYWTKYcravXRgkXgeGAyjvLg4QE5",
+    "missionTxStatus": "confirmed",
+    "contributionTxHashes": [
+      "EMM7kJgdMzhnQx4H8EFKRNPfBuYdqrpK6pBkGoiJjv5z",
+      "2bnjDxMcKTpvgCPQga3KufidLbUuoQZBdvpyhqJuRi8P",
+      "G9xQMXSfiFNoaQ2CL9ZDNvyoRnGsPqE8BPWDNBsJm3ip",
+      "4ihnNSEpXhFFeVxER6iAc9pJbPdV3Nx3mLR1R5nhGc72"
+    ],
+    "contributionTxStatuses": [
+      "confirmed",
+      "confirmed",
+      "confirmed",
+      "confirmed"
+    ],
+    "explorerUrl": "https://testnet.nearblocks.io/txns/5Rm2QdHDAYNFeZMsoYWTKYcravXRgkXgeGAyjvLg4QE5",
+    "attestedAt": "2026-11-14T20:50:23.778Z"
+  }
+}

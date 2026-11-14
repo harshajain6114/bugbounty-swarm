@@ -284,13 +284,17 @@ function MissionControl({
   onResetDemo,
   onVerifyIntegrity,
   integrityResult,
+  integrityLoading = false,
+  integrityError = null,
 }: {
   mission: MissionData | null
   isRunning: boolean
   onStartMission: () => void
   onResetDemo: () => void
   onVerifyIntegrity: (tamper?: boolean) => void
-  integrityResult: { status: string; computedLocalHash: string; storedOnChainHash: string; tampered: boolean } | null
+  integrityResult: { status: string; computedLocalHash: string; storedOnChainHash: string; tampered: boolean; explorerUrl?: string } | null
+  integrityLoading?: boolean
+  integrityError?: string | null
 }) {
   const isNearConfigured = mission?.nearAttestation?.status === 'confirmed' || mission?.nearAttestation?.status === 'pending'
   const isCompleted = Boolean(mission && mission.status === 'completed')
@@ -323,15 +327,15 @@ function MissionControl({
             <button
               className="secondary-button"
               onClick={() => onVerifyIntegrity(false)}
-              disabled={!mission || isRunning}
-              title={!mission ? "Run a mission first to attest findings on-chain" : "Verify local hash against unchanged on-chain contract hash"}
+              disabled={isRunning || integrityLoading}
+              title="Verify local hash against unchanged on-chain contract hash"
             >
-              <CheckCircle size={15} /> Verify integrity
+              <CheckCircle size={15} /> {integrityLoading ? 'Verifying…' : 'Verify integrity'}
             </button>
             <button
               className="secondary-button"
               onClick={() => onVerifyIntegrity(true)}
-              disabled={!mission || isRunning}
+              disabled={isRunning || integrityLoading}
               style={{ borderColor: '#ff6b6b', color: '#ff6b6b' }}
               title="Mutates local memory finding to demonstrate cryptographic mismatch against unchanged on-chain hash"
             >
@@ -341,11 +345,37 @@ function MissionControl({
         }
       />
 
+      {integrityLoading && (
+        <div className="demo-notice" style={{ borderColor: '#61d8d1', background: 'rgba(97, 216, 209, 0.08)' }}>
+          <RotateCcw size={18} color="#61d8d1" className="spin" style={{ flexShrink: 0 }} />
+          <div>
+            <strong style={{ color: '#61d8d1', fontSize: '13px' }}>QUERYING IMMUTABLE ON-CHAIN RECORD…</strong>
+            <div style={{ fontSize: '12px', marginTop: '2px', color: '#8fa08e' }}>
+              Fetching on-chain attestation hash via FastNear RPC from harsha-swarm.testnet…
+            </div>
+          </div>
+        </div>
+      )}
+
+      {integrityError && (
+        <div className="demo-notice" style={{ borderColor: '#ff4d4f', background: 'rgba(255, 77, 79, 0.08)' }}>
+          <AlertTriangle size={18} color="#ff4d4f" style={{ flexShrink: 0 }} />
+          <div>
+            <strong style={{ color: '#ff4d4f', fontSize: '13px' }}>INTEGRITY CHECK ERROR</strong>
+            <div style={{ fontSize: '12px', marginTop: '2px', color: '#ff8587' }}>
+              {integrityError}
+            </div>
+          </div>
+        </div>
+      )}
+
       {integrityResult && (() => {
         const isMatch = integrityResult.status === 'MATCH'
         const isNoRecord = integrityResult.status === 'NO ON-CHAIN RECORD'
         const toneColor = isMatch ? '#B6FF5C' : isNoRecord ? '#faad14' : '#ff4d4f'
         const bgTone = isMatch ? 'rgba(182, 255, 92, 0.08)' : isNoRecord ? 'rgba(250, 173, 20, 0.08)' : 'rgba(255, 77, 79, 0.08)'
+        const shorten = (h: string) => (h && h.length > 20 ? `${h.slice(0, 10)}…${h.slice(-8)}` : h)
+
         return (
           <div
             className="demo-notice"
@@ -362,18 +392,30 @@ function MissionControl({
               <AlertTriangle size={18} color={toneColor} style={{ flexShrink: 0 }} />
             )}
             <div style={{ flex: 1 }}>
-              <strong style={{ color: toneColor, fontSize: '13px' }}>
-                INTEGRITY CHECK: {integrityResult.status}
-              </strong>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                <strong style={{ color: toneColor, fontSize: '13px' }}>
+                  INTEGRITY CHECK: {integrityResult.status}
+                </strong>
+                {integrityResult.explorerUrl && (
+                  <a
+                    href={integrityResult.explorerUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ fontSize: '11px', color: '#B6FF5C', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    View on NearBlocks <ExternalLink size={11} />
+                  </a>
+                )}
+              </div>
               <div style={{ fontSize: '12px', marginTop: '4px', fontFamily: 'monospace', wordBreak: 'break-all' }}>
-                Unchanged On-Chain Hash: {integrityResult.storedOnChainHash}
+                Unchanged On-Chain Hash : <span style={{ color: '#edf2ea' }}>{shorten(integrityResult.storedOnChainHash)}</span>
               </div>
               <div style={{ fontSize: '12px', marginTop: '2px', fontFamily: 'monospace', wordBreak: 'break-all' }}>
-                Re-calculated Local Hash: {integrityResult.computedLocalHash}
+                Re-calculated Local Hash: <span style={{ color: '#edf2ea' }}>{shorten(integrityResult.computedLocalHash)}</span>
               </div>
               {integrityResult.tampered && (
-                <div style={{ fontSize: '11px', color: '#ff4d4f', marginTop: '4px' }}>
-                  Simulated mutation: modified local finding title in memory. The on-chain contract record remained untouched, correctly producing a hash MISMATCH.
+                <div style={{ fontSize: '11px', color: '#ff4d4f', marginTop: '4px', fontWeight: 600 }}>
+                  local copy edited; chain unchanged (Simulated mutation: modified local finding title in memory)
                 </div>
               )}
             </div>
@@ -898,11 +940,14 @@ function App() {
   const [mission, setMission] = useState<MissionData | null>(null)
   const [repData, setRepData] = useState<ReputationData | null>(null)
   const [isRunning, setIsRunning] = useState(false)
+  const [integrityLoading, setIntegrityLoading] = useState(false)
+  const [integrityError, setIntegrityError] = useState<string | null>(null)
   const [integrityResult, setIntegrityResult] = useState<{
     status: string
     computedLocalHash: string
     storedOnChainHash: string
     tampered: boolean
+    explorerUrl?: string
   } | null>(null)
 
   const fetchMissionData = async () => {
@@ -936,6 +981,7 @@ function App() {
   const handleStartMission = async () => {
     setIsRunning(true)
     setIntegrityResult(null)
+    setIntegrityError(null)
     try {
       const res = await fetch('http://localhost:4000/api/missions/start', {
         method: 'POST',
@@ -960,27 +1006,44 @@ function App() {
       if (res.ok) {
         setMission(null)
         setIntegrityResult(null)
+        setIntegrityError(null)
       }
     } catch (err) {
       console.error('Reset error:', err)
       setMission(null)
       setIntegrityResult(null)
+      setIntegrityError(null)
     }
   }
 
   const handleVerifyIntegrity = async (tampered = false) => {
+    setIntegrityLoading(true)
+    setIntegrityError(null)
     try {
+      console.log(`[Integrity] Requesting integrity check (tampered=${tampered}, missionId=${mission?.missionId})…`)
       const res = await fetch('http://localhost:4000/api/missions/verify-integrity', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ missionId: mission?.missionId, tamperedFinding: tampered }),
       })
-      if (res.ok) {
-        const data = await res.json()
-        setIntegrityResult(data)
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({ error: `HTTP ${res.status}: ${res.statusText}` }))
+        const errorMsg = errJson.error || `Verification request failed with HTTP ${res.status}`
+        console.error('[Integrity] Endpoint returned error:', errorMsg)
+        setIntegrityError(errorMsg)
+        setIntegrityResult(null)
+        return
       }
+      const data = await res.json()
+      console.log('[Integrity] Verification response received:', data)
+      setIntegrityResult(data)
     } catch (err) {
-      console.error(err)
+      const errorMsg = (err as Error).message || 'Failed to connect to backend server at http://localhost:4000'
+      console.error('[Integrity] Error during verification:', err)
+      setIntegrityError(errorMsg)
+      setIntegrityResult(null)
+    } finally {
+      setIntegrityLoading(false)
     }
   }
 
@@ -1018,6 +1081,8 @@ function App() {
               onResetDemo={handleResetDemo}
               onVerifyIntegrity={handleVerifyIntegrity}
               integrityResult={integrityResult}
+              integrityLoading={integrityLoading}
+              integrityError={integrityError}
             />
           ) : active === 'Bounty Market' ? (
             <BountyMarket

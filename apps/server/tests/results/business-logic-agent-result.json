@@ -1,5 +1,5 @@
 {
-  "missionId": "test-mission-1794687289883-bizlogic",
+  "missionId": "test-mission-1794687702479-bizlogic",
   "target": "http://localhost:4000/shop",
   "status": "completed",
   "summary": {
@@ -122,7 +122,7 @@
               }
             ],
             "total": 1,
-            "createdAt": "2026-11-14T20:17:16.594Z"
+            "createdAt": "2026-11-14T20:23:35.813Z"
           },
           "warning": "[VULN] Price was accepted from client payload — no server-side validation."
         },
@@ -136,14 +136,14 @@
         "Observe that the server accepts the client-supplied price without validating against the product database, creating order order-alice-100 for 1 cent(s) instead of 7999 cents."
       ],
       "remediation": "Never accept product price fields from client-side checkout payloads. When processing orders, ignore any client-supplied price and look up the authoritative price server-side directly from the database using productId.",
-      "timestamp": "2026-11-14T20:17:16.594Z"
+      "timestamp": "2026-11-14T20:23:35.814Z"
     }
   ],
   "errors": [],
   "metadata": {
     "agentName": "BusinessLogicAgent",
     "agentVersion": "1.0.0",
-    "completedAt": "2026-11-14T20:17:16.596Z",
+    "completedAt": "2026-11-14T20:23:35.816Z",
     "targetScope": "http://localhost:4000/shop"
   }
 }

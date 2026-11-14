@@ -82,7 +82,9 @@ app.get("/api/missions/latest", (_req: Request, res: Response) => {
     res.status(404).json({ error: "No completed missions found." });
     return;
   }
-  const latestSummary = missions[missions.length - 1];
+  // Sort by startedAt or completedAt descending
+  const sorted = [...missions].sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+  const latestSummary = sorted[0];
   const latestMission = orchestrator.getMission(latestSummary.missionId);
   res.json(latestMission);
 });
@@ -97,23 +99,25 @@ app.get("/api/near/reputation", async (_req: Request, res: Response) => {
     if (!nearClient) {
       res.json({
         configured: false,
-        reputation: {
-          ReconAgent: 0,
-          IdorAgent: 1,
-          XssAgent: 1,
-          BusinessLogicAgent: 1,
-        },
+        reputation: null,
       });
       return;
     }
+    const [recon, idor, xss, biz] = await Promise.all([
+      nearClient.getAgentReputation("ReconAgent"),
+      nearClient.getAgentReputation("IdorAgent"),
+      nearClient.getAgentReputation("XssAgent"),
+      nearClient.getAgentReputation("BusinessLogicAgent"),
+    ]);
+
     res.json({
       configured: true,
       contractId: process.env.NEAR_CONTRACT_ID || "harsha-swarm.testnet",
       reputation: {
-        ReconAgent: 0,
-        IdorAgent: 1,
-        XssAgent: 1,
-        BusinessLogicAgent: 1,
+        ReconAgent: recon,
+        IdorAgent: idor,
+        XssAgent: xss,
+        BusinessLogicAgent: biz,
       },
     });
   } catch (err) {

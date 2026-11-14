@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node scripts/start-all.js",
+    "verify:near": "node scripts/verify-near.js",
     "test:contract": "cargo test --manifest-path apps/near-contract/Cargo.toml",
     "test:server": "cd apps/server && node node_modules/tsx/dist/cli.mjs tests/run-all.ts",
     "test:orchestrator": "cd apps/server && node node_modules/tsx/dist/cli.mjs tests/mission-orchestrator.test.ts",

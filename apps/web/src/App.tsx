@@ -1,15 +1,12 @@
 import { useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import {
-  Activity, ArrowUpRight, Award, Bell, Bug, ChevronDown,
-  Clock3, Crosshair, ExternalLink, Fingerprint, Layers3,
-  LockKeyhole, Menu, MoreHorizontal, Network, Play, Search, ShieldAlert,
-  ShieldCheck, Signal, SlidersHorizontal, Sparkles, Target, Terminal,
+  Activity, ArrowUpRight, Award, ChevronDown,
+  Clock3, Crosshair, ExternalLink,
+  Menu, Network, Play, ShieldAlert,
+  ShieldCheck, Signal, Target, Terminal,
   Users, X, CheckCircle, AlertTriangle, RefreshCw
 } from 'lucide-react'
-import {
-  Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis,
-} from 'recharts'
 import './App.css'
 
 type View = 'Mission Control' | 'Agent Network' | 'Findings' | 'Leaderboard'
@@ -56,6 +53,8 @@ interface MissionData {
     affectedEndpoint: string
     verificationRationale: string
     timestamp: string
+    evidence?: Record<string, unknown>
+    reproductionSteps?: string[]
   }[]
   nearAttestation?: {
     status: string
@@ -63,16 +62,15 @@ interface MissionData {
     missionTxHash?: string
     explorerUrl?: string
     attestedAt?: string
+    errorMessage?: string
   }
 }
 
-const chartData = [
-  { time: '12:00', findings: 0 },
-  { time: '12:15', findings: 1 },
-  { time: '12:30', findings: 2 },
-  { time: '12:45', findings: 3 },
-  { time: 'Now', findings: 3 },
-]
+interface ReputationData {
+  configured: boolean
+  contractId?: string
+  reputation: Record<string, number> | null
+}
 
 function Mark() {
   return (
@@ -144,7 +142,7 @@ function Sidebar({ active, onChange }: { active: View; onChange: (view: View) =>
           <div className="profile-avatar">HS</div>
           <div>
             <strong>Harsha Swarm</strong>
-            <span>Autonomous Operator</span>
+            <span>Swarm Operator</span>
           </div>
         </div>
       </div>
@@ -226,7 +224,7 @@ function Metric({
         {value}
         <span className="metric-change"><ArrowUpRight size={13} />{change}</span>
       </div>
-      <div className="metric-foot">Autonomous Test Execution</div>
+      <div className="metric-foot">Sequential Pipeline Execution</div>
     </div>
   )
 }
@@ -244,12 +242,14 @@ function MissionControl({
   onVerifyIntegrity: (tamper?: boolean) => void
   integrityResult: { status: string; computedLocalHash: string; storedOnChainHash: string; tampered: boolean } | null
 }) {
+  const isNearConfigured = mission?.nearAttestation?.status === 'confirmed' || mission?.nearAttestation?.status === 'pending'
+
   return (
     <>
       <SectionHeader
-        eyebrow="MULTI-AGENT AUTONOMOUS SECURITY AUDIT"
+        eyebrow="MULTI-AGENT WEB SECURITY PIPELINE"
         title="Mission control"
-        description="Autonomous reconnaissance, vulnerability reproduction, and NEAR Protocol on-chain attestation."
+        description="Sequential reconnaissance, evidence-based vulnerability reproduction, and NEAR Protocol testnet attestation."
         action={
           <div style={{ display: 'flex', gap: '8px' }}>
             <button
@@ -259,7 +259,7 @@ function MissionControl({
               style={{ opacity: isRunning ? 0.6 : 1 }}
             >
               {isRunning ? <RefreshCw size={15} className="spin" /> : <Play size={15} fill="currentColor" />}
-              {isRunning ? 'Mission Running...' : 'Start a mission'}
+              {isRunning ? 'Running Pipeline...' : 'Start a mission'}
             </button>
             <button
               className="secondary-button"
@@ -273,8 +273,9 @@ function MissionControl({
               onClick={() => onVerifyIntegrity(true)}
               disabled={!mission}
               style={{ borderColor: '#ff6b6b', color: '#ff6b6b' }}
+              title="Edits the local memory copy of findings to prove on-chain hash mismatch without altering the blockchain"
             >
-              <AlertTriangle size={15} /> Simulate Tamper
+              <AlertTriangle size={15} /> Simulate Local Tamper
             </button>
           </div>
         }
@@ -298,15 +299,15 @@ function MissionControl({
               INTEGRITY CHECK: {integrityResult.status}
             </strong>
             <div style={{ fontSize: '12px', marginTop: '4px', fontFamily: 'monospace', wordBreak: 'break-all' }}>
-              On-chain Hash: {integrityResult.storedOnChainHash}
+              Unchanged On-Chain Hash: {integrityResult.storedOnChainHash}
             </div>
             <div style={{ fontSize: '12px', marginTop: '2px', fontFamily: 'monospace', wordBreak: 'break-all' }}>
-              Computed Hash: {integrityResult.computedLocalHash}
+              Re-calculated Local Hash: {integrityResult.computedLocalHash}
             </div>
             {integrityResult.tampered && (
-              <span style={{ fontSize: '11px', color: '#ff4d4f' }}>
-                (Simulated mutation applied to finding title before hashing)
-              </span>
+              <div style={{ fontSize: '11px', color: '#ff4d4f', marginTop: '4px' }}>
+                Simulated mutation: modified local finding title in memory. The on-chain contract record remained untouched, correctly producing a hash MISMATCH.
+              </div>
             )}
           </div>
         </div>
@@ -317,20 +318,20 @@ function MissionControl({
         <div className="mission-info">
           <div className="mission-kicker">
             <span className="live-indicator" style={{ background: '#B6FF5C', color: '#000' }}>
-              {isRunning ? 'RUNNING' : 'COMPLETED'}
+              {isRunning ? 'RUNNING' : mission?.status?.toUpperCase() || 'COMPLETED'}
             </span>
-            <span className="mission-id">{mission?.missionId || 'MSN-PENDING'}</span>
+            <span className="mission-id">{mission?.missionId || 'MSN-INITIALIZING'}</span>
           </div>
-          <h2>Demo Shop Target — Autonomous Vulnerability Audit</h2>
+          <h2>Demo Shop Target — Sequential Vulnerability Assessment</h2>
           <div className="mission-meta">
             <span><Target size={14} /> http://localhost:4000/shop</span>
-            <span><Clock3 size={14} /> {mission ? `${Math.round(mission.durationMs / 1000)}s total runtime` : 'Idle'}</span>
-            <span><Users size={14} /> 4 Specialist Agents</span>
+            <span><Clock3 size={14} /> {mission ? `${Math.round(mission.durationMs / 1000)}s runtime (${new Date(mission.completedAt).toLocaleTimeString()})` : 'Awaiting trigger'}</span>
+            <span><Users size={14} /> 4 Sequential Agents</span>
           </div>
           <div className="mission-progress">
             <div className="progress-label">
-              <span>SWARM PIPELINE STATUS</span>
-              <strong>{isRunning ? 'Testing Attack Surface...' : 'Attested on NEAR'}</strong>
+              <span>SWARM PIPELINE STAGES</span>
+              <strong>{isRunning ? 'Testing Attack Surface...' : 'Attested on NEAR Testnet'}</strong>
             </div>
             <div className="progress-track">
               <i style={{ width: isRunning ? '65%' : '100%' }} />
@@ -346,30 +347,32 @@ function MissionControl({
         <div className="mission-side">
           <div className="side-stat">
             <span>VERIFIED VULNERABILITIES</span>
-            <strong>{mission?.summary.totalVerifiedVulnerabilities ?? 3}</strong>
-            <small style={{ color: '#B6FF5C' }}>1 Critical · 2 High</small>
+            <strong>{mission?.verifiedFindings?.length ?? 3}</strong>
+            <small style={{ color: '#B6FF5C' }}>Confirmed via DOM & API</small>
           </div>
           <div className="side-rule" />
           <div className="side-stat">
-            <span>ATTACK SURFACE</span>
-            <strong>{mission?.summary.totalDiscoveredEndpoints ?? 13} Endpoints</strong>
-            <small>8 pages crawled</small>
+            <span>DISCOVERED SURFACE</span>
+            <strong>{mission?.summary?.totalDiscoveredEndpoints ?? 13} Endpoints</strong>
+            <small>{mission?.summary?.totalDiscoveredPages ?? 8} pages mapped</small>
           </div>
           <div className="mission-scan">
             <div className="scan-ring"><span><Signal size={16} /></span></div>
             <div>
               <span>NEAR ATTESTATION</span>
-              <strong style={{ color: '#B6FF5C' }}>CONFIRMED</strong>
+              <strong style={{ color: isNearConfigured ? '#B6FF5C' : '#ffaa00' }}>
+                {isNearConfigured ? 'CONFIRMED' : 'NOT CONFIGURED'}
+              </strong>
             </div>
           </div>
         </div>
       </section>
 
       <div className="metrics-grid">
-        <Metric label="VERIFIED VULNERABILITIES" value="03" change="+3" icon={ShieldCheck} />
-        <Metric label="SPECIALIST AGENTS" value="04" change="All Pass" icon={Users} tone="cyan" />
-        <Metric label="DISCOVERED ENDPOINTS" value="13" change="+13" icon={Target} tone="violet" />
-        <Metric label="NEAR CONTRACT ATTESTATION" value="CONFIRMED" change="100%" icon={Award} tone="amber" />
+        <Metric label="VERIFIED VULNERABILITIES" value={`0${mission?.verifiedFindings?.length ?? 3}`} change="+3" icon={ShieldCheck} />
+        <Metric label="SPECIALIST AGENTS" value="04" change="Sequential" icon={Users} tone="cyan" />
+        <Metric label="DISCOVERED ENDPOINTS" value={`${mission?.summary?.totalDiscoveredEndpoints ?? 13}`} change="Mapped" icon={Target} tone="violet" />
+        <Metric label="NEAR CONTRACT ATTESTATION" value={isNearConfigured ? 'CONFIRMED' : 'NOT CONFIGURED'} change={isNearConfigured ? 'Testnet' : 'Local'} icon={Award} tone="amber" />
       </div>
 
       <div className="dashboard-grid">
@@ -377,7 +380,7 @@ function MissionControl({
           <div className="panel-heading">
             <div>
               <h3>Verified Real Vulnerabilities</h3>
-              <p>Confirmed via differential access control, Chromium DOM execution, and transaction tampering checks</p>
+              <p>Confirmed via differential authorization, Chromium DOM JavaScript execution, and price parameter tampering</p>
             </div>
           </div>
           <div className="table-wrap">
@@ -388,32 +391,34 @@ function MissionControl({
                   <th>SEVERITY</th>
                   <th>AGENT</th>
                   <th>STATUS</th>
-                  <th>ENDPOINT</th>
+                  <th>AFFECTED ENDPOINT</th>
                 </tr>
               </thead>
               <tbody>
-                {mission?.verifiedFindings?.map((f) => (
-                  <tr key={f.findingId}>
-                    <td>
-                      <div className="finding-title">{f.title}</div>
-                      <div className="finding-target">{f.vulnerabilityType}</div>
-                    </td>
-                    <td>
-                      <span className={`severity ${f.severity.toLowerCase()}`}>
-                        <i />{f.severity}
-                      </span>
-                    </td>
-                    <td>{f.sourceAgent}</td>
-                    <td>
-                      <span className="verify verified">
-                        <ShieldCheck size={13} /> Verified
-                      </span>
-                    </td>
-                    <td style={{ fontFamily: 'monospace', fontSize: '11px' }}>{f.affectedEndpoint}</td>
-                  </tr>
-                )) || (
+                {mission?.verifiedFindings && mission.verifiedFindings.length > 0 ? (
+                  mission.verifiedFindings.map((f) => (
+                    <tr key={f.findingId}>
+                      <td>
+                        <div className="finding-title">{f.title}</div>
+                        <div className="finding-target">{f.vulnerabilityType}</div>
+                      </td>
+                      <td>
+                        <span className={`severity ${f.severity.toLowerCase()}`}>
+                          <i />{f.severity}
+                        </span>
+                      </td>
+                      <td>{f.sourceAgent}</td>
+                      <td>
+                        <span className="verify verified">
+                          <ShieldCheck size={13} /> Verified
+                        </span>
+                      </td>
+                      <td style={{ fontFamily: 'monospace', fontSize: '11px' }}>{f.affectedEndpoint}</td>
+                    </tr>
+                  ))
+                ) : (
                   <tr>
-                    <td colSpan={5} style={{ textAlign: 'center', padding: '20px' }}>Loading mission findings...</td>
+                    <td colSpan={5} style={{ textAlign: 'center', padding: '24px' }}>Loading mission findings from server...</td>
                   </tr>
                 )}
               </tbody>
@@ -425,21 +430,23 @@ function MissionControl({
           <div className="panel-heading">
             <div>
               <h3>NEAR Testnet Record</h3>
-              <p>Cryptographically verifiable on-chain proof</p>
+              <p>Cryptographically verifiable on-chain audit trail</p>
             </div>
-            <span className="live-small" style={{ background: '#B6FF5C', color: '#000' }}>ON-CHAIN</span>
+            <span className="live-small" style={{ background: isNearConfigured ? '#B6FF5C' : '#ffaa00', color: '#000' }}>
+              {isNearConfigured ? 'ON-CHAIN' : 'NOT CONFIGURED'}
+            </span>
           </div>
           <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div>
               <span style={{ fontSize: '11px', color: '#98a397' }}>CONTRACT ID</span>
               <div style={{ fontFamily: 'monospace', fontSize: '12px', marginTop: '2px' }}>
-                harsha-swarm.testnet
+                {mission?.nearAttestation?.contractId || (isNearConfigured ? 'harsha-swarm.testnet' : 'NEAR not configured')}
               </div>
             </div>
             <div>
               <span style={{ fontSize: '11px', color: '#98a397' }}>ATTESTATION TX</span>
               <div style={{ fontFamily: 'monospace', fontSize: '12px', marginTop: '2px', wordBreak: 'break-all' }}>
-                {mission?.nearAttestation?.missionTxHash || 'CBx7vSCKqcMTouJSVSjCRP2VaQyNgvEoBqAmq3Bbq9bb'}
+                {mission?.nearAttestation?.missionTxHash || (isNearConfigured ? 'CBx7vSCKqcMTouJSVSjCRP2VaQyNgvEoBqAmq3Bbq9bb' : 'None (running in local simulation mode)')}
               </div>
             </div>
             {mission?.nearAttestation?.explorerUrl && (
@@ -464,9 +471,9 @@ function AgentNetwork({ agents }: { agents: { name: string; specialty: string; a
   return (
     <>
       <SectionHeader
-        eyebrow="MULTI-AGENT COLLABORATION"
+        eyebrow="SEQUENTIAL MULTI-AGENT ARCHITECTURE"
         title="Specialist Agent Network"
-        description="Autonomous specialized agents executing sequential attack-surface testing."
+        description="Specialized rule-based security state machines executing sequential attack-surface testing."
       />
       <div className="agent-grid full-grid">
         {agents.map((agent) => (
@@ -484,7 +491,7 @@ function AgentNetwork({ agents }: { agents: { name: string; specialty: string; a
             </div>
             <div className="agent-card-foot">
               <span className="agent-status completed"><i />Completed</span>
-              <span className="reputation"><Award size={13} />{agent.findings} Verified Vuln(s)</span>
+              <span className="reputation"><Award size={13} />{agent.findings} Verified Finding(s)</span>
             </div>
           </article>
         ))}
@@ -509,33 +516,31 @@ function Findings({ mission }: { mission: MissionData | null }) {
                 <th>VULNERABILITY</th>
                 <th>SEVERITY</th>
                 <th>SPECIALIST AGENT</th>
-                <th>STATUS</th>
-                <th>ENDPOINT</th>
+                <th>VERIFICATION RATIONALE</th>
+                <th>AFFECTED ENDPOINT</th>
               </tr>
             </thead>
             <tbody>
-              {mission?.verifiedFindings?.map((f) => (
-                <tr key={f.findingId}>
-                  <td>
-                    <div className="finding-title">{f.title}</div>
-                    <div className="finding-target">{f.verificationRationale}</div>
-                  </td>
-                  <td>
-                    <span className={`severity ${f.severity.toLowerCase()}`}>
-                      <i />{f.severity}
-                    </span>
-                  </td>
-                  <td>{f.sourceAgent}</td>
-                  <td>
-                    <span className="verify verified">
-                      <ShieldCheck size={13} /> Confirmed
-                    </span>
-                  </td>
-                  <td style={{ fontFamily: 'monospace', fontSize: '11px' }}>{f.affectedEndpoint}</td>
-                </tr>
-              )) || (
+              {mission?.verifiedFindings && mission.verifiedFindings.length > 0 ? (
+                mission.verifiedFindings.map((f) => (
+                  <tr key={f.findingId}>
+                    <td>
+                      <div className="finding-title">{f.title}</div>
+                      <div className="finding-target">{f.vulnerabilityType}</div>
+                    </td>
+                    <td>
+                      <span className={`severity ${f.severity.toLowerCase()}`}>
+                        <i />{f.severity}
+                      </span>
+                    </td>
+                    <td>{f.sourceAgent}</td>
+                    <td style={{ fontSize: '12px', color: '#c5d1c4' }}>{f.verificationRationale}</td>
+                    <td style={{ fontFamily: 'monospace', fontSize: '11px' }}>{f.affectedEndpoint}</td>
+                  </tr>
+                ))
+              ) : (
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '20px' }}>No findings loaded.</td>
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '24px' }}>Loading verified findings from server...</td>
                 </tr>
               )}
             </tbody>
@@ -546,19 +551,25 @@ function Findings({ mission }: { mission: MissionData | null }) {
   )
 }
 
-function Leaderboard() {
-  const realRanks = [
-    { rank: '01', name: 'IdorAgent', specialty: 'BOLA / Object-Level Access Control', score: '100', findings: 1, verified: 1 },
-    { rank: '02', name: 'XssAgent', specialty: 'Stored Cross-Site Scripting (DOM)', score: '100', findings: 1, verified: 1 },
-    { rank: '03', name: 'BusinessLogicAgent', specialty: 'Client Price Manipulation Logic', score: '100', findings: 1, verified: 1 },
-    { rank: '04', name: 'ReconAgent', specialty: 'Playwright Surface Discovery & Crawl', score: '100', findings: 0, verified: 0 },
+function Leaderboard({ repData }: { repData: ReputationData | null }) {
+  const getRep = (agent: string) => {
+    if (!repData || !repData.configured || !repData.reputation) return 'NEAR not configured'
+    return `${repData.reputation[agent] ?? 0} pts`
+  }
+
+  const agentsList = [
+    { rank: '01', name: 'IdorAgent', specialty: 'BOLA / Object-Level Access Control', findings: 1, rep: getRep('IdorAgent') },
+    { rank: '02', name: 'XssAgent', specialty: 'Stored Cross-Site Scripting (DOM)', findings: 1, rep: getRep('XssAgent') },
+    { rank: '03', name: 'BusinessLogicAgent', specialty: 'Client Price Manipulation Logic', findings: 1, rep: getRep('BusinessLogicAgent') },
+    { rank: '04', name: 'ReconAgent', specialty: 'Playwright Surface Discovery & Crawl', findings: 0, rep: getRep('ReconAgent') },
   ]
+
   return (
     <>
       <SectionHeader
         eyebrow="ON-CHAIN REPUTATION INDEX"
         title="Agent Leaderboard"
-        description="Reputation points earned through verified vulnerabilities attested on NEAR Protocol Testnet."
+        description="Reputation points read directly from the NEAR Protocol Testnet contract (1 point per verified vulnerability contribution)."
       />
       <div className="panel leaderboard-panel">
         <div className="table-wrap">
@@ -569,17 +580,17 @@ function Leaderboard() {
                 <th>AGENT</th>
                 <th>SPECIALTY</th>
                 <th>ON-CHAIN REPUTATION</th>
-                <th>VERIFIED FINDINGS</th>
+                <th>MISSION FINDINGS</th>
               </tr>
             </thead>
             <tbody>
-              {realRanks.map((row) => (
+              {agentsList.map((row) => (
                 <tr key={row.rank}>
                   <td><span className={`rank-number ${row.rank === '01' ? 'first' : ''}`}>{row.rank}</span></td>
                   <td><strong>{row.name}</strong></td>
                   <td>{row.specialty}</td>
-                  <td><strong className="score-number">{row.score} pts</strong></td>
-                  <td><span className="verified-number"><ShieldCheck size={13} /> {row.verified}</span></td>
+                  <td><strong className="score-number">{row.rep}</strong></td>
+                  <td><span className="verified-number"><ShieldCheck size={13} /> {row.findings}</span></td>
                 </tr>
               ))}
             </tbody>
@@ -593,6 +604,7 @@ function Leaderboard() {
 function App() {
   const [active, setActive] = useState<View>('Mission Control')
   const [mission, setMission] = useState<MissionData | null>(null)
+  const [repData, setRepData] = useState<ReputationData | null>(null)
   const [isRunning, setIsRunning] = useState(false)
   const [integrityResult, setIntegrityResult] = useState<{
     status: string
@@ -601,7 +613,7 @@ function App() {
     tampered: boolean
   } | null>(null)
 
-  const fetchLatestMission = async () => {
+  const fetchMissionData = async () => {
     try {
       const res = await fetch('http://localhost:4000/api/missions/latest')
       if (res.ok) {
@@ -609,12 +621,22 @@ function App() {
         setMission(data)
       }
     } catch {
-      // Server might not be up yet
+      // Backend not yet reachable
+    }
+
+    try {
+      const repRes = await fetch('http://localhost:4000/api/near/reputation')
+      if (repRes.ok) {
+        const rData = await repRes.json()
+        setRepData(rData)
+      }
+    } catch {
+      // Ignore
     }
   }
 
   useEffect(() => {
-    fetchLatestMission()
+    fetchMissionData()
   }, [])
 
   const handleStartMission = async () => {
@@ -629,6 +651,7 @@ function App() {
       if (res.ok) {
         const data = await res.json()
         setMission(data)
+        fetchMissionData()
       }
     } catch (err) {
       console.error(err)
@@ -679,11 +702,11 @@ function App() {
           ) : active === 'Findings' ? (
             <Findings mission={mission} />
           ) : (
-            <Leaderboard />
+            <Leaderboard repData={repData} />
           )}
           <footer className="footer">
-            <span>BUGBOUNTY SWARM — AUTONOMOUS WEB SECURITY PLATFORM</span>
-            <span>NEAR TESTNET ATTESTED (harsha-swarm.testnet) · PRODUCTION READY</span>
+            <span>BUGBOUNTY SWARM — MULTI-AGENT SECURITY RESEARCH PLATFORM</span>
+            <span>NEAR TESTNET ATTESTED (harsha-swarm.testnet) · SEQUENTIAL PIPELINE</span>
           </footer>
         </div>
       </main>

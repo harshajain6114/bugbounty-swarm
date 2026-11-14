@@ -209,6 +209,26 @@ export class NearClient {
   }
 
   /**
+   * Queries the contract to get an agent's reputation score on-chain.
+   */
+  async getAgentReputation(agentId: string): Promise<number> {
+    try {
+      const api = await getNearApi();
+      if (!api) return 0;
+      const { JsonRpcProvider } = api;
+      const provider = new JsonRpcProvider({ url: this.config.rpcUrl });
+      const raw = await provider.callFunction({
+        contractId: this.config.contractId,
+        method: "get_agent_reputation",
+        args: { agent_id: agentId },
+      });
+      return Number(raw) || 0;
+    } catch {
+      return 0;
+    }
+  }
+
+  /**
    * Queries the contract to verify a mission attestation exists on-chain.
    * Returns false if the query fails or the mission is not found.
    */

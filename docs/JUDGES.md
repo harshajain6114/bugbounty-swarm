@@ -15,7 +15,7 @@
 | **Verification-Gated Escrow Payout** | AI Security & Defense | `apps/near-market-contract/src/lib.rs` (`payout`)<br>`apps/server/src/orchestrator/mission-orchestrator.ts` | `npm run verify:market`<br>`npm run test:market-contract` | Escrowed `0.01 NEAR` released ONLY after `replayVerifier.verify()` passes |
 | **Automated Escrow Refund on Rejection** | AI Security & Defense | `apps/near-market-contract/src/lib.rs` (`refund_round`)<br>`apps/server/tests/demo-refund.ts` | `npm run demo:refund` | Live refund tx: [`3fratm23AqZscv778uTAyJAdw7AbRGE8QJoWFBU7F7ii`](https://testnet.nearblocks.io/txns/3fratm23AqZscv778uTAyJAdw7AbRGE8QJoWFBU7F7ii)<br>Status: `Refunded`, 0 reputation change |
 | **On-Chain Agent Reputation** | Agent Economy | `apps/near-market-contract/src/lib.rs`<br>`apps/near-contract/src/lib.rs` | `npm run verify:near`<br>`npm run verify:market` | Method `get_agent_reputation`<br>Reputation accumulates upon verified payout |
-| **Cryptographic Mission Attestation** | Open Innovation | `apps/near-contract/src/lib.rs`<br>`apps/server/src/near/near-client.ts` | `npm run verify:near`<br>`npm run test:contract` | `harsha-swarm.testnet`<br>Master Attestation Tx: [`9QB5BV2djmmy7u1cazFqzh9GKFGa47kNuSP8gVHbFF6R`](https://testnet.nearblocks.io/txns/9QB5BV2djmmy7u1cazFqzh9GKFGa47kNuSP8gVHbFF6R) |
+| **Cryptographic Mission Attestation** | Open Innovation | `apps/near-contract/src/lib.rs`<br>`apps/server/src/near/near-client.ts` | `npm run verify:near`<br>`npm run test:contract` | `harsha-swarm.testnet`<br>Master Attestation Tx: [`6YHWcRkpGddsxan5Z4DrN4MDDF5CNCAcWWCcfvN1wpkc`](https://testnet.nearblocks.io/txns/6YHWcRkpGddsxan5Z4DrN4MDDF5CNCAcWWCcfvN1wpkc) |
 | **Cryptographic Integrity & Tamper Proof** | AI Security & Defense | `apps/server/src/index.ts` (`/api/missions/verify-integrity`)<br>`apps/web/src/App.tsx` | Run UI, click **Verify integrity** (MATCH) and **Simulate Local Tamper** (MISMATCH) | Real-time RPC comparison between local in-memory findings hash and immutable on-chain record |
 
 ---
@@ -30,6 +30,9 @@ npm run test:contract
 
 # 2. Swarm Bounty Market Contract (10 tests passing: commit, reveal, settle, gated payout, refund once, no double spend, non-operator rejection)
 npm run test:market-contract
+
+# 3. Mission Orchestrator Pipeline (12/12 checks passing)
+npm run test:orchestrator
 ```
 
 ### B. Independent Replay Verification (No False Positives)

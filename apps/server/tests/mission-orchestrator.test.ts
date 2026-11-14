@@ -228,7 +228,7 @@ async function runTest(): Promise<void> {
       timestamp: new Date().toISOString(),
     };
 
-    const auditResult = verifier.verifyFindings([fakeUnsupportedFinding]);
+    const auditResult = await verifier.verifyFindings([fakeUnsupportedFinding]);
     if (auditResult.verifiedFindings.length > 0 || auditResult.rejectedFindings.length !== 1) {
       throw new Error("Independent verifier failed to reject unsupported finding!");
     }

@@ -68,19 +68,18 @@ All smart contracts and mission transactions are permanently deployed and confir
 - **Deployment Transaction**: [`FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8`](https://testnet.nearblocks.io/txns/FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8)
 
 ### Live Mission & Market Transactions
-- **Master Mission Attestation**: [`9QB5BV2djmmy7u1cazFqzh9GKFGa47kNuSP8gVHbFF6R`](https://testnet.nearblocks.io/txns/9QB5BV2djmmy7u1cazFqzh9GKFGa47kNuSP8gVHbFF6R)
+- **Master Mission Attestation**: [`6YHWcRkpGddsxan5Z4DrN4MDDF5CNCAcWWCcfvN1wpkc`](https://testnet.nearblocks.io/txns/6YHWcRkpGddsxan5Z4DrN4MDDF5CNCAcWWCcfvN1wpkc) (Mission `test-mission-1794687289883`)
 - **Auction Round 1 (`task-access-control`)**:
-  - Open Round: [`7U4W5G885uN2n1V3sE21g9s5R9aQoE3Bv4u4Prt724Z`](https://testnet.nearblocks.io/txns/7U4W5G885uN2n1V3sE21g9s5R9aQoE3Bv4u4Prt724Z)
-  - Settle Round: [`FFcxdkGbdjTvd2aCks5sJbJ511uJom76kU7q5tS9aW8`](https://testnet.nearblocks.io/txns/FFcxdkGbdjTvd2aCks5sJbJ511uJom76kU7q5tS9aW8)
-  - Verification-Gated Payout: [`ALNTULKEX8xSspXUqYpWw3vGjGssZ2F8G6x4hSgC3WwP`](https://testnet.nearblocks.io/txns/ALNTULKEX8xSspXUqYpWw3vGjGssZ2F8G6x4hSgC3WwP) (Awarded to `idor.harsha-swarm.testnet`)
+  - Open Round: [`4C8TRvucksZZMXK6HhkFQhvJQ7YaxWb8j8NqAQk6jvYU`](https://testnet.nearblocks.io/txns/4C8TRvucksZZMXK6HhkFQhvJQ7YaxWb8j8NqAQk6jvYU)
+  - Settle Round: [`8ZJZiyr3SzxduKnMtd2zhDpR9X4p8ZZXahmyy5G31HS8`](https://testnet.nearblocks.io/txns/8ZJZiyr3SzxduKnMtd2zhDpR9X4p8ZZXahmyy5G31HS8)
+  - Verification-Gated Payout: [`Fu7g8a5wBBdm2x2TWAoJy5FeqRe3jTs1QJ1PZTe2NhW4`](https://testnet.nearblocks.io/txns/Fu7g8a5wBBdm2x2TWAoJy5FeqRe3jTs1QJ1PZTe2NhW4) (Awarded to `idor.harsha-swarm.testnet`)
 - **Auction Round 2 (`task-injection`)**:
-  - Open Round: [`GvXCFXL8uR6e2B2V2kE9sS4Qo4E3Bv4u4Prt724ZG`](https://testnet.nearblocks.io/txns/GvXCFXL8uR6e2B2V2kE9sS4Qo4E3Bv4u4Prt724ZG)
-  - Settle Round: [`25efCBU7gB8sJbJ511uJom76kU7q5tS9aW8jTvd2aCks`](https://testnet.nearblocks.io/txns/25efCBU7gB8sJbJ511uJom76kU7q5tS9aW8jTvd2aCks)
-  - Verification-Gated Payout: [`He9JmiWzYpWw3vGjGssZ2F8G6x4hSgC3WwPALNTULKEX`](https://testnet.nearblocks.io/txns/He9JmiWzYpWw3vGjGssZ2F8G6x4hSgC3WwPALNTULKEX) (Awarded to `xss.harsha-swarm.testnet`)
+  - Open Round: [`EKewTS7zVASn1QqmAVB5R89JCmx2SGxR3NhAGDeeSqoi`](https://testnet.nearblocks.io/txns/EKewTS7zVASn1QqmAVB5R89JCmx2SGxR3NhAGDeeSqoi)
+  - Settle Round: [`H6Rc4En75xi2af4jhy85ZoHGDhRzeWC2z2JUcLnyADtL`](https://testnet.nearblocks.io/txns/H6Rc4En75xi2af4jhy85ZoHGDhRzeWC2z2JUcLnyADtL)
+  - Verification-Gated Payout: [`4iH82Md1jeaNmYUMpzXcGD2odQBC5qMwTwfvnDD9QHLA`](https://testnet.nearblocks.io/txns/4iH82Md1jeaNmYUMpzXcGD2odQBC5qMwTwfvnDD9QHLA) (Awarded to `xss.harsha-swarm.testnet`)
 - **Auction Round 3 (`task-business-logic`)**:
-  - Open Round: [`B51Hea9KoE3Bv4u4Prt724ZGvXCFXL8uR6e2B2V2kE9s`](https://testnet.nearblocks.io/txns/B51Hea9KoE3Bv4u4Prt724ZGvXCFXL8uR6e2B2V2kE9s)
-  - Settle Round: [`F85Zp8Qv7q5tS9aW8jTvd2aCks25efCBU7gB8sJbJ511u`](https://testnet.nearblocks.io/txns/F85Zp8Qv7q5tS9aW8jTvd2aCks25efCBU7gB8sJbJ511u)
-  - Verification-Gated Payout: [`GMs1mR7YGssZ2F8G6x4hSgC3WwPALNTULKEX8xSspXUq`](https://testnet.nearblocks.io/txns/GMs1mR7YGssZ2F8G6x4hSgC3WwPALNTULKEX8xSspXUq) (Awarded to `logic.harsha-swarm.testnet`)
+  - Open Round: [`8AXLFPioroLzz3uGn1jgcuAmHmjTHqx4UZ8JAx8QBCNQ`](https://testnet.nearblocks.io/txns/8AXLFPioroLzz3uGn1jgcuAmHmjTHqx4UZ8JAx8QBCNQ)
+  - Verification-Gated Payout: [`8rY8BrhivqQzrGDDN5qJ21VNMyGRwzRHYEpAenEtRD7C`](https://testnet.nearblocks.io/txns/8rY8BrhivqQzrGDDN5qJ21VNMyGRwzRHYEpAenEtRD7C) (Awarded to `logic.harsha-swarm.testnet`)
 
 ### Zero-Gas Read-Only Verification
 Anyone can verify all on-chain states directly from NEAR testnet without private keys or gas:

@@ -1,8 +1,8 @@
 # BUGBOUNTY SWARM
 
-> **Autonomous Multi-Agent Web Security Swarm with On-Chain Commit-Reveal Bounty Market and NEAR Protocol Testnet Attestation**
+> **Coordinated Multi-Agent Web Security Swarm with On-Chain Commit-Reveal Bounty Market and NEAR Protocol Testnet Attestation**
 
-BUGBOUNTY SWARM deploys a synchronized swarm of specialist security agents that map attack surfaces, compete for task bounties through a cryptographic commit-reveal auction, systematically reproduce web vulnerabilities in browser DOM and API contexts, independently verify differential proof, and record tamper-evident audit attestations onto the **NEAR Protocol Testnet**.
+BUGBOUNTY SWARM deploys a synchronized swarm of specialist security agents that map attack surfaces, compete for task bounties through a cryptographic commit-reveal auction, systematically reproduce web vulnerabilities in browser DOM and API contexts, independently verify differential proof via headless replay, and record tamper-evident audit attestations onto the **NEAR Protocol Testnet**.
 
 ---
 
@@ -10,19 +10,19 @@ BUGBOUNTY SWARM deploys a synchronized swarm of specialist security agents that 
 
 | Hackathon Track | Role in Project | Implementation Details |
 |---|---|---|
-| **AI Swarms** *(Primary)* | **Multi-Agent Coordination & Task Auction** | Autonomous pipeline coordinated by Mission Orchestrator and Market Coordinator. Features 5 agent accounts (`idor`, `xss`, `logic`, `gen1`, `gen2`) bidding in a 3-round commit-reveal auction. |
+| **AI Swarms** *(Primary)* | **Multi-Agent Coordination & Task Auction** | Multi-agent pipeline coordinated by Mission Orchestrator and Market Coordinator. Features 5 agent accounts (`idor`, `xss`, `logic`, `gen1`, `gen2`) bidding in a 3-round commit-reveal auction. |
 | **Agent Economy** | **Escrow Bounties & On-Chain Reputation** | Agents earn testnet NEAR bounties escrowed in `market.harsha-swarm.testnet`. Reputation accumulates on-chain upon verified vulnerability submission (`get_agent_reputation`). |
-| **AI Security & Defense** | **Verification-Gated Payouts (Zero Hallucinations)** | Rewards are held in smart contract escrow and released ONLY after our independent `FindingVerifier` reproduces and confirms the vulnerability. Zero false positives. |
+| **AI Security & Defense** | **Verification-Gated Payouts** | Rewards are held in smart contract escrow and released ONLY after our independent `ReplayVerifier` reproduces and confirms the vulnerability. Unverified findings trigger automated contract refunds. |
 
 ### Deterministic Swarm Architecture (No LLM Hallucinations)
-- **Deterministic Security State-Machines**: Agents are rule-based security engines executing in a synchronized pipeline (Recon → Task Auction → IDOR/BOLA → Stored XSS → Price Tampering → Independent Verification → Escrow Payout → Master Attestation).
+- **Deterministic Security State-Machines**: Agents are rule-based security engines executing in a synchronized pipeline (Recon → Task Auction → IDOR/BOLA → Stored XSS → Price Tampering → Independent Replay Verification → Escrow Payout or Refund → Master Attestation).
 - **Actual Browser DOM Execution**: Uses headless Playwright Chromium to execute real JavaScript sinks and cross-user session states rather than probabilistic text generation.
 - **Commit-Reveal Task Auction**:
-  - **Phase 1 (Commit)**: Competing agents submit `sha256(bidder|taskId|confidence|cost|salt)` to prevent front-running.
+  - **Phase 1 (Commit)**: Competing agents submit `sha256(bidder|taskId|confidence|cost|salt)` signed with agent Function-Call keys to prevent front-running.
   - **Phase 2 (Reveal)**: Preimages are validated on-chain by the market contract.
   - **Deterministic Formula**:
-    $$\text{Score} = \frac{\text{Confidence\_Bps} \times (1 + \text{Reputation}) \times 10^{12}}{\text{Cost\_Yocto}}$$
-  - **Phase 3 (Gated Payout)**: Escrowed payout (`0.01 NEAR` per round) is unlocked only when the verifier confirms reproducible exploitation.
+    $$\text{Score} = \frac{\text{Confidence\_Bps} \times (1 + \text{Reputation}) \times 10^{12}}{\text{Cost\_Units}}$$
+  - **Phase 3 (Gated Payout / Refund)**: Escrowed payout (`0.01 NEAR` per round) is unlocked only when independent replay confirms reproducible exploitation. Otherwise, `refund_round` returns funds to escrow.
 
 ---
 
@@ -98,25 +98,43 @@ npm run verify:market
 
 - Run smart contract unit tests:
   ```bash
-  npm run test:contract
+  npm run test:contract        # 13/13 passing in apps/near-contract
+  npm run test:market-contract # 10/10 passing in apps/near-market-contract
   ```
-  *(13/13 passing in `apps/near-contract`; 5/5 passing in `apps/near-market-contract`)*
-- Run full agent & exploitation test suites:
+- Run agent & exploitation test suites:
   ```bash
-  npm run test:server
-  npm run test:orchestrator
+  npm run test:server          # Unit tests for recon, IDOR, XSS, and price logic
+  npm run test:orchestrator    # End-to-end swarm mission pipeline
+  npm run test:fabricated      # Proves replay verifier REJECTS fabricated findings
   ```
-- Build frontend production bundle:
+- Run live testnet demo scenarios:
+  ```bash
+  npm run demo:refund          # Executes live mission where patched IDOR triggers testnet refund_round
+  npm run proof:generate       # Dynamically generates docs/near-proof.md from latest mission state
+  ```
+- Build frontend bundle:
   ```bash
   npm run build:web
   ```
 
 ---
 
-## 5. Technology Stack
+## 5. Known Limitations & Honest Disclosures
+
+1. **Scripted Bidding Parameters**: Specialist and generalist agents submit bids based on predetermined confidence intervals and scripted cost units rather than live reinforcement learning or external financial models.
+2. **Generalist Agent Implementations**: Generalist agents (`gen1`, `gen2`) participate in the task auction using lower confidence scores; in the current prototype, their execution fallback is coordinated by the core specialist engine.
+3. **NEAR Testnet Only**: All contracts and sub-accounts are deployed exclusively on NEAR Protocol Testnet (`harsha-swarm.testnet`, `market.harsha-swarm.testnet`). No mainnet deployment or real financial value is involved.
+4. **NEAR Intents Scope**: NEAR Intents is currently mainnet-focused with specialized solver networks. For this hackathon, task auctioning and escrow release are implemented via custom commit-reveal smart contracts on testnet.
+5. **Operator Relay**: The Mission Orchestrator coordinates round openings and bid relaying using sub-account Function-Call access keys.
+
+For an exhaustive audit and line-by-line verification guide, see [docs/JUDGES.md](docs/JUDGES.md).
+
+---
+
+## 6. Technology Stack
 
 - **Blockchain**: `near-sdk` (v5.6.0 Rust) for both attestation and market contracts; `near-api-js` (v7.5.3); FastNear RPC (`https://test.rpc.fastnear.com`).
-- **Autonomous Testing**: `playwright` (Chromium v1255) for headless browser crawling and DOM code execution.
+- **Browser Automation**: `playwright` (Chromium v1255) for headless browser crawling and DOM code execution.
 - **Backend & Verification**: `express` (v5), `cors`, `dotenv`, Node.js `crypto` for deterministic SHA-256 digests.
 - **Frontend**: `react` (v19), `typescript`, `vite`, `lucide-react`.
 

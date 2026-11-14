@@ -272,7 +272,7 @@ function Metric({
         {value}
         <span className="metric-change"><ArrowUpRight size={13} />{change}</span>
       </div>
-      <div className="metric-foot">Autonomous Swarm Pipeline</div>
+      <div className="metric-foot">Multi-Agent Swarm Pipeline</div>
     </div>
   )
 }
@@ -300,7 +300,7 @@ function MissionControl({
       <SectionHeader
         eyebrow="MULTI-AGENT WEB SECURITY PIPELINE"
         title="Mission control"
-        description="Autonomous reconnaissance, commit-reveal task auction, evidence-based vulnerability verification, and NEAR Protocol testnet attestation."
+        description="Automated reconnaissance, commit-reveal task auction, independent replay verification, and NEAR Protocol testnet attestation."
         action={
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button
@@ -341,37 +341,45 @@ function MissionControl({
         }
       />
 
-      {integrityResult && (
-        <div
-          className="demo-notice"
-          style={{
-            borderColor: integrityResult.status === 'MATCH' ? '#B6FF5C' : '#ff4d4f',
-            background: integrityResult.status === 'MATCH' ? 'rgba(182, 255, 92, 0.08)' : 'rgba(255, 77, 79, 0.08)',
-          }}
-        >
-          {integrityResult.status === 'MATCH' ? (
-            <CheckCircle size={18} color="#B6FF5C" style={{ flexShrink: 0 }} />
-          ) : (
-            <AlertTriangle size={18} color="#ff4d4f" style={{ flexShrink: 0 }} />
-          )}
-          <div style={{ flex: 1 }}>
-            <strong style={{ color: integrityResult.status === 'MATCH' ? '#B6FF5C' : '#ff4d4f', fontSize: '13px' }}>
-              INTEGRITY CHECK: {integrityResult.status}
-            </strong>
-            <div style={{ fontSize: '12px', marginTop: '4px', fontFamily: 'monospace', wordBreak: 'break-all' }}>
-              Unchanged On-Chain Hash: {integrityResult.storedOnChainHash}
-            </div>
-            <div style={{ fontSize: '12px', marginTop: '2px', fontFamily: 'monospace', wordBreak: 'break-all' }}>
-              Re-calculated Local Hash: {integrityResult.computedLocalHash}
-            </div>
-            {integrityResult.tampered && (
-              <div style={{ fontSize: '11px', color: '#ff4d4f', marginTop: '4px' }}>
-                Simulated mutation: modified local finding title in memory. The on-chain contract record remained untouched, correctly producing a hash MISMATCH.
-              </div>
+      {integrityResult && (() => {
+        const isMatch = integrityResult.status === 'MATCH'
+        const isNoRecord = integrityResult.status === 'NO ON-CHAIN RECORD'
+        const toneColor = isMatch ? '#B6FF5C' : isNoRecord ? '#faad14' : '#ff4d4f'
+        const bgTone = isMatch ? 'rgba(182, 255, 92, 0.08)' : isNoRecord ? 'rgba(250, 173, 20, 0.08)' : 'rgba(255, 77, 79, 0.08)'
+        return (
+          <div
+            className="demo-notice"
+            style={{
+              borderColor: toneColor,
+              background: bgTone,
+            }}
+          >
+            {isMatch ? (
+              <CheckCircle size={18} color={toneColor} style={{ flexShrink: 0 }} />
+            ) : isNoRecord ? (
+              <ShieldAlert size={18} color={toneColor} style={{ flexShrink: 0 }} />
+            ) : (
+              <AlertTriangle size={18} color={toneColor} style={{ flexShrink: 0 }} />
             )}
+            <div style={{ flex: 1 }}>
+              <strong style={{ color: toneColor, fontSize: '13px' }}>
+                INTEGRITY CHECK: {integrityResult.status}
+              </strong>
+              <div style={{ fontSize: '12px', marginTop: '4px', fontFamily: 'monospace', wordBreak: 'break-all' }}>
+                Unchanged On-Chain Hash: {integrityResult.storedOnChainHash}
+              </div>
+              <div style={{ fontSize: '12px', marginTop: '2px', fontFamily: 'monospace', wordBreak: 'break-all' }}>
+                Re-calculated Local Hash: {integrityResult.computedLocalHash}
+              </div>
+              {integrityResult.tampered && (
+                <div style={{ fontSize: '11px', color: '#ff4d4f', marginTop: '4px' }}>
+                  Simulated mutation: modified local finding title in memory. The on-chain contract record remained untouched, correctly producing a hash MISMATCH.
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       <section className="mission-banner">
         <div className="mission-banner-grid" />
@@ -392,7 +400,7 @@ function MissionControl({
             </span>
             <span className="mission-id">{mission?.missionId || 'MSN-PENDING-TRIGGER'}</span>
           </div>
-          <h2>Demo Shop Target — Autonomous Vulnerability Assessment</h2>
+          <h2>Demo Shop Target — Automated Vulnerability Assessment</h2>
           <div className="mission-meta">
             <span><Target size={14} /> http://localhost:4000/shop</span>
             <span>
@@ -536,7 +544,7 @@ function MissionControl({
                       <Target size={28} style={{ margin: '0 auto 8px', display: 'block', opacity: 0.6 }} />
                       <strong style={{ color: '#d2dbd0', fontSize: '13px' }}>Target attack surface unscanned</strong>
                       <div style={{ fontSize: '11px', marginTop: '4px', color: '#778477' }}>
-                        Click <strong>"Start a mission"</strong> above to deploy autonomous reconnaissance and specialist exploit agents.
+                        Click <strong>"Start a mission"</strong> above to deploy automated reconnaissance and specialist exploit agents.
                       </div>
                     </td>
                   </tr>
@@ -617,7 +625,7 @@ function BountyMarket({
       <SectionHeader
         eyebrow="SWARM BOUNTY MARKET · COMMIT-REVEAL AUCTION"
         title="Decentralized Agent Market"
-        description="Autonomous agents compete for task bounties via commit-reveal sealed bids. Escrowed payouts are strictly gated by independent verification."
+        description="Competing agent sub-accounts submit sealed bids for task bounties. Escrowed payouts are released only after independent replay verification."
       />
 
       <div className="metrics-grid">
@@ -693,7 +701,7 @@ function BountyMarket({
                       <th>BIDDER AGENT</th>
                       <th>TESTNET SUB-ACCOUNT</th>
                       <th>CONFIDENCE</th>
-                      <th>ASKING COST</th>
+                      <th>SCRIPTED COST UNITS</th>
                       <th>AUCTION SCORE</th>
                       <th>AUCTION OUTCOME</th>
                     </tr>
@@ -713,7 +721,7 @@ function BountyMarket({
                             </span>
                           </td>
                           <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>
-                            {(Number(b.costYocto) / 1e24).toFixed(3)} NEAR
+                            {b.costYocto} units
                           </td>
                           <td>
                             <strong style={{ color: isWinner ? '#B6FF5C' : '#a5afa3' }}>{b.score.toFixed(2)}</strong>
@@ -853,7 +861,7 @@ function Leaderboard({ repData }: { repData: ReputationData | null }) {
       <SectionHeader
         eyebrow="ON-CHAIN REPUTATION INDEX"
         title="Agent Leaderboard"
-        description="Reputation points read directly from the NEAR Protocol Testnet contract (1 point per verified vulnerability contribution)."
+        description="Reputation points read directly from the NEAR Protocol Testnet contract (increments when an agent finding is independently verified and payout is released)."
       />
       <div className="panel leaderboard-panel">
         <div className="table-wrap">
@@ -1014,7 +1022,7 @@ function App() {
           ) : active === 'Bounty Market' ? (
             <BountyMarket
               marketRounds={mission?.marketRounds}
-              contractId={mission?.nearAttestation?.contractId}
+              contractId="market.harsha-swarm.testnet"
             />
           ) : active === 'Agent Network' ? (
             <AgentNetwork agents={specialistAgents} />

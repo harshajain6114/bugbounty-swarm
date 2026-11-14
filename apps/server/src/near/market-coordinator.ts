@@ -18,6 +18,7 @@ const OPERATOR_ACCOUNT = process.env.NEAR_ACCOUNT_ID || "harsha-swarm.testnet";
 export class MarketCoordinator {
   private static instance: MarketCoordinator;
   private marketState: MarketRoundResult[] = [];
+  private isReset = false;
 
   constructor() {
     this.initBaselineRounds();
@@ -98,7 +99,13 @@ export class MarketCoordinator {
     }
   }
 
+  public resetMarketState(): void {
+    this.isReset = true;
+    this.marketState = [];
+  }
+
   public getMarketRounds(): MarketRoundResult[] {
+    if (this.isReset) return [];
     return this.marketState;
   }
 
@@ -153,6 +160,7 @@ export class MarketCoordinator {
    * Executes a complete market auction round for a security task.
    */
   public async runMarketRound(taskId: string, taskName: string, roundId: string): Promise<MarketRoundResult> {
+    this.isReset = false;
     console.log(`\n  [MARKET] ── Opening Auction Round: ${roundId} (${taskName}) ──`);
     const bids = this.generateBids(taskId);
     const nearClient = createNearClient();

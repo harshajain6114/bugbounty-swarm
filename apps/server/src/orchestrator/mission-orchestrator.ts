@@ -36,6 +36,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export class MissionOrchestrator {
   private static instance: MissionOrchestrator;
   private isMissionRunning = false;
+  private isDemoReset = false;
   private completedMissions = new Map<string, MissionResult>();
   private defaultResultsDir = path.resolve(__dirname, "../../tests/results");
 
@@ -97,12 +98,19 @@ export class MissionOrchestrator {
     return this.isMissionRunning;
   }
 
+  public resetDemoState(): void {
+    this.isDemoReset = true;
+    this.completedMissions.clear();
+  }
+
   public getMission(missionId: string): MissionResult | null {
+    if (this.isDemoReset) return null;
     this.loadPersistedMissions();
     return this.completedMissions.get(missionId) || null;
   }
 
   public listMissions(): MissionSummaryItem[] {
+    if (this.isDemoReset) return [];
     this.loadPersistedMissions();
     return Array.from(this.completedMissions.values()).map((m) => ({
       missionId: m.missionId,
@@ -136,6 +144,7 @@ export class MissionOrchestrator {
     }
 
     this.isMissionRunning = true;
+    this.isDemoReset = false;
     const startedAt = new Date().toISOString();
     const startTime = Date.now();
 

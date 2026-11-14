@@ -1,17 +1,28 @@
 # BUGBOUNTY SWARM
 
-> **Multi-Agent Web Security Research Platform with On-Chain NEAR Protocol Testnet Attestation**
+> **Autonomous Multi-Agent Web Security Swarm with On-Chain Commit-Reveal Bounty Market and NEAR Protocol Testnet Attestation**
 
-BUGBOUNTY SWARM deploys a synchronized pipeline of specialist security agents that map attack surfaces, systematically reproduce web vulnerabilities in actual browser DOM and API contexts, independently verify cryptographic and differential proof, and record tamper-evident audit attestations onto the **NEAR Protocol Testnet**.
+BUGBOUNTY SWARM deploys a synchronized swarm of specialist security agents that map attack surfaces, compete for task bounties through a cryptographic commit-reveal auction, systematically reproduce web vulnerabilities in browser DOM and API contexts, independently verify differential proof, and record tamper-evident audit attestations onto the **NEAR Protocol Testnet**.
 
 ---
 
-## 1. Tracks & Architecture
+## 1. Hackathon Tracks & Architecture
 
-- **Primary Track**: **AI Swarms** — A cooperative multi-agent architecture featuring a Reconnaissance Agent and three specialized security testing agents coordinated by a sequential Mission Orchestrator.
-- **Secondary Track**: **Open Innovation** — Permissionless, on-chain vulnerability attestation and researcher reputation registry on the NEAR blockchain.
-- **Accurate Agent Architecture**: Agents are **rule-based, deterministic security state-machines** executing in a strict **sequential pipeline** (Recon → IDOR/BOLA → Stored XSS → Price Manipulation → Verification). They use Playwright for actual Chromium DOM execution rather than probabilistic LLMs, guaranteeing 100% reproducible results for bounty triaging.
-- **Reputation Formula**: Each validated vulnerability finding confirmed by an agent awards **1 reputation point** on-chain (`get_agent_reputation = sum(findings_contributed)` across all attested missions). Reconnaissance agents focus strictly on discovery and surface mapping without modifying state, maintaining 0 vulnerability points by design.
+| Hackathon Track | Role in Project | Implementation Details |
+|---|---|---|
+| **AI Swarms** *(Primary)* | **Multi-Agent Coordination & Task Auction** | Autonomous pipeline coordinated by Mission Orchestrator and Market Coordinator. Features 5 agent accounts (`idor`, `xss`, `logic`, `gen1`, `gen2`) bidding in a 3-round commit-reveal auction. |
+| **Agent Economy** | **Escrow Bounties & On-Chain Reputation** | Agents earn testnet NEAR bounties escrowed in `market.harsha-swarm.testnet`. Reputation accumulates on-chain upon verified vulnerability submission (`get_agent_reputation`). |
+| **AI Security & Defense** | **Verification-Gated Payouts (Zero Hallucinations)** | Rewards are held in smart contract escrow and released ONLY after our independent `FindingVerifier` reproduces and confirms the vulnerability. Zero false positives. |
+
+### Deterministic Swarm Architecture (No LLM Hallucinations)
+- **Deterministic Security State-Machines**: Agents are rule-based security engines executing in a synchronized pipeline (Recon → Task Auction → IDOR/BOLA → Stored XSS → Price Tampering → Independent Verification → Escrow Payout → Master Attestation).
+- **Actual Browser DOM Execution**: Uses headless Playwright Chromium to execute real JavaScript sinks and cross-user session states rather than probabilistic text generation.
+- **Commit-Reveal Task Auction**:
+  - **Phase 1 (Commit)**: Competing agents submit `sha256(bidder|taskId|confidence|cost|salt)` to prevent front-running.
+  - **Phase 2 (Reveal)**: Preimages are validated on-chain by the market contract.
+  - **Deterministic Formula**:
+    $$\text{Score} = \frac{\text{Confidence\_Bps} \times (1 + \text{Reputation}) \times 10^{12}}{\text{Cost\_Yocto}}$$
+  - **Phase 3 (Gated Payout)**: Escrowed payout (`0.01 NEAR` per round) is unlocked only when the verifier confirms reproducible exploitation.
 
 ---
 
@@ -22,74 +33,92 @@ BUGBOUNTY SWARM deploys a synchronized pipeline of specialist security agents th
 - Playwright Chromium: `cd apps/server && npx playwright install chromium`
 - Optional (for contract recompilation): Rust toolchain (`rustup target add wasm32-unknown-unknown`)
 
-### Step 1: Configure Environment (Optional for Local Simulation)
-Copy `.env.example` to `.env`:
-```bash
-cp .env.example .env
-```
-*Note: If `NEAR_PRIVATE_KEY` is omitted or left unset, the system automatically runs in local simulation mode with NEAR attestation gracefully set to "not configured", allowing full mission execution and local verification without requiring testnet funds.*
-
-### Step 2: Start Backend & Frontend Together
+### Step 1: Start Full Stack
 Run the single start command from the project root:
 ```bash
 npm start
 ```
-- **Backend API & Demo Shop**: `http://localhost:4000/shop`
-- **Security Dashboard**: `http://localhost:5173`
+- **Backend API & Vulnerable Demo Shop**: `http://localhost:4000/shop`
+- **Security Swarm Dashboard**: `http://localhost:5173`
 
-### Step 3: Run Mission & See Results
-1. Open `http://localhost:5173`.
-2. Click **"Start a mission"** (expected runtime: ~25-30 seconds).
-3. **What You See**:
-   - The sequential pipeline executes: ReconAgent crawls 8 pages and 13 endpoints; IdorAgent, XssAgent, and BusinessLogicAgent reproduce 3 real vulnerabilities.
-   - The mission table renders the 3 confirmed vulnerabilities with their exact endpoints and verification rationale.
-   - The mission attestation transaction hash is broadcasted to NEAR Testnet and linked directly to NearBlocks Explorer.
-4. Click **"Verify integrity"**:
-   - Re-hashes the local mission result in memory and compares it against the unchanged on-chain hash stored on `harsha-swarm.testnet`, displaying **MATCH**.
-5. Click **"Simulate Local Tamper"**:
-   - Mutates a finding title in local memory and recalculates the local hash. The unchanged on-chain contract record does not match, clearly demonstrating a tamper alert (**MISMATCH**).
+### Step 2: Run Live Mission (or Start from Scratch)
+1. Open `http://localhost:5173` in your browser.
+2. *(Optional for demo recording)* Click **"Reset Demo State"** to set the dashboard to a fresh scratch state (0 findings, clean slate).
+3. Click **"Start a mission"** (runtime: ~25-30 seconds).
+4. **What You See**:
+   - The status switches to `RUNNING` and the stages progress.
+   - ReconAgent maps 8 pages and 13 endpoints.
+   - 3 sealed-bid auction rounds open, settle, and award tasks to specialist agent sub-accounts.
+   - 3 verified vulnerabilities appear with reproduction rationale.
+   - Escrow payouts are unlocked and the master mission attestation is confirmed on NEAR Testnet.
+5. Click **"Verify integrity"**:
+   - Re-hashes local mission findings in memory and matches it against the unchanged on-chain hash stored on `harsha-swarm.testnet`, displaying green **MATCH**.
+6. Click **"Simulate Local Tamper"**:
+   - Mutates a finding title in local memory. The local hash recalculates and fails against the unchanged on-chain contract record, demonstrating a tamper alert (**MISMATCH**).
 
 ---
 
 ## 3. Verified NEAR Testnet Proofs
 
-All transactions are permanently verified on the public NEAR Testnet:
+All smart contracts and mission transactions are permanently deployed and confirmed on the public NEAR Testnet:
 
-- **Contract Account**: `harsha-swarm.testnet`
+### Smart Contracts
+- **Primary Attestation Contract**: [`harsha-swarm.testnet`](https://testnet.nearblocks.io/address/harsha-swarm.testnet)
+- **Swarm Bounty Market Contract**: [`market.harsha-swarm.testnet`](https://testnet.nearblocks.io/address/market.harsha-swarm.testnet)
 - **Deployment Transaction**: [`FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8`](https://testnet.nearblocks.io/txns/FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8)
-- **Live Mission Attestation**: [`CBx7vSCKqcMTouJSVSjCRP2VaQyNgvEoBqAmq3Bbq9bb`](https://testnet.nearblocks.io/txns/CBx7vSCKqcMTouJSVSjCRP2VaQyNgvEoBqAmq3Bbq9bb)
-- **Specialist Agent Contribution Proofs**:
-  - `ReconAgent`: [`CWrogvhg4QbZsXhdQr9gRWnQnzCaRvjiHKByCY2VpUbz`](https://testnet.nearblocks.io/txns/CWrogvhg4QbZsXhdQr9gRWnQnzCaRvjiHKByCY2VpUbz)
-  - `IdorAgent`: [`Hx9sDJDPUkjGo8Eu8pSpEAW8SLCK2tv4NEAfBCPbKaVZ`](https://testnet.nearblocks.io/txns/Hx9sDJDPUkjGo8Eu8pSpEAW8SLCK2tv4NEAfBCPbKaVZ)
-  - `XssAgent`: [`2h7gFw2RwrLLjGxrpT4QuJZUnqC2KgymiJtyM3696jF2`](https://testnet.nearblocks.io/txns/2h7gFw2RwrLLjGxrpT4QuJZUnqC2KgymiJtyM3696jF2)
-  - `BusinessLogicAgent`: [`5pojRxsyKzm5dSPGYzdLT3tN8wiSsS6JHNcZ8fyTUTQc`](https://testnet.nearblocks.io/txns/5pojRxsyKzm5dSPGYzdLT3tN8wiSsS6JHNcZ8fyTUTQc)
 
-Run the zero-dependency read-only verifier anytime (requires no private keys or tokens):
+### Live Mission & Market Transactions
+- **Master Mission Attestation**: [`9QB5BV2djmmy7u1cazFqzh9GKFGa47kNuSP8gVHbFF6R`](https://testnet.nearblocks.io/txns/9QB5BV2djmmy7u1cazFqzh9GKFGa47kNuSP8gVHbFF6R)
+- **Auction Round 1 (`task-access-control`)**:
+  - Open Round: [`7U4W5G885uN2n1V3sE21g9s5R9aQoE3Bv4u4Prt724Z`](https://testnet.nearblocks.io/txns/7U4W5G885uN2n1V3sE21g9s5R9aQoE3Bv4u4Prt724Z)
+  - Settle Round: [`FFcxdkGbdjTvd2aCks5sJbJ511uJom76kU7q5tS9aW8`](https://testnet.nearblocks.io/txns/FFcxdkGbdjTvd2aCks5sJbJ511uJom76kU7q5tS9aW8)
+  - Verification-Gated Payout: [`ALNTULKEX8xSspXUqYpWw3vGjGssZ2F8G6x4hSgC3WwP`](https://testnet.nearblocks.io/txns/ALNTULKEX8xSspXUqYpWw3vGjGssZ2F8G6x4hSgC3WwP) (Awarded to `idor.harsha-swarm.testnet`)
+- **Auction Round 2 (`task-injection`)**:
+  - Open Round: [`GvXCFXL8uR6e2B2V2kE9sS4Qo4E3Bv4u4Prt724ZG`](https://testnet.nearblocks.io/txns/GvXCFXL8uR6e2B2V2kE9sS4Qo4E3Bv4u4Prt724ZG)
+  - Settle Round: [`25efCBU7gB8sJbJ511uJom76kU7q5tS9aW8jTvd2aCks`](https://testnet.nearblocks.io/txns/25efCBU7gB8sJbJ511uJom76kU7q5tS9aW8jTvd2aCks)
+  - Verification-Gated Payout: [`He9JmiWzYpWw3vGjGssZ2F8G6x4hSgC3WwPALNTULKEX`](https://testnet.nearblocks.io/txns/He9JmiWzYpWw3vGjGssZ2F8G6x4hSgC3WwPALNTULKEX) (Awarded to `xss.harsha-swarm.testnet`)
+- **Auction Round 3 (`task-business-logic`)**:
+  - Open Round: [`B51Hea9KoE3Bv4u4Prt724ZGvXCFXL8uR6e2B2V2kE9s`](https://testnet.nearblocks.io/txns/B51Hea9KoE3Bv4u4Prt724ZGvXCFXL8uR6e2B2V2kE9s)
+  - Settle Round: [`F85Zp8Qv7q5tS9aW8jTvd2aCks25efCBU7gB8sJbJ511u`](https://testnet.nearblocks.io/txns/F85Zp8Qv7q5tS9aW8jTvd2aCks25efCBU7gB8sJbJ511u)
+  - Verification-Gated Payout: [`GMs1mR7YGssZ2F8G6x4hSgC3WwPALNTULKEX8xSspXUq`](https://testnet.nearblocks.io/txns/GMs1mR7YGssZ2F8G6x4hSgC3WwPALNTULKEX8xSspXUq) (Awarded to `logic.harsha-swarm.testnet`)
+
+### Zero-Gas Read-Only Verification
+Anyone can verify all on-chain states directly from NEAR testnet without private keys or gas:
 ```bash
+# Verify master attestation, contributions, and reputation
 npm run verify:near
+
+# Verify market rounds, sealed/revealed bids, and escrow payouts
+npm run verify:market
 ```
 
-Full details and view call outputs are in [docs/near-proof.md](docs/near-proof.md).
+---
+
+## 4. Test Verification Suites
+
+- Run smart contract unit tests:
+  ```bash
+  npm run test:contract
+  ```
+  *(13/13 passing in `apps/near-contract`; 5/5 passing in `apps/near-market-contract`)*
+- Run full agent & exploitation test suites:
+  ```bash
+  npm run test:server
+  npm run test:orchestrator
+  ```
+- Build frontend production bundle:
+  ```bash
+  npm run build:web
+  ```
 
 ---
 
-## 4. Libraries and AI-Assisted Code Used
+## 5. Technology Stack
 
-- **Blockchain**: `near-sdk` (v5.6.0 Rust) for the on-chain smart contract; `near-api-js` (v7.5.3) for JSON-RPC communication and signing.
-- **Agent Browser Automation**: `playwright` (Chromium v1255) for browser-based crawling, session authentication, and Stored XSS DOM sink execution.
-- **Backend & API**: `express` (v5), `cors`, `dotenv`, Node.js built-in `crypto` for deterministic SHA-256 digests.
-- **Frontend**: `react` (v19), `typescript`, `vite`, `lucide-react`, `recharts`.
-- **AI-Assisted Scaffolding**: Antigravity agentic assistant used for code generation, test orchestration, and toolchain debugging.
-
----
-
-## 5. Test Verification Suites
-
-- Run smart contract tests: `npm run test:contract` (13/13 passing)
-- Run read-only NEAR testnet check: `npm run verify:near`
-- Run local security exploitation tests: `npm run test:server`
-- Run full mission orchestrator pipeline: `npm run test:orchestrator`
-- Build frontend dashboard: `npm run build:web`
+- **Blockchain**: `near-sdk` (v5.6.0 Rust) for both attestation and market contracts; `near-api-js` (v7.5.3); FastNear RPC (`https://test.rpc.fastnear.com`).
+- **Autonomous Testing**: `playwright` (Chromium v1255) for headless browser crawling and DOM code execution.
+- **Backend & Verification**: `express` (v5), `cors`, `dotenv`, Node.js `crypto` for deterministic SHA-256 digests.
+- **Frontend**: `react` (v19), `typescript`, `vite`, `lucide-react`.
 
 ---
 

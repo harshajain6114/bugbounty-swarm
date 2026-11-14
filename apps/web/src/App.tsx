@@ -1,24 +1,16 @@
 import { useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import {
-  Activity, ArrowUpRight, Award, ChevronDown,
+  Activity, ArrowUpRight, Award,
   Clock3, Crosshair, ExternalLink,
   Network, Play, ShieldAlert,
   ShieldCheck, Signal, Target, Terminal,
   Users, CheckCircle, AlertTriangle, RefreshCw,
-  Coins, Gavel, Scale
+  Coins, Gavel, Scale, RotateCcw
 } from 'lucide-react'
 import './App.css'
 
 type View = 'Mission Control' | 'Bounty Market' | 'Agent Network' | 'Findings' | 'Leaderboard'
-
-const navItems: { label: View; icon: typeof Activity; count?: string }[] = [
-  { label: 'Mission Control', icon: Crosshair },
-  { label: 'Bounty Market', icon: Coins, count: '03' },
-  { label: 'Agent Network', icon: Network, count: '04' },
-  { label: 'Findings', icon: ShieldAlert, count: '03' },
-  { label: 'Leaderboard', icon: Award },
-]
 
 export interface MarketRound {
   roundId: string
@@ -104,7 +96,25 @@ function Mark() {
   )
 }
 
-function Sidebar({ active, onChange }: { active: View; onChange: (view: View) => void }) {
+function Sidebar({
+  active,
+  onChange,
+  marketCount = 0,
+  findingsCount = 0,
+}: {
+  active: View
+  onChange: (view: View) => void
+  marketCount?: number
+  findingsCount?: number
+}) {
+  const navItems: { label: View; icon: typeof Activity; count?: string }[] = [
+    { label: 'Mission Control', icon: Crosshair },
+    { label: 'Bounty Market', icon: Coins, count: marketCount > 0 ? `0${marketCount}` : '00' },
+    { label: 'Agent Network', icon: Network, count: '04' },
+    { label: 'Findings', icon: ShieldAlert, count: findingsCount > 0 ? `0${findingsCount}` : '00' },
+    { label: 'Leaderboard', icon: Award },
+  ]
+
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -120,7 +130,6 @@ function Sidebar({ active, onChange }: { active: View; onChange: (view: View) =>
           <span>Target Workspace</span>
           <strong>Local Demo Shop (:4000)</strong>
         </div>
-        <ChevronDown size={14} />
       </div>
       <div className="nav-label">PLATFORM</div>
       <nav aria-label="Main navigation">
@@ -170,7 +179,17 @@ function Sidebar({ active, onChange }: { active: View; onChange: (view: View) =>
   )
 }
 
-function Topbar({ active, nearTx }: { active: View; nearTx?: string }) {
+function Topbar({
+  active,
+  nearTx,
+  isRunning,
+  onResetDemo,
+}: {
+  active: View
+  nearTx?: string
+  isRunning: boolean
+  onResetDemo: () => void
+}) {
   return (
     <header className="topbar">
       <div className="crumb">
@@ -179,6 +198,15 @@ function Topbar({ active, nearTx }: { active: View; nearTx?: string }) {
         <strong>{active}</strong>
       </div>
       <div className="top-actions">
+        <button
+          className="secondary-button"
+          onClick={onResetDemo}
+          disabled={isRunning}
+          style={{ height: '30px', fontSize: '11px', padding: '0 10px' }}
+          title="Reset demo to scratch state (0 findings, clean slate for video recording)"
+        >
+          <RotateCcw size={13} /> Reset Demo State
+        </button>
         <div className="system-pill" style={{ borderColor: '#B6FF5C', color: '#B6FF5C' }}>
           ● LIVE SWARM · NEAR TESTNET
         </div>
@@ -244,7 +272,7 @@ function Metric({
         {value}
         <span className="metric-change"><ArrowUpRight size={13} />{change}</span>
       </div>
-      <div className="metric-foot">Sequential Pipeline Execution</div>
+      <div className="metric-foot">Autonomous Swarm Pipeline</div>
     </div>
   )
 }
@@ -253,25 +281,28 @@ function MissionControl({
   mission,
   isRunning,
   onStartMission,
+  onResetDemo,
   onVerifyIntegrity,
   integrityResult,
 }: {
   mission: MissionData | null
   isRunning: boolean
   onStartMission: () => void
+  onResetDemo: () => void
   onVerifyIntegrity: (tamper?: boolean) => void
   integrityResult: { status: string; computedLocalHash: string; storedOnChainHash: string; tampered: boolean } | null
 }) {
   const isNearConfigured = mission?.nearAttestation?.status === 'confirmed' || mission?.nearAttestation?.status === 'pending'
+  const isCompleted = Boolean(mission && mission.status === 'completed')
 
   return (
     <>
       <SectionHeader
         eyebrow="MULTI-AGENT WEB SECURITY PIPELINE"
         title="Mission control"
-        description="Sequential reconnaissance, evidence-based vulnerability reproduction, and NEAR Protocol testnet attestation."
+        description="Autonomous reconnaissance, commit-reveal task auction, evidence-based vulnerability verification, and NEAR Protocol testnet attestation."
         action={
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button
               className="primary-button"
               disabled={isRunning}
@@ -279,21 +310,30 @@ function MissionControl({
               style={{ opacity: isRunning ? 0.6 : 1 }}
             >
               {isRunning ? <RefreshCw size={15} className="spin" /> : <Play size={15} fill="currentColor" />}
-              {isRunning ? 'Running Pipeline...' : 'Start a mission'}
+              {isRunning ? 'Running Swarm Pipeline...' : 'Start a mission'}
+            </button>
+            <button
+              className="secondary-button"
+              onClick={onResetDemo}
+              disabled={isRunning}
+              title="Reset dashboard to clean initial scratch state for demo recording"
+            >
+              <RotateCcw size={15} /> Reset Demo
             </button>
             <button
               className="secondary-button"
               onClick={() => onVerifyIntegrity(false)}
-              disabled={!mission}
+              disabled={!mission || isRunning}
+              title={!mission ? "Run a mission first to attest findings on-chain" : "Verify local hash against unchanged on-chain contract hash"}
             >
               <CheckCircle size={15} /> Verify integrity
             </button>
             <button
               className="secondary-button"
               onClick={() => onVerifyIntegrity(true)}
-              disabled={!mission}
+              disabled={!mission || isRunning}
               style={{ borderColor: '#ff6b6b', color: '#ff6b6b' }}
-              title="Edits the local memory copy of findings to prove on-chain hash mismatch without altering the blockchain"
+              title="Mutates local memory finding to demonstrate cryptographic mismatch against unchanged on-chain hash"
             >
               <AlertTriangle size={15} /> Simulate Local Tamper
             </button>
@@ -310,12 +350,12 @@ function MissionControl({
           }}
         >
           {integrityResult.status === 'MATCH' ? (
-            <CheckCircle size={16} color="#B6FF5C" />
+            <CheckCircle size={18} color="#B6FF5C" style={{ flexShrink: 0 }} />
           ) : (
-            <AlertTriangle size={16} color="#ff4d4f" />
+            <AlertTriangle size={18} color="#ff4d4f" style={{ flexShrink: 0 }} />
           )}
           <div style={{ flex: 1 }}>
-            <strong style={{ color: integrityResult.status === 'MATCH' ? '#B6FF5C' : '#ff4d4f' }}>
+            <strong style={{ color: integrityResult.status === 'MATCH' ? '#B6FF5C' : '#ff4d4f', fontSize: '13px' }}>
               INTEGRITY CHECK: {integrityResult.status}
             </strong>
             <div style={{ fontSize: '12px', marginTop: '4px', fontFamily: 'monospace', wordBreak: 'break-all' }}>
@@ -337,51 +377,82 @@ function MissionControl({
         <div className="mission-banner-grid" />
         <div className="mission-info">
           <div className="mission-kicker">
-            <span className="live-indicator" style={{ background: '#B6FF5C', color: '#000' }}>
-              {isRunning ? 'RUNNING' : mission?.status?.toUpperCase() || 'COMPLETED'}
+            <span
+              className="live-indicator"
+              style={{
+                background: isRunning ? 'rgba(97, 216, 209, 0.2)' : isCompleted ? '#B6FF5C' : 'rgba(255, 255, 255, 0.08)',
+                color: isRunning ? '#61d8d1' : isCompleted ? '#000' : '#8fa08e',
+                border: isRunning ? '1px solid #61d8d1' : 'none',
+                padding: '2px 8px',
+                borderRadius: '4px',
+                fontWeight: 700,
+              }}
+            >
+              {isRunning ? 'RUNNING' : isCompleted ? 'COMPLETED' : 'AWAITING TRIGGER'}
             </span>
-            <span className="mission-id">{mission?.missionId || 'MSN-INITIALIZING'}</span>
+            <span className="mission-id">{mission?.missionId || 'MSN-PENDING-TRIGGER'}</span>
           </div>
-          <h2>Demo Shop Target — Sequential Vulnerability Assessment</h2>
+          <h2>Demo Shop Target — Autonomous Vulnerability Assessment</h2>
           <div className="mission-meta">
             <span><Target size={14} /> http://localhost:4000/shop</span>
-            <span><Clock3 size={14} /> {mission ? `${Math.round(mission.durationMs / 1000)}s runtime (${new Date(mission.completedAt).toLocaleTimeString()})` : 'Awaiting trigger'}</span>
-            <span><Users size={14} /> 4 Sequential Agents</span>
+            <span>
+              <Clock3 size={14} />{' '}
+              {isRunning
+                ? 'Mission in progress...'
+                : mission
+                ? `${Math.round(mission.durationMs / 1000)}s runtime (${new Date(mission.completedAt).toLocaleTimeString()})`
+                : 'Ready (Click Start a mission)'}
+            </span>
+            <span><Users size={14} /> 4 Specialist Agents + Market Auction</span>
           </div>
           <div className="mission-progress">
             <div className="progress-label">
               <span>SWARM PIPELINE STAGES</span>
-              <strong>{isRunning ? 'Testing Attack Surface...' : 'Attested on NEAR Testnet'}</strong>
+              <strong>
+                {isRunning
+                  ? 'Active: Crawling Surface & Auctioning Tasks...'
+                  : isCompleted
+                  ? 'Attested on NEAR Testnet'
+                  : 'Standing By'}
+              </strong>
             </div>
             <div className="progress-track">
-              <i style={{ width: isRunning ? '65%' : '100%' }} />
+              <i
+                style={{
+                  width: isRunning ? '65%' : isCompleted ? '100%' : '0%',
+                  background: isRunning ? 'var(--cyan)' : 'var(--lime)',
+                  transition: 'width 0.4s ease',
+                }}
+              />
             </div>
             <div className="progress-phases">
-              <span className="done">Reconnaissance</span>
-              <span className="done">IDOR / BOLA</span>
-              <span className="done">Stored XSS</span>
-              <span className="done">Price Logic</span>
+              <span className={isCompleted ? 'done' : isRunning ? 'current' : ''}>1. Surface Recon</span>
+              <span className={isCompleted ? 'done' : isRunning ? 'current' : ''}>2. Task Auction</span>
+              <span className={isCompleted ? 'done' : isRunning ? 'current' : ''}>3. Specialist Exploits</span>
+              <span className={isCompleted ? 'done' : isRunning ? 'current' : ''}>4. Verify & Payout</span>
             </div>
           </div>
         </div>
         <div className="mission-side">
           <div className="side-stat">
             <span>VERIFIED VULNERABILITIES</span>
-            <strong>{mission?.verifiedFindings?.length ?? 3}</strong>
-            <small style={{ color: '#B6FF5C' }}>Confirmed via DOM & API</small>
+            <strong>{mission?.verifiedFindings?.length ?? 0}</strong>
+            <small style={{ color: isCompleted ? '#B6FF5C' : '#8fa08e' }}>
+              {isCompleted ? 'Confirmed via DOM & API' : 'Awaiting mission execution'}
+            </small>
           </div>
           <div className="side-rule" />
           <div className="side-stat">
             <span>DISCOVERED SURFACE</span>
-            <strong>{mission?.summary?.totalDiscoveredEndpoints ?? 13} Endpoints</strong>
-            <small>{mission?.summary?.totalDiscoveredPages ?? 8} pages mapped</small>
+            <strong>{mission?.summary?.totalDiscoveredEndpoints ?? 0} Endpoints</strong>
+            <small>{mission?.summary?.totalDiscoveredPages ?? 0} pages mapped</small>
           </div>
           <div className="mission-scan">
             <div className="scan-ring"><span><Signal size={16} /></span></div>
             <div>
               <span>NEAR ATTESTATION</span>
-              <strong style={{ color: isNearConfigured ? '#B6FF5C' : '#ffaa00' }}>
-                {isNearConfigured ? 'CONFIRMED' : 'NOT CONFIGURED'}
+              <strong style={{ color: isCompleted && isNearConfigured ? '#B6FF5C' : isRunning ? '#61d8d1' : '#8fa08e' }}>
+                {isRunning ? 'BROADCASTING...' : isCompleted && isNearConfigured ? 'CONFIRMED' : 'READY / TESTNET'}
               </strong>
             </div>
           </div>
@@ -389,10 +460,33 @@ function MissionControl({
       </section>
 
       <div className="metrics-grid">
-        <Metric label="VERIFIED VULNERABILITIES" value={`0${mission?.verifiedFindings?.length ?? 3}`} change="+3" icon={ShieldCheck} />
-        <Metric label="SPECIALIST AGENTS" value="04" change="Sequential" icon={Users} tone="cyan" />
-        <Metric label="DISCOVERED ENDPOINTS" value={`${mission?.summary?.totalDiscoveredEndpoints ?? 13}`} change="Mapped" icon={Target} tone="violet" />
-        <Metric label="NEAR CONTRACT ATTESTATION" value={isNearConfigured ? 'CONFIRMED' : 'NOT CONFIGURED'} change={isNearConfigured ? 'Testnet' : 'Local'} icon={Award} tone="amber" />
+        <Metric
+          label="VERIFIED VULNERABILITIES"
+          value={mission?.verifiedFindings?.length ? `0${mission.verifiedFindings.length}` : '00'}
+          change={isCompleted ? '+3 Confirmed' : 'Standing By'}
+          icon={ShieldCheck}
+        />
+        <Metric
+          label="SPECIALIST AGENTS"
+          value="04"
+          change="Sequential Swarm"
+          icon={Users}
+          tone="cyan"
+        />
+        <Metric
+          label="DISCOVERED ENDPOINTS"
+          value={mission?.summary?.totalDiscoveredEndpoints ? `${mission.summary.totalDiscoveredEndpoints}` : '00'}
+          change={isCompleted ? '100% Surface' : 'Unmapped'}
+          icon={Target}
+          tone="violet"
+        />
+        <Metric
+          label="NEAR CONTRACT ATTESTATION"
+          value={isCompleted && isNearConfigured ? 'CONFIRMED' : 'ONLINE'}
+          change="harsha-swarm.testnet"
+          icon={Award}
+          tone="amber"
+        />
       </div>
 
       <div className="dashboard-grid">
@@ -433,12 +527,18 @@ function MissionControl({
                           <ShieldCheck size={13} /> Verified
                         </span>
                       </td>
-                      <td style={{ fontFamily: 'monospace', fontSize: '11px' }}>{f.affectedEndpoint}</td>
+                      <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>{f.affectedEndpoint}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} style={{ textAlign: 'center', padding: '24px' }}>Loading mission findings from server...</td>
+                    <td colSpan={5} style={{ textAlign: 'center', padding: '36px 16px', color: '#8fa08e' }}>
+                      <Target size={28} style={{ margin: '0 auto 8px', display: 'block', opacity: 0.6 }} />
+                      <strong style={{ color: '#d2dbd0', fontSize: '13px' }}>Target attack surface unscanned</strong>
+                      <div style={{ fontSize: '11px', marginTop: '4px', color: '#778477' }}>
+                        Click <strong>"Start a mission"</strong> above to deploy autonomous reconnaissance and specialist exploit agents.
+                      </div>
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -452,21 +552,36 @@ function MissionControl({
               <h3>NEAR Testnet Record</h3>
               <p>Cryptographically verifiable on-chain audit trail</p>
             </div>
-            <span className="live-small" style={{ background: isNearConfigured ? '#B6FF5C' : '#ffaa00', color: '#000' }}>
-              {isNearConfigured ? 'ON-CHAIN' : 'NOT CONFIGURED'}
+            <span
+              className="live-small"
+              style={{
+                background: isCompleted && isNearConfigured ? '#B6FF5C' : '#1e2820',
+                color: isCompleted && isNearConfigured ? '#000' : '#8fa08e',
+                padding: '2px 6px',
+                borderRadius: '3px',
+                fontSize: '10px',
+              }}
+            >
+              {isCompleted && isNearConfigured ? 'ON-CHAIN' : 'TESTNET READY'}
             </span>
           </div>
           <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div>
               <span style={{ fontSize: '11px', color: '#98a397' }}>CONTRACT ID</span>
-              <div style={{ fontFamily: 'monospace', fontSize: '12px', marginTop: '2px' }}>
-                {mission?.nearAttestation?.contractId || (isNearConfigured ? 'harsha-swarm.testnet' : 'NEAR not configured')}
+              <div style={{ fontFamily: 'monospace', fontSize: '12px', marginTop: '2px', color: '#eef2ec' }}>
+                harsha-swarm.testnet
               </div>
             </div>
             <div>
-              <span style={{ fontSize: '11px', color: '#98a397' }}>ATTESTATION TX</span>
-              <div style={{ fontFamily: 'monospace', fontSize: '12px', marginTop: '2px', wordBreak: 'break-all' }}>
-                {mission?.nearAttestation?.missionTxHash || (isNearConfigured ? 'CBx7vSCKqcMTouJSVSjCRP2VaQyNgvEoBqAmq3Bbq9bb' : 'None (running in local simulation mode)')}
+              <span style={{ fontSize: '11px', color: '#98a397' }}>MARKET CONTRACT</span>
+              <div style={{ fontFamily: 'monospace', fontSize: '12px', marginTop: '2px', color: '#eef2ec' }}>
+                market.harsha-swarm.testnet
+              </div>
+            </div>
+            <div>
+              <span style={{ fontSize: '11px', color: '#98a397' }}>LATEST ATTESTATION TX</span>
+              <div style={{ fontFamily: 'monospace', fontSize: '12px', marginTop: '2px', wordBreak: 'break-all', color: '#B6FF5C' }}>
+                {mission?.nearAttestation?.missionTxHash || 'Awaiting mission trigger to broadcast on-chain hash'}
               </div>
             </div>
             {mission?.nearAttestation?.explorerUrl && (
@@ -475,7 +590,7 @@ function MissionControl({
                 target="_blank"
                 rel="noreferrer"
                 className="secondary-button"
-                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center', marginTop: '4px' }}
               >
                 View on NearBlocks Explorer <ExternalLink size={13} />
               </a>
@@ -494,62 +609,8 @@ function BountyMarket({
   marketRounds?: MarketRound[]
   contractId?: string
 }) {
-  const defaultRounds: MarketRound[] = [
-    {
-      roundId: "bounty-round-001",
-      taskId: "task-access-control",
-      taskName: "BOLA / IDOR Authorization Bypass",
-      rewardNear: "0.01",
-      winnerAccount: "idor.harsha-swarm.testnet",
-      winnerScore: "980.00",
-      payoutStatus: "confirmed",
-      openTxHash: "7R6iJ16aQfYgpLPd2q3UktYsWbiJnkrLBZBjVpz4Agni",
-      settleTxHash: "DdUUnnKSkRBQRYNdbr1xxG8i33jeR4fqmDzYySVRPndX",
-      payoutTxHash: "2JxwVYH55NTdy39zkQEteZHPd8nTmdonTqJC9Sutunzo",
-      allBids: [
-        { agentId: "IdorAgent", account: "idor.harsha-swarm.testnet", confidenceBps: 9800, costYocto: "10000000000000000000000", score: 980.00, revealed: true },
-        { agentId: "GeneralistBeta", account: "gen2.harsha-swarm.testnet", confidenceBps: 5500, costYocto: "6000000000000000000000", score: 916.67, revealed: true },
-        { agentId: "GeneralistAlpha", account: "gen1.harsha-swarm.testnet", confidenceBps: 6000, costYocto: "8000000000000000000000", score: 750.00, revealed: true },
-      ]
-    },
-    {
-      roundId: "bounty-round-002",
-      taskId: "task-injection",
-      taskName: "Stored XSS (Playwright DOM Injection)",
-      rewardNear: "0.01",
-      winnerAccount: "xss.harsha-swarm.testnet",
-      winnerScore: "990.00",
-      payoutStatus: "confirmed",
-      openTxHash: "CBx7vSCKqcMTouJSVSjCRP2VaQyNgvEoBqAmq3Bbq9bb",
-      settleTxHash: "7R6iJ16aQfYgpLPd2q3UktYsWbiJnkrLBZBjVpz4Agni",
-      payoutTxHash: "2JxwVYH55NTdy39zkQEteZHPd8nTmdonTqJC9Sutunzo",
-      allBids: [
-        { agentId: "XssAgent", account: "xss.harsha-swarm.testnet", confidenceBps: 9900, costYocto: "10000000000000000000000", score: 990.00, revealed: true },
-        { agentId: "GeneralistBeta", account: "gen2.harsha-swarm.testnet", confidenceBps: 5500, costYocto: "6000000000000000000000", score: 916.67, revealed: true },
-        { agentId: "GeneralistAlpha", account: "gen1.harsha-swarm.testnet", confidenceBps: 6000, costYocto: "8000000000000000000000", score: 750.00, revealed: true },
-      ]
-    },
-    {
-      roundId: "bounty-round-003",
-      taskId: "task-business-logic",
-      taskName: "Client Price Parameter Tampering",
-      rewardNear: "0.01",
-      winnerAccount: "logic.harsha-swarm.testnet",
-      winnerScore: "990.00",
-      payoutStatus: "confirmed",
-      openTxHash: "CBx7vSCKqcMTouJSVSjCRP2VaQyNgvEoBqAmq3Bbq9bb",
-      settleTxHash: "7R6iJ16aQfYgpLPd2q3UktYsWbiJnkrLBZBjVpz4Agni",
-      payoutTxHash: "2JxwVYH55NTdy39zkQEteZHPd8nTmdonTqJC9Sutunzo",
-      allBids: [
-        { agentId: "BusinessLogicAgent", account: "logic.harsha-swarm.testnet", confidenceBps: 9900, costYocto: "10000000000000000000000", score: 990.00, revealed: true },
-        { agentId: "GeneralistBeta", account: "gen2.harsha-swarm.testnet", confidenceBps: 5500, costYocto: "6000000000000000000000", score: 916.67, revealed: true },
-        { agentId: "GeneralistAlpha", account: "gen1.harsha-swarm.testnet", confidenceBps: 6000, costYocto: "8000000000000000000000", score: 750.00, revealed: true },
-      ]
-    }
-  ]
-
-  const rounds = marketRounds && marketRounds.length > 0 ? marketRounds : defaultRounds
   const cid = contractId || "market.harsha-swarm.testnet"
+  const hasRounds = marketRounds && marketRounds.length > 0
 
   return (
     <>
@@ -561,8 +622,8 @@ function BountyMarket({
 
       <div className="metrics-grid">
         <Metric label="MARKET CONTRACT" value="ONLINE" change={cid} icon={Coins} tone="lime" />
-        <Metric label="AUCTION ROUNDS" value="03" change="Completed" icon={Gavel} tone="cyan" />
-        <Metric label="ESCROW BOUNTIES PAID" value="0.03 NEAR" change="Verified" icon={Award} tone="amber" />
+        <Metric label="AUCTION ROUNDS" value={hasRounds ? `0${marketRounds.length}` : '00'} change={hasRounds ? 'Settled' : 'Ready'} icon={Gavel} tone="cyan" />
+        <Metric label="ESCROW BOUNTIES PAID" value={hasRounds ? `${(marketRounds.length * 0.01).toFixed(2)} NEAR` : '0.00 NEAR'} change="Verified" icon={Award} tone="amber" />
         <Metric label="COMPETING AGENTS" value="05" change="Sub-Accounts" icon={Users} tone="violet" />
       </div>
 
@@ -574,99 +635,110 @@ function BountyMarket({
             Score = (Confidence_Bps × (1 + Reputation) × 10¹²) / Cost_Yocto
           </span>
           <div style={{ fontSize: '11px', color: '#9ba897', marginTop: '4px' }}>
-            Phase 1 (Commit): Agents hash sha256(bidder|taskId|confidence|cost|salt) to prevent front-running.
+            Phase 1 (Commit): Agents submit sha256(bidder|taskId|confidence|cost|salt) to prevent front-running.
             Phase 2 (Reveal): Preimages are cryptographically verified by the smart contract.
             Phase 3 (Payout): Reward transferred ONLY when finding reproduction is independently confirmed.
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {rounds.map((round, idx) => (
-          <div key={round.roundId} className="panel" style={{ padding: '18px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', borderBottom: '1px solid #242d26', paddingBottom: '12px' }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span className="live-indicator" style={{ background: '#B6FF5C', color: '#000', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold' }}>
-                    ROUND 0{idx + 1}
+      {!hasRounds ? (
+        <div className="panel" style={{ padding: '40px 20px', textAlign: 'center', color: '#9ba897' }}>
+          <Coins size={36} color="#B6FF5C" style={{ margin: '0 auto 12px', display: 'block', opacity: 0.8 }} />
+          <strong style={{ fontSize: '16px', color: '#edf2ea' }}>Auction Market Standing By</strong>
+          <p style={{ maxWidth: '560px', margin: '8px auto 0', fontSize: '12px', color: '#8fa08e', lineHeight: 1.6 }}>
+            When a mission is triggered, the coordinator opens 3 sealed-bid auction rounds on <code style={{ color: '#B6FF5C' }}>{cid}</code>.
+            5 competing agent sub-accounts (<code style={{ color: '#d2dbd0' }}>idor</code>, <code style={{ color: '#d2dbd0' }}>xss</code>, <code style={{ color: '#d2dbd0' }}>logic</code>, <code style={{ color: '#d2dbd0' }}>gen1</code>, <code style={{ color: '#d2dbd0' }}>gen2</code>) submit cryptographically sealed bids that are settled deterministically on-chain.
+          </p>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {marketRounds.map((round, idx) => (
+            <div key={round.roundId} className="panel" style={{ padding: '18px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', borderBottom: '1px solid #242d26', paddingBottom: '12px' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="live-indicator" style={{ background: '#B6FF5C', color: '#000', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold' }}>
+                      ROUND 0{idx + 1}
+                    </span>
+                    <strong style={{ fontSize: '14px', color: '#edf2ea' }}>{round.taskName}</strong>
+                    <span style={{ fontFamily: 'monospace', fontSize: '11px', color: '#778477' }}>({round.taskId})</span>
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#8fa08e', marginTop: '4px' }}>
+                    Reward: <strong style={{ color: '#B6FF5C' }}>{round.rewardNear} NEAR</strong> · Winner: <strong style={{ color: '#caff91' }}>{round.winnerAccount}</strong> (Score: {round.winnerScore})
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <span className="verify verified" style={{ fontSize: '11px' }}>
+                    <ShieldCheck size={14} /> Payout: {round.payoutStatus.toUpperCase()}
                   </span>
-                  <strong style={{ fontSize: '14px', color: '#edf2ea' }}>{round.taskName}</strong>
-                  <span style={{ fontFamily: 'monospace', fontSize: '11px', color: '#778477' }}>({round.taskId})</span>
-                </div>
-                <div style={{ fontSize: '11px', color: '#8fa08e', marginTop: '4px' }}>
-                  Reward: <strong style={{ color: '#B6FF5C' }}>{round.rewardNear} NEAR</strong> · Winner: <strong style={{ color: '#caff91' }}>{round.winnerAccount}</strong> (Score: {round.winnerScore})
+                  {round.payoutTxHash && (
+                    <a
+                      href={`https://testnet.nearblocks.io/txns/${round.payoutTxHash}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="system-pill"
+                      style={{ textDecoration: 'none', color: '#B6FF5C', border: '1px solid #B6FF5C' }}
+                    >
+                      TX: {round.payoutTxHash.slice(0, 8)}... <ExternalLink size={10} style={{ marginLeft: 3 }} />
+                    </a>
+                  )}
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span className="verify verified" style={{ fontSize: '10px' }}>
-                  <ShieldCheck size={14} /> Payout: {round.payoutStatus.toUpperCase()}
-                </span>
-                {round.payoutTxHash && (
-                  <a
-                    href={`https://testnet.nearblocks.io/txns/${round.payoutTxHash}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="system-pill"
-                    style={{ textDecoration: 'none', color: '#B6FF5C', border: '1px solid #B6FF5C' }}
-                  >
-                    TX: {round.payoutTxHash.slice(0, 8)}... <ExternalLink size={10} style={{ marginLeft: 3 }} />
-                  </a>
-                )}
-              </div>
-            </div>
 
-            <div className="table-wrap" style={{ marginTop: '12px' }}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>BIDDER AGENT</th>
-                    <th>TESTNET SUB-ACCOUNT</th>
-                    <th>CONFIDENCE</th>
-                    <th>ASKING COST</th>
-                    <th>AUCTION SCORE</th>
-                    <th>AUCTION OUTCOME</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {round.allBids.map((b) => {
-                    const isWinner = b.account === round.winnerAccount
-                    return (
-                      <tr key={b.account} style={{ background: isWinner ? 'rgba(182, 255, 92, 0.04)' : undefined }}>
-                        <td>
-                          <strong>{b.agentId}</strong>
-                        </td>
-                        <td style={{ fontFamily: 'monospace', fontSize: '11px' }}>{b.account}</td>
-                        <td>
-                          <span style={{ color: isWinner ? '#B6FF5C' : '#a5afa3' }}>
-                            {(b.confidenceBps / 100).toFixed(0)}%
-                          </span>
-                        </td>
-                        <td style={{ fontFamily: 'monospace', fontSize: '11px' }}>
-                          {(Number(b.costYocto) / 1e24).toFixed(3)} NEAR
-                        </td>
-                        <td>
-                          <strong style={{ color: isWinner ? '#B6FF5C' : '#a5afa3' }}>{b.score.toFixed(2)}</strong>
-                        </td>
-                        <td>
-                          {isWinner ? (
-                            <span className="verify verified" style={{ fontWeight: 700 }}>
-                              <CheckCircle size={12} /> WINNER (AWARDED)
+              <div className="table-wrap" style={{ marginTop: '12px' }}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>BIDDER AGENT</th>
+                      <th>TESTNET SUB-ACCOUNT</th>
+                      <th>CONFIDENCE</th>
+                      <th>ASKING COST</th>
+                      <th>AUCTION SCORE</th>
+                      <th>AUCTION OUTCOME</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {round.allBids.map((b) => {
+                      const isWinner = b.account === round.winnerAccount
+                      return (
+                        <tr key={b.account} style={{ background: isWinner ? 'rgba(182, 255, 92, 0.04)' : undefined }}>
+                          <td>
+                            <strong>{b.agentId}</strong>
+                          </td>
+                          <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>{b.account}</td>
+                          <td>
+                            <span style={{ color: isWinner ? '#B6FF5C' : '#a5afa3', fontWeight: isWinner ? 700 : 400 }}>
+                              {(b.confidenceBps / 100).toFixed(0)}%
                             </span>
-                          ) : (
-                            <span style={{ color: '#778477', fontSize: '9px' }}>
-                              OUTBID
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+                          </td>
+                          <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>
+                            {(Number(b.costYocto) / 1e24).toFixed(3)} NEAR
+                          </td>
+                          <td>
+                            <strong style={{ color: isWinner ? '#B6FF5C' : '#a5afa3' }}>{b.score.toFixed(2)}</strong>
+                          </td>
+                          <td>
+                            {isWinner ? (
+                              <span className="verify verified" style={{ fontWeight: 700 }}>
+                                <CheckCircle size={13} /> WINNER (AWARDED)
+                              </span>
+                            ) : (
+                              <span style={{ color: '#778477', fontSize: '10px' }}>
+                                OUTBID
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </>
   )
 }
@@ -694,7 +766,7 @@ function AgentNetwork({ agents }: { agents: { name: string; specialty: string; a
               <p>{agent.action}</p>
             </div>
             <div className="agent-card-foot">
-              <span className="agent-status completed"><i />Completed</span>
+              <span className="agent-status completed"><i />Standing By</span>
               <span className="reputation"><Award size={13} />{agent.findings} Verified Finding(s)</span>
             </div>
           </article>
@@ -705,6 +777,8 @@ function AgentNetwork({ agents }: { agents: { name: string; specialty: string; a
 }
 
 function Findings({ mission }: { mission: MissionData | null }) {
+  const hasFindings = mission?.verifiedFindings && mission.verifiedFindings.length > 0
+
   return (
     <>
       <SectionHeader
@@ -725,7 +799,7 @@ function Findings({ mission }: { mission: MissionData | null }) {
               </tr>
             </thead>
             <tbody>
-              {mission?.verifiedFindings && mission.verifiedFindings.length > 0 ? (
+              {hasFindings ? (
                 mission.verifiedFindings.map((f) => (
                   <tr key={f.findingId}>
                     <td>
@@ -739,12 +813,18 @@ function Findings({ mission }: { mission: MissionData | null }) {
                     </td>
                     <td>{f.sourceAgent}</td>
                     <td style={{ fontSize: '12px', color: '#c5d1c4' }}>{f.verificationRationale}</td>
-                    <td style={{ fontFamily: 'monospace', fontSize: '11px' }}>{f.affectedEndpoint}</td>
+                    <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>{f.affectedEndpoint}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '24px' }}>Loading verified findings from server...</td>
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '36px 16px', color: '#8fa08e' }}>
+                    <ShieldAlert size={28} style={{ margin: '0 auto 8px', display: 'block', opacity: 0.6 }} />
+                    <strong style={{ color: '#d2dbd0', fontSize: '13px' }}>No verified findings loaded</strong>
+                    <div style={{ fontSize: '11px', marginTop: '4px', color: '#778477' }}>
+                      Start a mission from Mission Control to run automated differential authorization, DOM XSS injection, and price tampering tests.
+                    </div>
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -823,6 +903,8 @@ function App() {
       if (res.ok) {
         const data = await res.json()
         setMission(data)
+      } else {
+        setMission(null)
       }
     } catch {
       // Backend not yet reachable
@@ -864,6 +946,20 @@ function App() {
     }
   }
 
+  const handleResetDemo = async () => {
+    try {
+      const res = await fetch('http://localhost:4000/api/demo/reset', { method: 'POST' })
+      if (res.ok) {
+        setMission(null)
+        setIntegrityResult(null)
+      }
+    } catch (err) {
+      console.error('Reset error:', err)
+      setMission(null)
+      setIntegrityResult(null)
+    }
+  }
+
   const handleVerifyIntegrity = async (tampered = false) => {
     try {
       const res = await fetch('http://localhost:4000/api/missions/verify-integrity', {
@@ -887,17 +983,31 @@ function App() {
     { name: 'BusinessLogicAgent', specialty: 'Business Logic / Price Manipulation', action: 'Testing parameter tampering during checkout to verify server-side price validation.', findings: 1 },
   ]
 
+  const marketCount = mission?.marketRounds?.length || 0
+  const findingsCount = mission?.verifiedFindings?.length || 0
+
   return (
     <div className="app-shell">
-      <Sidebar active={active} onChange={setActive} />
+      <Sidebar
+        active={active}
+        onChange={setActive}
+        marketCount={marketCount}
+        findingsCount={findingsCount}
+      />
       <main className="main-shell">
-        <Topbar active={active} nearTx={mission?.nearAttestation?.missionTxHash} />
+        <Topbar
+          active={active}
+          nearTx={mission?.nearAttestation?.missionTxHash}
+          isRunning={isRunning}
+          onResetDemo={handleResetDemo}
+        />
         <div className="page-content">
           {active === 'Mission Control' ? (
             <MissionControl
               mission={mission}
               isRunning={isRunning}
               onStartMission={handleStartMission}
+              onResetDemo={handleResetDemo}
               onVerifyIntegrity={handleVerifyIntegrity}
               integrityResult={integrityResult}
             />

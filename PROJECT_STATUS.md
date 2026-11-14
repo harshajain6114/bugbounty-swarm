@@ -1,52 +1,68 @@
 # BUGBOUNTY SWARM — Project Status
 
 Date: November 14, 2026  
-Status: Complete Hackathon Submission  
+Status: Complete Hackathon Submission (All Tracks Verified On-Chain)
 
 ---
 
 ## 1. What Is Built & Verified Working
 
-### Sequential Multi-Agent Pipeline
-- **Reconnaissance Agent** (`apps/server/src/agents/recon/`): Headless Playwright Chromium crawler. Explores unauthenticated and authenticated states, discovering 8 pages, 13 API endpoints, and 7 forms.
-- **IDOR / BOLA Agent** (`apps/server/src/agents/idor/`): Performs differential access control testing on object-level endpoints (`/shop/api/orders/:id`), validating unauthorized cross-tenant data leakage.
-- **Stored XSS Agent** (`apps/server/src/agents/xss/`): Injects payloads into reviews, verifies persistent storage, navigates with real browser, and verifies execution of `window.__bugbounty_xss_test` in Chromium.
-- **Business Logic Agent** (`apps/server/src/agents/business-logic/`): Exploits client-controlled price fields, submitting $0.01 checkout payloads that succeed against vulnerable checkout endpoints.
-- **Mission Orchestrator** (`apps/server/src/orchestrator/`): Sequential multi-agent pipeline with concurrency locks, out-of-scope target guards, independent evidence verification, credential scrubbing, and disk persistence.
+### Autonomous Multi-Agent Swarm
+- **Reconnaissance Agent** (`apps/server/src/agents/recon/`): Headless Playwright Chromium crawler. Maps 8 pages, 13 API endpoints, and 7 forms across authenticated and unauthenticated states.
+- **IDOR / BOLA Specialist Agent** (`apps/server/src/agents/idor/`): Performs cross-tenant differential access testing on `/shop/api/orders/:id`, proving unauthorized data exposure.
+- **Stored XSS Specialist Agent** (`apps/server/src/agents/xss/`): Injects payloads into product reviews, navigates in real Chromium, and confirms DOM sink execution via `window.__bugbounty_xss_test`.
+- **Business Logic Specialist Agent** (`apps/server/src/agents/business-logic/`): Executes client-side price tampering during checkout, purchasing items at $0.01 without server re-validation.
+- **Mission Orchestrator** (`apps/server/src/orchestrator/`): Coordinates sequential execution, enforces authorized target scope, deduplicates root causes via `FindingVerifier`, and saves results.
 
-### NEAR Protocol Testnet Integration
-- **Rust Smart Contract** (`apps/near-contract/`): Compiled with `near-sdk` (v5.6.0) to `target/wasm32-unknown-unknown/release/bugbounty_swarm_contract.wasm`. 13/13 unit tests pass.
-- **On-Chain Deployment**: Deployed and initialized on NEAR Testnet at `harsha-swarm.testnet`.
-- **Live Attestation**: Submits deterministic SHA-256 mission result hashes, findings hashes, and agent contribution records. Live transaction: `CBx7vSCKqcMTouJSVSjCRP2VaQyNgvEoBqAmq3Bbq9bb`.
+### Swarm Bounty Market on NEAR Testnet
+- **Market Smart Contract** (`apps/near-market-contract/`): Rust contract with 5/5 passing unit tests:
+  - Commit-reveal sealed bidding (SHA-256 preimages).
+  - Deterministic scoring: `(confidence_bps * (1 + rep) * 1e12) / cost_yocto`.
+  - Verification-gated payouts: operator can only release escrowed reward after automated reproduction.
+  - Reputation increments upon confirmed payout.
+- **Live Testnet Market Deployment**: Deployed and active at `market.harsha-swarm.testnet`.
+- **5 Competing Sub-Accounts**:
+  - `idor.harsha-swarm.testnet`
+  - `xss.harsha-swarm.testnet`
+  - `logic.harsha-swarm.testnet`
+  - `gen1.harsha-swarm.testnet`
+  - `gen2.harsha-swarm.testnet`
 
-### Dashboard & Verification UI
-- **React + TypeScript Web App** (`apps/web/`):
-  - Connected to live backend (`http://localhost:4000`).
-  - "Start a mission" triggers real-time execution.
-  - Displays all 3 confirmed vulnerabilities with reproduction steps and target endpoints.
-  - Displays NEAR Testnet transaction status with direct links to NearBlocks Explorer.
-  - Interactive "Verify integrity" and "Simulate Local Tamper" buttons for cryptographic validation against the on-chain hash.
-  - Live Leaderboard reading on-chain reputation points directly from `harsha-swarm.testnet`.
+### Attestation Smart Contract on NEAR Testnet
+- **Attestation Contract** (`apps/near-contract/`): Rust contract with 13/13 passing unit tests.
+- **Live Deployment**: Deployed and active at `harsha-swarm.testnet`.
+- **Master Attestation**: Live transaction `9QB5BV2djmmy7u1cazFqzh9GKFGa47kNuSP8gVHbFF6R` storing root mission hash, finding count, and timestamp.
+
+### Web Dashboard & Demo System
+- **React + Vite UI** (`apps/web/`):
+  - **Clean Reset Demo Feature**: One-click "Reset Demo State" button sets dashboard to 0 findings / fresh scratch state for live video recording.
+  - **Mission Control**: Live progress indicator, verified findings table, and NEAR status.
+  - **Bounty Market View**: Displays all 3 rounds, competing bids, scores, winners, and transaction links.
+  - **Findings View**: Full vulnerability details, severity badges, and reproduction rationale.
+  - **Cryptographic Integrity Testing**: Real-time "Verify integrity" (shows MATCH) and "Simulate Local Tamper" (shows MISMATCH).
+  - **Agent Leaderboard**: Live on-chain reputation reading directly from NEAR Testnet.
 
 ---
 
-## 2. Incomplete or Out-of-Scope Items
-- **Mainnet**: Intentionally omitted. Contract and backend strictly enforce NEAR Testnet.
-- **Arbitrary External Target URLs**: Intentionally blocked. Scope is strictly restricted to `http://localhost:4000/shop` to guarantee safe, legal testing.
-- **LLM Hallucinations**: Agent logic uses deterministic rule-based engines rather than probabilistic LLMs to guarantee reproducibility for bounty reporting.
+## 2. Verification Scripts (Zero Gas / Read-Only)
 
----
-
-## 3. How to Run & Verify
 ```bash
-# 1. Start full stack
-npm start
+# 1. Read-only market auction verification
+npm run verify:market
 
-# 2. Run read-only testnet check (no keys required)
+# 2. Read-only master attestation verification
 npm run verify:near
 
-# 3. Run test suites
+# 3. Unit test suites
 npm run test:server
 npm run test:orchestrator
 npm run test:contract
+npm run build:web
 ```
+
+---
+
+## 3. Scope & Safety Guardrails
+- **Scope Restriction**: Hardcoded to `http://localhost:4000/shop`. Out-of-scope targets are strictly rejected.
+- **NEAR Testnet Only**: Strictly restricted to testnet; zero mainnet interactions or real funds.
+- **Key Security**: No private keys or `.env` files are tracked in git or printed in logs.

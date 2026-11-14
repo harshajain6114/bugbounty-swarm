@@ -93,6 +93,19 @@ app.get("/api/missions/latest", (_req: Request, res: Response) => {
 });
 
 /**
+ * POST /api/demo/reset
+ * Resets the demo state to a clean initial scratch slate.
+ */
+app.post("/api/demo/reset", (_req: Request, res: Response) => {
+  orchestrator.resetDemoState();
+  MarketCoordinator.getInstance().resetMarketState();
+  res.json({
+    status: "ok",
+    message: "Demo state reset to scratch. Ready for live demo recording.",
+  });
+});
+
+/**
  * GET /api/market/rounds
  * Fetches all auction rounds from the Swarm Bounty Market.
  */

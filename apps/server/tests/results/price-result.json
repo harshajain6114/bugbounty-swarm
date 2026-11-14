@@ -1,0 +1,25 @@
+{
+  "testName": "PRICE-001",
+  "vulnerability": "Client-Side Price Manipulation (Improper Input Validation)",
+  "severity": "High",
+  "affectedEndpoint": "POST /shop/api/checkout",
+  "cwe": "CWE-20: Improper Input Validation",
+  "reproductionSteps": [
+    "1. POST /shop/api/auth/login — credentials: alice@example.com / Alice123!",
+    "2. Note that prod-001 has a canonical price of 7999 cents ($79.99).",
+    "3. POST /shop/api/checkout with body:",
+    "   { \"items\": [{ \"productId\": \"prod-001\", \"quantity\": 1, \"price\": 1 }] }",
+    "4. Observe that the returned order records priceAtPurchase = 1 — not the catalog price."
+  ],
+  "evidence": {
+    "legitimateProductPrice": 7999,
+    "clientSubmittedPrice": 1,
+    "recordedPriceAtPurchase": 1,
+    "orderTotal": 1,
+    "priceDifference": 7998
+  },
+  "testPassed": true,
+  "vulnerabilityReproduced": true,
+  "details": "POST /shop/api/checkout accepts the \"price\" field from the client payload without validating it against the server-side product catalog. The order was created with priceAtPurchase=1 (client-supplied) instead of 7999 (catalog). Fix: ignore the client price field; derive price from server-side product record.",
+  "testedAt": "2026-11-14T06:34:59.960Z"
+}

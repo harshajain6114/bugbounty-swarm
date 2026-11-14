@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build artifacts
+dist/
+build/
+target/
+*.wasm
+
+# Environment & Credentials
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+.near-credentials/
+credentials/
+
+# Playwright & Browser artifacts
+test-results/
+playwright-report/
+blob-report/
+.cache/
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log

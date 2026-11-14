@@ -4,7 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node node_modules/tsx/dist/cli.mjs tests/run-all.ts",
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "demo:shop": "tsx src/index.ts",
+    "test:idor": "node node_modules/tsx/dist/cli.mjs tests/idor-bola.test.ts",
+    "test:xss": "node node_modules/tsx/dist/cli.mjs tests/stored-xss.test.ts",
+    "test:price": "node node_modules/tsx/dist/cli.mjs tests/price-manipulation.test.ts",
+    "test:recon": "node node_modules/tsx/dist/cli.mjs tests/recon-agent.test.ts",
+    "test:idor-agent": "node node_modules/tsx/dist/cli.mjs tests/idor-agent.test.ts",
+    "test:xss-agent": "node node_modules/tsx/dist/cli.mjs tests/xss-agent.test.ts",
+    "test:business-logic-agent": "node node_modules/tsx/dist/cli.mjs tests/business-logic-agent.test.ts",
+    "test:mission": "node node_modules/tsx/dist/cli.mjs tests/mission-orchestrator.test.ts",
+    "test:all": "node node_modules/tsx/dist/cli.mjs tests/run-all.ts",
+    "typecheck": "node node_modules/typescript/bin/tsc --noEmit"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +26,7 @@
     "cors": "^2.8.6",
     "dotenv": "^18.0.10",
     "express": "^5.3.0",
+    "near-api-js": "^7.5.3",
     "playwright": "^1.65.0"
   },
   "devDependencies": {
@@ -21,5 +35,6 @@
     "@types/node": "^26.6.6",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
-  }
+  },
+  "type": "module"
 }

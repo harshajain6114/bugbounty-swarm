@@ -1,0 +1,149 @@
+{
+  "missionId": "test-mission-1794638115148-bizlogic",
+  "target": "http://localhost:4000/shop",
+  "status": "completed",
+  "summary": {
+    "totalDiscoveredEndpoints": 13,
+    "checkoutCandidatesEvaluated": 1,
+    "skippedEndpointsCount": 12,
+    "vulnerabilitiesConfirmed": 1,
+    "priceDiscrepancyCents": 7998,
+    "durationMs": 6
+  },
+  "candidatesEvaluated": [
+    {
+      "endpoint": "/shop/api/checkout",
+      "method": "POST",
+      "authRequired": true,
+      "rationale": "State-changing financial mutation endpoint (POST /shop/api/checkout) identified for price validation and transaction integrity probing."
+    }
+  ],
+  "skippedEndpoints": [
+    {
+      "endpoint": "/shop",
+      "method": "GET",
+      "reason": "Frontend UI route, not an API transaction endpoint."
+    },
+    {
+      "endpoint": "/shop/products",
+      "method": "GET",
+      "reason": "Frontend UI route, not an API transaction endpoint."
+    },
+    {
+      "endpoint": "/shop/orders",
+      "method": "GET",
+      "reason": "Frontend UI route, not an API transaction endpoint."
+    },
+    {
+      "endpoint": "/shop/checkout",
+      "method": "GET",
+      "reason": "Frontend UI route, not an API transaction endpoint."
+    },
+    {
+      "endpoint": "/shop/products/:id",
+      "method": "GET",
+      "reason": "Frontend UI route, not an API transaction endpoint."
+    },
+    {
+      "endpoint": "/shop/api/auth/login",
+      "method": "POST",
+      "reason": "Authentication / session endpoint without transactional commerce logic."
+    },
+    {
+      "endpoint": "/shop/api/auth/me",
+      "method": "GET",
+      "reason": "Authentication / session endpoint without transactional commerce logic."
+    },
+    {
+      "endpoint": "/shop/api/orders",
+      "method": "GET",
+      "reason": "Endpoint does not process monetary checkout transactions."
+    },
+    {
+      "endpoint": "/shop/api/orders/:id",
+      "method": "GET",
+      "reason": "Read-only order retrieval endpoint; subject to IDOR analysis rather than price manipulation."
+    },
+    {
+      "endpoint": "/shop/api/products/:id/reviews",
+      "method": "POST",
+      "reason": "Content submission endpoint (product review); evaluated for injection/XSS flaws."
+    },
+    {
+      "endpoint": "/shop/api/auth/logout",
+      "method": "POST",
+      "reason": "Authentication / session endpoint without transactional commerce logic."
+    },
+    {
+      "endpoint": "/shop/api/products",
+      "method": "GET",
+      "reason": "Catalog retrieval endpoint; used as authoritative price reference."
+    }
+  ],
+  "findings": [
+    {
+      "findingId": "bizlogic-find-001",
+      "vulnerabilityType": "Business Logic Flaw: Client-Side Price Manipulation",
+      "title": "Client-Side Price Parameter Trusted During Checkout",
+      "severity": "High",
+      "affectedEndpoint": "/shop/api/checkout",
+      "testResult": "VULNERABILITY_CONFIRMED",
+      "reproducible": true,
+      "evidence": {
+        "targetEndpoint": "/shop/api/checkout",
+        "productId": "prod-001",
+        "productName": "Wireless Headphones",
+        "canonicalCatalogPriceCents": 7999,
+        "clientSubmittedPriceCents": 1,
+        "serverRecordedPriceCents": 1,
+        "serverRecordedTotalCents": 1,
+        "priceUnderchargeCents": 7998,
+        "createdOrderId": "order-alice-100",
+        "httpStatus": 201,
+        "requestPayload": {
+          "items": [
+            {
+              "productId": "prod-001",
+              "quantity": 1,
+              "price": 1
+            }
+          ]
+        },
+        "responseSnippet": {
+          "message": "Order placed successfully.",
+          "order": {
+            "id": "order-alice-100",
+            "userId": "user-alice",
+            "items": [
+              {
+                "productId": "prod-001",
+                "quantity": 1,
+                "priceAtPurchase": 1
+              }
+            ],
+            "total": 1,
+            "createdAt": "2026-11-14T06:35:44.896Z"
+          },
+          "warning": "[VULN] Price was accepted from client payload — no server-side validation."
+        },
+        "vulnerabilityConfirmed": true
+      },
+      "reproductionSteps": [
+        "Authenticate to the store API using user credentials (alice@example.com).",
+        "Query the authoritative product catalog (GET /shop/api/products/prod-001) and record the canonical price (7999 cents).",
+        "Construct a checkout payload targeting /shop/api/checkout overriding the price parameter with an arbitrary lower value (1 cent).",
+        "Send the checkout request: POST /shop/api/checkout.",
+        "Observe that the server accepts the client-supplied price without validating against the product database, creating order order-alice-100 for 1 cent(s) instead of 7999 cents."
+      ],
+      "remediation": "Never accept product price fields from client-side checkout payloads. When processing orders, ignore any client-supplied price and look up the authoritative price server-side directly from the database using productId.",
+      "timestamp": "2026-11-14T06:35:44.897Z"
+    }
+  ],
+  "errors": [],
+  "metadata": {
+    "agentName": "BusinessLogicAgent",
+    "agentVersion": "1.0.0",
+    "completedAt": "2026-11-14T06:35:44.898Z",
+    "targetScope": "http://localhost:4000/shop"
+  }
+}

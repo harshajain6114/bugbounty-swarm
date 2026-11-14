@@ -1,0 +1,477 @@
+{
+  "missionId": "test-mission-1794638115148-recon",
+  "target": "http://localhost:4000/shop",
+  "status": "completed",
+  "summary": {
+    "pagesDiscovered": 8,
+    "endpointsDiscovered": 13,
+    "formsDiscovered": 7,
+    "authenticatedPages": 1,
+    "crawlDurationMs": 14460
+  },
+  "pages": [
+    {
+      "url": "http://localhost:4000/shop",
+      "path": "/shop",
+      "title": "VulnShop — VulnShop",
+      "authRequired": false,
+      "statusCode": 200,
+      "linksDiscovered": [
+        "http://localhost:4000/shop",
+        "http://localhost:4000/shop/products",
+        "http://localhost:4000/shop/orders",
+        "http://localhost:4000/shop/checkout"
+      ],
+      "formsDiscovered": 1,
+      "discoveredAt": "2026-11-14T06:35:29.152Z"
+    },
+    {
+      "url": "http://localhost:4000/shop/products",
+      "path": "/shop/products",
+      "title": "Products — VulnShop",
+      "authRequired": false,
+      "statusCode": 200,
+      "linksDiscovered": [
+        "http://localhost:4000/shop",
+        "http://localhost:4000/shop/products",
+        "http://localhost:4000/shop/orders",
+        "http://localhost:4000/shop/checkout",
+        "http://localhost:4000/shop/products/prod-001",
+        "http://localhost:4000/shop/products/prod-002",
+        "http://localhost:4000/shop/products/prod-003",
+        "http://localhost:4000/shop/products/prod-004"
+      ],
+      "formsDiscovered": 0,
+      "discoveredAt": "2026-11-14T06:35:29.202Z"
+    },
+    {
+      "url": "http://localhost:4000/shop/orders",
+      "path": "/shop/orders",
+      "title": "My Orders — VulnShop",
+      "authRequired": true,
+      "statusCode": 200,
+      "linksDiscovered": [
+        "http://localhost:4000/shop",
+        "http://localhost:4000/shop/products",
+        "http://localhost:4000/shop/orders",
+        "http://localhost:4000/shop/checkout"
+      ],
+      "formsDiscovered": 1,
+      "discoveredAt": "2026-11-14T06:35:29.237Z"
+    },
+    {
+      "url": "http://localhost:4000/shop/checkout",
+      "path": "/shop/checkout",
+      "title": "Checkout — VulnShop",
+      "authRequired": false,
+      "statusCode": 200,
+      "linksDiscovered": [
+        "http://localhost:4000/shop",
+        "http://localhost:4000/shop/products",
+        "http://localhost:4000/shop/orders",
+        "http://localhost:4000/shop/checkout"
+      ],
+      "formsDiscovered": 0,
+      "discoveredAt": "2026-11-14T06:35:29.270Z"
+    },
+    {
+      "url": "http://localhost:4000/shop/products/prod-001",
+      "path": "/shop/products/prod-001",
+      "title": "Wireless Headphones — VulnShop",
+      "authRequired": false,
+      "statusCode": 200,
+      "linksDiscovered": [
+        "http://localhost:4000/shop",
+        "http://localhost:4000/shop/products",
+        "http://localhost:4000/shop/orders",
+        "http://localhost:4000/shop/checkout"
+      ],
+      "formsDiscovered": 1,
+      "discoveredAt": "2026-11-14T06:35:29.314Z"
+    },
+    {
+      "url": "http://localhost:4000/shop/products/prod-002",
+      "path": "/shop/products/prod-002",
+      "title": "Mechanical Keyboard — VulnShop",
+      "authRequired": false,
+      "statusCode": 200,
+      "linksDiscovered": [
+        "http://localhost:4000/shop",
+        "http://localhost:4000/shop/products",
+        "http://localhost:4000/shop/orders",
+        "http://localhost:4000/shop/checkout"
+      ],
+      "formsDiscovered": 1,
+      "discoveredAt": "2026-11-14T06:35:29.348Z"
+    },
+    {
+      "url": "http://localhost:4000/shop/products/prod-003",
+      "path": "/shop/products/prod-003",
+      "title": "USB-C Hub — VulnShop",
+      "authRequired": false,
+      "statusCode": 200,
+      "linksDiscovered": [
+        "http://localhost:4000/shop",
+        "http://localhost:4000/shop/products",
+        "http://localhost:4000/shop/orders",
+        "http://localhost:4000/shop/checkout"
+      ],
+      "formsDiscovered": 1,
+      "discoveredAt": "2026-11-14T06:35:29.381Z"
+    },
+    {
+      "url": "http://localhost:4000/shop/products/prod-004",
+      "path": "/shop/products/prod-004",
+      "title": "Webcam 1080p — VulnShop",
+      "authRequired": false,
+      "statusCode": 200,
+      "linksDiscovered": [
+        "http://localhost:4000/shop",
+        "http://localhost:4000/shop/products",
+        "http://localhost:4000/shop/orders",
+        "http://localhost:4000/shop/checkout"
+      ],
+      "formsDiscovered": 1,
+      "discoveredAt": "2026-11-14T06:35:29.412Z"
+    }
+  ],
+  "endpoints": [
+    {
+      "url": "http://localhost:4000/shop",
+      "path": "/shop",
+      "method": "GET",
+      "statusCode": 200,
+      "authRequired": false,
+      "parameters": [],
+      "discoverySource": "network-observation",
+      "discoveredOnPage": "http://localhost:4000/shop"
+    },
+    {
+      "url": "http://localhost:4000/shop/products",
+      "path": "/shop/products",
+      "method": "GET",
+      "statusCode": 200,
+      "authRequired": false,
+      "parameters": [],
+      "discoverySource": "network-observation",
+      "discoveredOnPage": "http://localhost:4000/shop"
+    },
+    {
+      "url": "http://localhost:4000/shop/orders",
+      "path": "/shop/orders",
+      "method": "GET",
+      "statusCode": 200,
+      "authRequired": true,
+      "parameters": [],
+      "discoverySource": "network-observation",
+      "discoveredOnPage": "http://localhost:4000/shop"
+    },
+    {
+      "url": "http://localhost:4000/shop/checkout",
+      "path": "/shop/checkout",
+      "method": "GET",
+      "statusCode": 200,
+      "authRequired": true,
+      "parameters": [],
+      "discoverySource": "network-observation",
+      "discoveredOnPage": "http://localhost:4000/shop/orders"
+    },
+    {
+      "url": "http://localhost:4000/shop/products/:id",
+      "path": "/shop/products/:id",
+      "method": "GET",
+      "statusCode": 200,
+      "authRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "type": "string"
+        }
+      ],
+      "discoverySource": "network-observation",
+      "discoveredOnPage": "http://localhost:4000/shop/products/prod-003"
+    },
+    {
+      "url": "http://localhost:4000/shop/api/auth/login",
+      "path": "/shop/api/auth/login",
+      "method": "POST",
+      "statusCode": 200,
+      "authRequired": false,
+      "parameters": [],
+      "discoverySource": "network-observation",
+      "discoveredOnPage": "http://localhost:4000/shop"
+    },
+    {
+      "url": "http://localhost:4000/shop/api/auth/me",
+      "path": "/shop/api/auth/me",
+      "method": "GET",
+      "statusCode": 200,
+      "authRequired": true,
+      "parameters": [],
+      "discoverySource": "network-observation",
+      "discoveredOnPage": "http://localhost:4000/shop/checkout"
+    },
+    {
+      "url": "http://localhost:4000/shop/api/orders",
+      "path": "/shop/api/orders",
+      "method": "GET",
+      "statusCode": 200,
+      "authRequired": true,
+      "parameters": [],
+      "discoverySource": "network-observation",
+      "discoveredOnPage": "http://localhost:4000/shop/orders"
+    },
+    {
+      "url": "http://localhost:4000/shop/api/orders/:id",
+      "path": "/shop/api/orders/:id",
+      "method": "GET",
+      "statusCode": 401,
+      "authRequired": true,
+      "parameters": [
+        {
+          "name": "order-id-input",
+          "in": "body",
+          "type": "text"
+        },
+        {
+          "name": "id",
+          "in": "path",
+          "type": "string"
+        }
+      ],
+      "discoverySource": "form-action",
+      "discoveredOnPage": "http://localhost:4000/shop/orders"
+    },
+    {
+      "url": "http://localhost:4000/shop/api/products/:id/reviews",
+      "path": "/shop/api/products/:id/reviews",
+      "method": "POST",
+      "statusCode": null,
+      "authRequired": true,
+      "parameters": [
+        {
+          "name": "review-content",
+          "in": "body",
+          "type": "textarea"
+        },
+        {
+          "name": "review-rating",
+          "in": "body",
+          "type": "select"
+        }
+      ],
+      "discoverySource": "form-action",
+      "discoveredOnPage": "http://localhost:4000/shop/products/prod-001"
+    },
+    {
+      "url": "http://localhost:4000/shop/api/auth/logout",
+      "path": "/shop/api/auth/logout",
+      "method": "POST",
+      "statusCode": null,
+      "authRequired": false,
+      "parameters": [],
+      "discoverySource": "page-script",
+      "discoveredOnPage": "http://localhost:4000/shop"
+    },
+    {
+      "url": "http://localhost:4000/shop/api/checkout",
+      "path": "/shop/api/checkout",
+      "method": "POST",
+      "statusCode": null,
+      "authRequired": true,
+      "parameters": [],
+      "discoverySource": "page-script",
+      "discoveredOnPage": "http://localhost:4000/shop/checkout"
+    },
+    {
+      "url": "http://localhost:4000/shop/api/products",
+      "path": "/shop/api/products",
+      "method": "GET",
+      "statusCode": 200,
+      "authRequired": false,
+      "parameters": [],
+      "discoverySource": "page-script",
+      "discoveredOnPage": "http://localhost:4000/shop/products/prod-001"
+    }
+  ],
+  "forms": [
+    {
+      "id": "login-section",
+      "formAction": "/shop/api/auth/login",
+      "method": "POST",
+      "fields": [
+        {
+          "name": "email",
+          "id": "email",
+          "type": "email",
+          "placeholder": "Email",
+          "required": false,
+          "defaultValue": "alice@example.com"
+        },
+        {
+          "name": "password",
+          "id": "password",
+          "type": "password",
+          "placeholder": "Password",
+          "required": false,
+          "defaultValue": "Alice123!"
+        }
+      ],
+      "submitButton": {
+        "text": "Login",
+        "actionDescription": "login()"
+      },
+      "pageUrl": "http://localhost:4000/shop"
+    },
+    {
+      "id": "panel-card-1",
+      "formAction": "/shop/api/orders/:id",
+      "method": "GET",
+      "fields": [
+        {
+          "name": "order-id-input",
+          "id": "order-id-input",
+          "type": "text",
+          "placeholder": "e.g. order-bob-001",
+          "required": false
+        }
+      ],
+      "submitButton": {
+        "text": "Fetch Order",
+        "actionDescription": "lookupOrder()"
+      },
+      "pageUrl": "http://localhost:4000/shop/orders"
+    },
+    {
+      "id": "panel-card-2",
+      "formAction": "/shop/api/products/:id/reviews",
+      "method": "POST",
+      "fields": [
+        {
+          "name": "review-content",
+          "id": "review-content",
+          "type": "textarea",
+          "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+          "required": false
+        },
+        {
+          "name": "review-rating",
+          "id": "review-rating",
+          "type": "select",
+          "required": false,
+          "defaultValue": "5"
+        }
+      ],
+      "submitButton": {
+        "text": "Submit Review",
+        "actionDescription": "submitReview('prod-001')"
+      },
+      "pageUrl": "http://localhost:4000/shop/products/prod-001"
+    },
+    {
+      "id": "panel-card-2",
+      "formAction": "/shop/api/products/:id/reviews",
+      "method": "POST",
+      "fields": [
+        {
+          "name": "review-content",
+          "id": "review-content",
+          "type": "textarea",
+          "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+          "required": false
+        },
+        {
+          "name": "review-rating",
+          "id": "review-rating",
+          "type": "select",
+          "required": false,
+          "defaultValue": "5"
+        }
+      ],
+      "submitButton": {
+        "text": "Submit Review",
+        "actionDescription": "submitReview('prod-002')"
+      },
+      "pageUrl": "http://localhost:4000/shop/products/prod-002"
+    },
+    {
+      "id": "panel-card-2",
+      "formAction": "/shop/api/products/:id/reviews",
+      "method": "POST",
+      "fields": [
+        {
+          "name": "review-content",
+          "id": "review-content",
+          "type": "textarea",
+          "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+          "required": false
+        },
+        {
+          "name": "review-rating",
+          "id": "review-rating",
+          "type": "select",
+          "required": false,
+          "defaultValue": "5"
+        }
+      ],
+      "submitButton": {
+        "text": "Submit Review",
+        "actionDescription": "submitReview('prod-003')"
+      },
+      "pageUrl": "http://localhost:4000/shop/products/prod-003"
+    },
+    {
+      "id": "panel-card-2",
+      "formAction": "/shop/api/products/:id/reviews",
+      "method": "POST",
+      "fields": [
+        {
+          "name": "review-content",
+          "id": "review-content",
+          "type": "textarea",
+          "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+          "required": false
+        },
+        {
+          "name": "review-rating",
+          "id": "review-rating",
+          "type": "select",
+          "required": false,
+          "defaultValue": "5"
+        }
+      ],
+      "submitButton": {
+        "text": "Submit Review",
+        "actionDescription": "submitReview('prod-004')"
+      },
+      "pageUrl": "http://localhost:4000/shop/products/prod-004"
+    },
+    {
+      "id": "panel-card-2",
+      "formAction": "/shop/api/orders/:id",
+      "method": "GET",
+      "fields": [
+        {
+          "name": "order-id-input",
+          "id": "order-id-input",
+          "type": "text",
+          "placeholder": "e.g. order-bob-001",
+          "required": false
+        }
+      ],
+      "submitButton": {
+        "text": "Fetch Order",
+        "actionDescription": "lookupOrder()"
+      },
+      "pageUrl": "http://localhost:4000/shop/orders"
+    }
+  ],
+  "errors": [],
+  "metadata": {
+    "agentName": "ReconAgent",
+    "agentVersion": "1.0.0",
+    "completedAt": "2026-11-14T06:35:29.611Z",
+    "externalOriginsVisited": []
+  }
+}

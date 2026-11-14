@@ -1,0 +1,364 @@
+{
+  "missionId": "test-mission-1794638115148-xss",
+  "target": "http://localhost:4000/shop",
+  "status": "completed",
+  "summary": {
+    "totalDiscoveredForms": 7,
+    "candidateInputsEvaluated": 4,
+    "skippedFieldsCount": 8,
+    "testedInputsCount": 4,
+    "vulnerabilitiesConfirmed": 1,
+    "durationMs": 15212
+  },
+  "candidatesEvaluated": [
+    {
+      "candidateId": "xss-cand-1",
+      "formId": "panel-card-2",
+      "pageUrl": "http://localhost:4000/shop/products/prod-001",
+      "submissionEndpoint": "/shop/api/products/:id/reviews",
+      "httpMethod": "POST",
+      "targetField": {
+        "name": "review-content",
+        "id": "review-content",
+        "type": "textarea",
+        "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+        "required": false
+      },
+      "secondaryFields": [
+        {
+          "name": "review-rating",
+          "id": "review-rating",
+          "type": "select",
+          "required": false,
+          "defaultValue": "5"
+        }
+      ],
+      "submitButtonText": "Submit Review",
+      "expectedRenderUrl": "http://localhost:4000/shop/products/prod-001",
+      "rationale": "Discovered interactive textarea field 'review-content' submitted via POST to '/shop/api/products/:id/reviews' and rendered at 'http://localhost:4000/shop/products/prod-001'."
+    },
+    {
+      "candidateId": "xss-cand-2",
+      "formId": "panel-card-2",
+      "pageUrl": "http://localhost:4000/shop/products/prod-002",
+      "submissionEndpoint": "/shop/api/products/:id/reviews",
+      "httpMethod": "POST",
+      "targetField": {
+        "name": "review-content",
+        "id": "review-content",
+        "type": "textarea",
+        "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+        "required": false
+      },
+      "secondaryFields": [
+        {
+          "name": "review-rating",
+          "id": "review-rating",
+          "type": "select",
+          "required": false,
+          "defaultValue": "5"
+        }
+      ],
+      "submitButtonText": "Submit Review",
+      "expectedRenderUrl": "http://localhost:4000/shop/products/prod-002",
+      "rationale": "Discovered interactive textarea field 'review-content' submitted via POST to '/shop/api/products/:id/reviews' and rendered at 'http://localhost:4000/shop/products/prod-002'."
+    },
+    {
+      "candidateId": "xss-cand-3",
+      "formId": "panel-card-2",
+      "pageUrl": "http://localhost:4000/shop/products/prod-003",
+      "submissionEndpoint": "/shop/api/products/:id/reviews",
+      "httpMethod": "POST",
+      "targetField": {
+        "name": "review-content",
+        "id": "review-content",
+        "type": "textarea",
+        "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+        "required": false
+      },
+      "secondaryFields": [
+        {
+          "name": "review-rating",
+          "id": "review-rating",
+          "type": "select",
+          "required": false,
+          "defaultValue": "5"
+        }
+      ],
+      "submitButtonText": "Submit Review",
+      "expectedRenderUrl": "http://localhost:4000/shop/products/prod-003",
+      "rationale": "Discovered interactive textarea field 'review-content' submitted via POST to '/shop/api/products/:id/reviews' and rendered at 'http://localhost:4000/shop/products/prod-003'."
+    },
+    {
+      "candidateId": "xss-cand-4",
+      "formId": "panel-card-2",
+      "pageUrl": "http://localhost:4000/shop/products/prod-004",
+      "submissionEndpoint": "/shop/api/products/:id/reviews",
+      "httpMethod": "POST",
+      "targetField": {
+        "name": "review-content",
+        "id": "review-content",
+        "type": "textarea",
+        "placeholder": "Your review (HTML allowed for demo — XSS sink)",
+        "required": false
+      },
+      "secondaryFields": [
+        {
+          "name": "review-rating",
+          "id": "review-rating",
+          "type": "select",
+          "required": false,
+          "defaultValue": "5"
+        }
+      ],
+      "submitButtonText": "Submit Review",
+      "expectedRenderUrl": "http://localhost:4000/shop/products/prod-004",
+      "rationale": "Discovered interactive textarea field 'review-content' submitted via POST to '/shop/api/products/:id/reviews' and rendered at 'http://localhost:4000/shop/products/prod-004'."
+    }
+  ],
+  "skippedFields": [
+    {
+      "formId": "login-section",
+      "pageUrl": "http://localhost:4000/shop",
+      "fieldName": "email",
+      "fieldType": "email",
+      "reason": "Authentication credential field; verified for identity and not persisted as renderable rich user content."
+    },
+    {
+      "formId": "login-section",
+      "pageUrl": "http://localhost:4000/shop",
+      "fieldName": "password",
+      "fieldType": "password",
+      "reason": "Authentication credential field; verified for identity and not persisted as renderable rich user content."
+    },
+    {
+      "formId": "panel-card-1",
+      "pageUrl": "http://localhost:4000/shop/orders",
+      "fieldName": "order-id-input",
+      "fieldType": "text",
+      "reason": "Field belongs to a read-only GET query form (/shop/api/orders/:id); not a persistent content storage sink."
+    },
+    {
+      "formId": "panel-card-2",
+      "pageUrl": "http://localhost:4000/shop/products/prod-001",
+      "fieldName": "review-rating",
+      "fieldType": "select",
+      "reason": "Auxiliary form field (select); skipped in favor of primary rich-text field 'review-content'."
+    },
+    {
+      "formId": "panel-card-2",
+      "pageUrl": "http://localhost:4000/shop/products/prod-002",
+      "fieldName": "review-rating",
+      "fieldType": "select",
+      "reason": "Auxiliary form field (select); skipped in favor of primary rich-text field 'review-content'."
+    },
+    {
+      "formId": "panel-card-2",
+      "pageUrl": "http://localhost:4000/shop/products/prod-003",
+      "fieldName": "review-rating",
+      "fieldType": "select",
+      "reason": "Auxiliary form field (select); skipped in favor of primary rich-text field 'review-content'."
+    },
+    {
+      "formId": "panel-card-2",
+      "pageUrl": "http://localhost:4000/shop/products/prod-004",
+      "fieldName": "review-rating",
+      "fieldType": "select",
+      "reason": "Auxiliary form field (select); skipped in favor of primary rich-text field 'review-content'."
+    },
+    {
+      "formId": "panel-card-2",
+      "pageUrl": "http://localhost:4000/shop/orders",
+      "fieldName": "order-id-input",
+      "fieldType": "text",
+      "reason": "Field belongs to a read-only GET query form (/shop/api/orders/:id); not a persistent content storage sink."
+    }
+  ],
+  "findings": [
+    {
+      "findingId": "xss-find-001",
+      "vulnerabilityType": "Stored Cross-Site Scripting (Stored XSS)",
+      "title": "Stored XSS in Review Content Rendered via Unescaped innerHTML Sink",
+      "severity": "High",
+      "affectedPage": "/shop/products/:id",
+      "affectedPages": [
+        "http://localhost:4000/shop/products/prod-001",
+        "http://localhost:4000/shop/products/prod-002",
+        "http://localhost:4000/shop/products/prod-003",
+        "http://localhost:4000/shop/products/prod-004"
+      ],
+      "affectedEndpoint": "/shop/api/products/:id/reviews",
+      "inputField": "review-content",
+      "payloadType": "IMG_ONERROR_SENTINEL",
+      "testResult": "VULNERABILITY_CONFIRMED",
+      "reproducible": true,
+      "evidence": {
+        "browserEngine": "Chromium (Playwright)",
+        "targetUrl": "http://localhost:4000/shop/products/prod-001",
+        "authenticatedAs": "alice@example.com",
+        "payloadSubmitted": {
+          "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794638115148_xss_1='SENTINEL_30k04gk'\">",
+          "sentinelKey": "__bb_xss_test_mission_1794638115148_xss_1",
+          "sentinelValue": "SENTINEL_30k04gk",
+          "inputSelector": "#review-content",
+          "submissionUrl": "/shop/api/products/:id/reviews"
+        },
+        "storageVerification": {
+          "reviewId": "review-1",
+          "storedVerbatim": true,
+          "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
+          "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794638115148_xss_1='SENTINEL_30k04gk'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-14T06:35:44.248Z\"}"
+        },
+        "renderVerification": {
+          "pageUrl": "http://localhost:4000/shop/products/prod-001",
+          "containsDangerousSink": true,
+          "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794638115148_xss_1='SENTINEL_30k04gk'\\\">\";"
+        },
+        "browserExecution": {
+          "sentinelKey": "__bb_xss_test_mission_1794638115148_xss_1",
+          "expectedValue": "SENTINEL_30k04gk",
+          "actualValue": "SENTINEL_30k04gk",
+          "executed": true
+        }
+      },
+      "allEvidence": [
+        {
+          "browserEngine": "Chromium (Playwright)",
+          "targetUrl": "http://localhost:4000/shop/products/prod-001",
+          "authenticatedAs": "alice@example.com",
+          "payloadSubmitted": {
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794638115148_xss_1='SENTINEL_30k04gk'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794638115148_xss_1",
+            "sentinelValue": "SENTINEL_30k04gk",
+            "inputSelector": "#review-content",
+            "submissionUrl": "/shop/api/products/:id/reviews"
+          },
+          "storageVerification": {
+            "reviewId": "review-1",
+            "storedVerbatim": true,
+            "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
+            "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794638115148_xss_1='SENTINEL_30k04gk'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-14T06:35:44.248Z\"}"
+          },
+          "renderVerification": {
+            "pageUrl": "http://localhost:4000/shop/products/prod-001",
+            "containsDangerousSink": true,
+            "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794638115148_xss_1='SENTINEL_30k04gk'\\\">\";"
+          },
+          "browserExecution": {
+            "sentinelKey": "__bb_xss_test_mission_1794638115148_xss_1",
+            "expectedValue": "SENTINEL_30k04gk",
+            "actualValue": "SENTINEL_30k04gk",
+            "executed": true
+          }
+        },
+        {
+          "browserEngine": "Chromium (Playwright)",
+          "targetUrl": "http://localhost:4000/shop/products/prod-002",
+          "authenticatedAs": "alice@example.com",
+          "payloadSubmitted": {
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794638115148_xss_2='SENTINEL_qf7wcoj'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794638115148_xss_2",
+            "sentinelValue": "SENTINEL_qf7wcoj",
+            "inputSelector": "#review-content",
+            "submissionUrl": "/shop/api/products/:id/reviews"
+          },
+          "storageVerification": {
+            "reviewId": "review-2",
+            "storedVerbatim": true,
+            "apiEndpointQueried": "/shop/api/products/prod-002/reviews",
+            "apiResponseSnippet": "{\"productId\":\"prod-002\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794638115148_xss_2='SENTINEL_qf7wcoj'\\\">\",\"rating\":5,\"id\":\"review-2\",\"createdAt\":\"2026-11-14T06:35:44.431Z\"}"
+          },
+          "renderVerification": {
+            "pageUrl": "http://localhost:4000/shop/products/prod-002",
+            "containsDangerousSink": true,
+            "sinkSnippet": "document.getElementById('review-content-review-2').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794638115148_xss_2='SENTINEL_qf7wcoj'\\\">\";"
+          },
+          "browserExecution": {
+            "sentinelKey": "__bb_xss_test_mission_1794638115148_xss_2",
+            "expectedValue": "SENTINEL_qf7wcoj",
+            "actualValue": "SENTINEL_qf7wcoj",
+            "executed": true
+          }
+        },
+        {
+          "browserEngine": "Chromium (Playwright)",
+          "targetUrl": "http://localhost:4000/shop/products/prod-003",
+          "authenticatedAs": "alice@example.com",
+          "payloadSubmitted": {
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794638115148_xss_3='SENTINEL_ettpv3u'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794638115148_xss_3",
+            "sentinelValue": "SENTINEL_ettpv3u",
+            "inputSelector": "#review-content",
+            "submissionUrl": "/shop/api/products/:id/reviews"
+          },
+          "storageVerification": {
+            "reviewId": "review-3",
+            "storedVerbatim": true,
+            "apiEndpointQueried": "/shop/api/products/prod-003/reviews",
+            "apiResponseSnippet": "{\"productId\":\"prod-003\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794638115148_xss_3='SENTINEL_ettpv3u'\\\">\",\"rating\":5,\"id\":\"review-3\",\"createdAt\":\"2026-11-14T06:35:44.598Z\"}"
+          },
+          "renderVerification": {
+            "pageUrl": "http://localhost:4000/shop/products/prod-003",
+            "containsDangerousSink": true,
+            "sinkSnippet": "document.getElementById('review-content-review-3').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794638115148_xss_3='SENTINEL_ettpv3u'\\\">\";"
+          },
+          "browserExecution": {
+            "sentinelKey": "__bb_xss_test_mission_1794638115148_xss_3",
+            "expectedValue": "SENTINEL_ettpv3u",
+            "actualValue": "SENTINEL_ettpv3u",
+            "executed": true
+          }
+        },
+        {
+          "browserEngine": "Chromium (Playwright)",
+          "targetUrl": "http://localhost:4000/shop/products/prod-004",
+          "authenticatedAs": "alice@example.com",
+          "payloadSubmitted": {
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794638115148_xss_4='SENTINEL_asvkk0s'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794638115148_xss_4",
+            "sentinelValue": "SENTINEL_asvkk0s",
+            "inputSelector": "#review-content",
+            "submissionUrl": "/shop/api/products/:id/reviews"
+          },
+          "storageVerification": {
+            "reviewId": "review-4",
+            "storedVerbatim": true,
+            "apiEndpointQueried": "/shop/api/products/prod-004/reviews",
+            "apiResponseSnippet": "{\"productId\":\"prod-004\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794638115148_xss_4='SENTINEL_asvkk0s'\\\">\",\"rating\":5,\"id\":\"review-4\",\"createdAt\":\"2026-11-14T06:35:44.765Z\"}"
+          },
+          "renderVerification": {
+            "pageUrl": "http://localhost:4000/shop/products/prod-004",
+            "containsDangerousSink": true,
+            "sinkSnippet": "document.getElementById('review-content-review-4').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794638115148_xss_4='SENTINEL_asvkk0s'\\\">\";"
+          },
+          "browserExecution": {
+            "sentinelKey": "__bb_xss_test_mission_1794638115148_xss_4",
+            "expectedValue": "SENTINEL_asvkk0s",
+            "actualValue": "SENTINEL_asvkk0s",
+            "executed": true
+          }
+        }
+      ],
+      "testedInstancesCount": 4,
+      "reproductionSteps": [
+        "Authenticate to the application as demo user (alice@example.com).",
+        "Navigate to any product detail page containing the review form (e.g. http://localhost:4000/shop/products/prod-001).",
+        "Submit a review payload containing an HTML element with an event handler into 'review-content': <img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794638115148_xss_1='SENTINEL_30k04gk'\">.",
+        "Verify that the API endpoint /shop/api/products/:id/reviews stores the payload without encoding or sanitization.",
+        "Navigate to the product render page.",
+        "Observe that the client script injects the raw review content into the DOM using document.getElementById(...).innerHTML = ...",
+        "Verify that the browser triggers the event handler and executes JavaScript in the page execution context.",
+        "Confirmed identical execution across 4 product endpoints: [prod-001, prod-002, prod-003, prod-004]."
+      ],
+      "remediation": "Avoid assigning untrusted user-supplied content to element.innerHTML. Use element.textContent or safe DOM templating. Alternatively, sanitize input using DOMPurify before DOM insertion.",
+      "timestamp": "2026-11-14T06:35:44.840Z"
+    }
+  ],
+  "errors": [],
+  "metadata": {
+    "agentName": "XssAgent",
+    "agentVersion": "1.0.0",
+    "completedAt": "2026-11-14T06:35:44.890Z",
+    "targetScope": "http://localhost:4000/shop"
+  }
+}

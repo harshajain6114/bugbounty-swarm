@@ -1,0 +1,164 @@
+{
+  "missionId": "test-mission-1794638115148-idor",
+  "target": "http://localhost:4000/shop",
+  "status": "completed",
+  "summary": {
+    "totalDiscoveredEndpoints": 13,
+    "candidateEndpointsEvaluated": 1,
+    "skippedEndpointsCount": 12,
+    "vulnerabilitiesConfirmed": 1,
+    "durationMs": 8
+  },
+  "candidatesEvaluated": [
+    "/shop/api/orders/:id"
+  ],
+  "skippedEndpoints": [
+    {
+      "path": "/shop",
+      "method": "GET",
+      "reason": "Frontend HTML page, not an API resource endpoint."
+    },
+    {
+      "path": "/shop/products",
+      "method": "GET",
+      "reason": "Frontend HTML page, not an API resource endpoint."
+    },
+    {
+      "path": "/shop/orders",
+      "method": "GET",
+      "reason": "Frontend HTML page, not an API resource endpoint."
+    },
+    {
+      "path": "/shop/checkout",
+      "method": "GET",
+      "reason": "Frontend HTML page, not an API resource endpoint."
+    },
+    {
+      "path": "/shop/products/:id",
+      "method": "GET",
+      "reason": "Frontend HTML page, not an API resource endpoint."
+    },
+    {
+      "path": "/shop/api/auth/login",
+      "method": "POST",
+      "reason": "Authentication / session endpoint without object-level resource ownership."
+    },
+    {
+      "path": "/shop/api/auth/me",
+      "method": "GET",
+      "reason": "Authentication / session endpoint without object-level resource ownership."
+    },
+    {
+      "path": "/shop/api/orders",
+      "method": "GET",
+      "reason": "Collection endpoint returning current user's items; used to discover resource IDs rather than direct object lookup."
+    },
+    {
+      "path": "/shop/api/products/:id/reviews",
+      "method": "POST",
+      "reason": "State-modifying POST mutation endpoint; skipped to preserve read-only test safety."
+    },
+    {
+      "path": "/shop/api/auth/logout",
+      "method": "POST",
+      "reason": "Authentication / session endpoint without object-level resource ownership."
+    },
+    {
+      "path": "/shop/api/checkout",
+      "method": "POST",
+      "reason": "State-modifying POST mutation endpoint; skipped to preserve read-only test safety."
+    },
+    {
+      "path": "/shop/api/products",
+      "method": "GET",
+      "reason": "Public catalog entity without per-user ownership boundaries."
+    }
+  ],
+  "findings": [
+    {
+      "findingId": "idor-finding-1",
+      "vulnerabilityType": "Insecure Direct Object Reference (IDOR / BOLA)",
+      "title": "BOLA / IDOR Authorization Bypass on /shop/api/orders/:id",
+      "severity": "High",
+      "affectedEndpoint": "/shop/api/orders/:id",
+      "httpMethod": "GET",
+      "authenticatedUser": "Alice (alice@example.com)",
+      "resourceOwner": "Bob (bob@example.com)",
+      "testResult": "VULNERABILITY_CONFIRMED",
+      "reproducible": true,
+      "evidence": {
+        "authenticatedUser": {
+          "id": "user-alice",
+          "name": "Alice",
+          "email": "alice@example.com"
+        },
+        "resourceOwner": {
+          "id": "user-bob",
+          "name": "Bob",
+          "email": "bob@example.com"
+        },
+        "aliceOwnResource": {
+          "resourceId": "order-alice-001",
+          "httpStatus": 200,
+          "responseBody": {
+            "id": "order-alice-001",
+            "userId": "user-alice",
+            "items": [
+              {
+                "productId": "prod-001",
+                "quantity": 1,
+                "priceAtPurchase": 7999
+              }
+            ],
+            "total": 7999,
+            "createdAt": "2026-11-01T10:00:00Z"
+          }
+        },
+        "crossUserAccessAttempt": {
+          "targetResourceId": "order-bob-001",
+          "httpStatus": 200,
+          "responseBody": {
+            "id": "order-bob-001",
+            "userId": "user-bob",
+            "items": [
+              {
+                "productId": "prod-002",
+                "quantity": 1,
+                "priceAtPurchase": 11999
+              }
+            ],
+            "total": 11999,
+            "createdAt": "2026-11-02T12:30:00Z"
+          }
+        },
+        "ownershipComparison": {
+          "expectedOwnerId": "user-bob",
+          "actualOwnerInResponse": "user-bob",
+          "crossUserLeakageConfirmed": true,
+          "leakedFields": [
+            "items",
+            "total",
+            "createdAt",
+            "userId"
+          ]
+        }
+      },
+      "reproductionSteps": [
+        "1. Authenticate as alice@example.com via POST /shop/api/auth/login.",
+        "2. Obtain session Bearer token for alice@example.com.",
+        "3. Verify legitimate baseline: GET /shop/api/orders/order-alice-001 returns HTTP 200 with Alice's order.",
+        "4. Send cross-user request: GET /shop/api/orders/order-bob-001 with Alice's Bearer token.",
+        "5. Observe that HTTP 200 is returned with Bob's private data (userId=\"user-bob\") — no ownership validation enforced."
+      ],
+      "remediation": "Implement server-side object ownership authorization. Verify that the requested order's userId matches the authenticated session's userId (req.userId). If mismatched, return HTTP 403 Forbidden.",
+      "timestamp": "2026-11-14T06:35:29.676Z"
+    }
+  ],
+  "errors": [],
+  "metadata": {
+    "agentName": "IdorAgent",
+    "agentVersion": "1.0.0",
+    "completedAt": "2026-11-14T06:35:29.676Z",
+    "targetScope": "http://localhost:4000/shop"
+  }
+}

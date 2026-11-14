@@ -1,0 +1,55 @@
+{
+  "testName": "IDOR-001",
+  "vulnerability": "Insecure Direct Object Reference (IDOR / BOLA)",
+  "severity": "High",
+  "affectedEndpoint": "GET /shop/api/orders/:id",
+  "cwe": "CWE-284: Improper Access Control",
+  "reproductionSteps": [
+    "1. POST /shop/api/auth/login — credentials: alice@example.com / Alice123!",
+    "2. Store the returned Bearer token.",
+    "3. GET /shop/api/orders/order-bob-001 with Alice's Bearer token (not Bob's).",
+    "4. Observe HTTP 200 and Bob's private order data returned — no ownership check performed."
+  ],
+  "evidence": {
+    "aliceLogin": {
+      "httpStatus": 200,
+      "userId": "user-alice"
+    },
+    "aliceOwnOrder": {
+      "httpStatus": 200,
+      "body": {
+        "id": "order-alice-001",
+        "userId": "user-alice",
+        "items": [
+          {
+            "productId": "prod-001",
+            "quantity": 1,
+            "priceAtPurchase": 7999
+          }
+        ],
+        "total": 7999,
+        "createdAt": "2026-11-01T10:00:00Z"
+      }
+    },
+    "bobOrderAccessedByAlice": {
+      "httpStatus": 200,
+      "body": {
+        "id": "order-bob-001",
+        "userId": "user-bob",
+        "items": [
+          {
+            "productId": "prod-002",
+            "quantity": 1,
+            "priceAtPurchase": 11999
+          }
+        ],
+        "total": 11999,
+        "createdAt": "2026-11-02T12:30:00Z"
+      }
+    }
+  },
+  "testPassed": true,
+  "vulnerabilityReproduced": true,
+  "details": "GET /shop/api/orders/:id returns order data without verifying ownership. Alice (user-alice) retrieved Bob's order (order-bob-001, userId=user-bob) using only her own Bearer token. Fix: add \"if (order.userId !== req.userId) return res.status(403).json(...)\" before returning.",
+  "testedAt": "2026-11-14T06:34:42.217Z"
+}

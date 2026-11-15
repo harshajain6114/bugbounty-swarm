@@ -15,6 +15,7 @@ import { runIdorMission } from "../agents/idor/index.js";
 import { runXssMission } from "../agents/xss/index.js";
 import { runBusinessLogicMission } from "../agents/business-logic/index.js";
 import { FindingVerifier } from "./finding-verifier.js";
+import { adviseBids, type AgentBidAdvice } from "../agents/bid-advisor.js";
 import {
   createNearClient,
   hashMissionResult,
@@ -211,6 +212,22 @@ export class MissionOrchestrator {
       // ── Stage 3: Sequential Specialist Agent Execution via Bounty Market ───
       console.log(`\n[Stage 2/4] Executing Specialist Security Agents via Swarm Bounty Market…`);
       const marketCoordinator = MarketCoordinator.getInstance();
+
+      // Each agent reasons about its bid over the recon map on NEAR AI Cloud.
+      // Only TEE-signature-verified answers may set a bid (else: scripted).
+      let aiBidAdvice: AgentBidAdvice[] | null = null;
+      try {
+        if (process.env.NEAR_AI_API_KEY) {
+          console.log(`\n  → Agents reasoning about bids on NEAR AI Cloud (TEE, verified)…`);
+          aiBidAdvice = await adviseBids(reconResult);
+        } else {
+          console.log(`  ℹ NEAR_AI_API_KEY not set — agents use scripted bid confidences.`);
+        }
+      } catch (aiErr) {
+        console.warn(`  ⚠ NEAR AI bid advice failed; using scripted confidences:`, (aiErr as Error).message);
+        aiBidAdvice = null;
+      }
+      marketCoordinator.setBidAdvice(aiBidAdvice);
 
       // 1. IDOR / BOLA Agent
       console.log(`\n  → [1/3] Running Bounty Auction for: task-access-control…`);
@@ -433,7 +450,9 @@ export class MissionOrchestrator {
           completedAt,
         },
         marketRounds: marketCoordinator.getMarketRounds().filter((r) => r.roundId.startsWith(missionId)),
+        aiBidAdvice: aiBidAdvice ?? undefined,
       };
+      marketCoordinator.setBidAdvice(null);
 
       // ── Stage 5b: NEAR Blockchain Attestation (optional) ──────────────────
       // Runs AFTER finding verification, BEFORE saving results.

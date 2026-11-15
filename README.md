@@ -14,9 +14,11 @@ BUGBOUNTY SWARM deploys a synchronized swarm of specialist security agents that 
 | **Agent Economy** | **Escrow Bounties & On-Chain Reputation** | Agents earn testnet NEAR bounties escrowed in `market.harsha-swarm.testnet`. Reputation accumulates on-chain upon verified vulnerability submission (`get_agent_reputation`). |
 | **AI Security & Defense** | **Verification-Gated Payouts** | Rewards are held in smart contract escrow and released ONLY after our independent `ReplayVerifier` reproduces and confirms the vulnerability. Unverified findings trigger automated contract refunds. |
 
-### Deterministic Swarm Architecture (No LLM Hallucinations)
-- **Deterministic Security State-Machines**: Agents are rule-based security engines executing in a synchronized pipeline (Recon → Task Auction → IDOR/BOLA → Stored XSS → Price Tampering → Independent Replay Verification → Escrow Payout or Refund → Master Attestation).
-- **Actual Browser DOM Execution**: Uses headless Playwright Chromium to execute real JavaScript sinks and cross-user session states rather than probabilistic text generation.
+### Swarm Architecture: AI Decides What to Bid, Code Proves What Is Paid
+- **Pipeline**: Recon → AI bid reasoning (NEAR AI Cloud) → 1Click-priced escrow → Commit-Reveal Auction → IDOR/BOLA → Stored XSS → Price Tampering → Independent Replay Verification → NEAR MCP Audit → Escrow Payout or Refund → Master Attestation.
+- **AI Bid Reasoning on NEAR AI Cloud (TEE)** *(on when `NEAR_AI_API_KEY` is set)*: After recon, each of the 5 agents separately asks a TEE-hosted model (`cloud-api.near.ai`), given *its own* capabilities and the discovered attack surface, how confident it is for each task. Every completion is verified before use: the TEE signature's signed text must equal `sha256(request):sha256(response)`, the recovered EIP-191 signer must equal `signing_address`, and that signer must appear in an attestation report fetched with a **fresh random nonce** that the report echoes back. Only verified answers can set an on-chain bid; anything else falls back to scripted confidence, recorded per bid as `confidenceSource`. *Not done:* full Intel TDX quote / NVIDIA GPU evidence verification (`apps/server/src/near/near-ai-client.ts`, `apps/server/src/agents/bid-advisor.ts`).
+- **Bounty Priced via NEAR Intents (1Click)**: Each bounty is defined in USD (`BOUNTY_USD`, default $0.03). Before a round opens, a live 1Click `POST /v0/quote` with `dry: true` (EXACT_OUTPUT wNEAR → USDC) returns how much NEAR that costs, and that amount is the escrow attached to `open_round`. The quote's correlationId and signature are stored on the round. Dry quotes move no funds; settlement is *not* done via Intents, which has no testnet (`apps/server/src/near/intents-pricer.ts`).
+- **Deterministic Exploitation**: The exploits themselves are rule-based code, with no LLM in the attack path. Headless Playwright Chromium runs real JavaScript sinks and cross-user sessions.
 - **Commit-Reveal Task Auction**:
   - **Phase 1 (Commit)**: Competing agents submit `sha256(bidder|taskId|confidence|cost|salt)` signed with agent Function-Call keys to prevent front-running.
   - **Phase 2 (Reveal)**: Preimages are validated on-chain by the market contract.
@@ -24,7 +26,7 @@ BUGBOUNTY SWARM deploys a synchronized swarm of specialist security agents that 
     $$\text{Score} = \frac{\text{Confidence\_Bps} \times (1 + \text{Reputation}) \times 10^{12}}{\text{Cost\_Units}}$$
   - **Phase 3 (Settle)**: `settle_round` picks the winner on-chain using each bidder's on-chain reputation. The server then reads the winner back with `get_round` and treats it as authoritative. The local score is only a preview, and payout or refund is refused for any round the contract did not settle.
   - **Phase 3b (NEAR MCP Audit)**: Before any escrow moves, the orchestrator launches the official NEAR MCP server (`@nearai/near-mcp`, stdio) and re-reads chain state through it, independently of the path that sent the transactions. `contract_call_raw_function_as_read_only` → `get_round` must show `Settled` with the recorded winner, and `account_list_access_keys` must show the winner's bid key as a FunctionCall key scoped to `commit_bid`/`reveal_bid` on the market. A failed audit means a refund, not a payout (`apps/server/src/near/mcp-auditor.ts`).
-  - **Phase 4 (Gated Payout / Refund)**: The escrowed `0.01 NEAR` per round goes to the **on-chain winner** only if *that winner's* finding is independently reproduced by `ReplayVerifier`. Otherwise `refund_round` returns the escrow to the operator and reputation is unchanged.
+  - **Phase 4 (Gated Payout / Refund)**: The escrow (1Click-quoted, about 0.011 NEAR for $0.03; fixed 0.01 NEAR if the quote fails) per round goes to the **on-chain winner** only if *that winner's* finding is independently reproduced by `ReplayVerifier`. Otherwise `refund_round` returns the escrow to the operator and reputation is unchanged.
 
 ---
 
@@ -106,6 +108,8 @@ npm run verify:market
   npm run test:orchestrator    # End-to-end swarm mission pipeline
   npm run test:fabricated      # Proves replay verifier REJECTS fabricated findings
   npm run test:mcp             # Read-only: NEAR MCP audit rejects paid / wrong-winner / missing rounds
+  npm run test:intents         # Live 1Click dry quote → escrow amount (no funds move)
+  npm run test:near-ai         # Offline: TEE response-signature recovery (known vector + tamper)
   ```
 - Run live testnet demo scenarios:
   ```bash
@@ -124,7 +128,8 @@ npm run verify:market
 1. **Scripted Bidding Parameters**: Specialist and generalist agents submit bids based on predetermined confidence intervals and scripted cost units rather than live reinforcement learning or external financial models.
 2. **Generalist Agents Have No Exploit Code**: `gen1` and `gen2` are real sub-accounts that really commit and reveal bids, but they implement no exploits. The orchestrator always runs the task's specialist. If a generalist ever won a round, no verified finding would come from the winner, so the round would be **refunded**, not paid (`mission-orchestrator.ts`, Stage 3b).
 3. **NEAR Testnet Only**: All contracts and sub-accounts are deployed exclusively on NEAR Protocol Testnet (`harsha-swarm.testnet`, `market.harsha-swarm.testnet`). No mainnet deployment or real financial value is involved.
-4. **No NEAR Intents / Agent API integration**: Per the NEAR Intents docs, *"There is no testnet version of NEAR Intents or the Agent API"*, and both need mainnet funds. This project is testnet-only, so it uses neither. See [docs/JUDGES.md §4](docs/JUDGES.md) for why the custom market contract does something the Agent API does not offer. (The NEAR MCP server **is** integrated; see the payout audit above.)
+4. **NEAR Intents is used for pricing only, not settlement; the Agent API is not used**: Per the NEAR Intents docs, *"There is no testnet version of NEAR Intents or the Agent API"*. The project calls the live 1Click quote API (dry, no funds moved) to set each escrow, but pays out with native testnet NEAR transfers from the market contract. See [docs/JUDGES.md §4](docs/JUDGES.md) for why the custom market contract does something the Agent API does not offer.
+7. **AI Is Optional and Limited to Bidding**: Without `NEAR_AI_API_KEY`, all bids use scripted confidences, and `confidenceSource: "scripted"` says so on every bid. The AI never decides whether a finding is real or whether anyone gets paid.
 6. **Agent Sub-Accounts Also Hold a Full-Access Key**: Each agent sub-account was created with a full-access key, which stays in the owner's local `~/.near-credentials` and is used only by `provision:agents` to add the scoped key. The agent runtime loads and signs with the scoped function-call key from `.agent-keys.json`, and the MCP audit checks that this exact key is the scoped one.
 5. **Operator Role**: Only the operator account (`harsha-swarm.testnet`, full-access key from `.env`) calls `open_round` (which needs an attached deposit, so a function-call key cannot do it), `settle_round`, `payout` and `refund_round`. Bids are **never** signed by the operator. An agent with no provisioned function-call key simply does not bid (`signingMode: "missing_key"`).
 

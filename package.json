@@ -11,6 +11,8 @@
     "test:server": "cd apps/server && node node_modules/tsx/dist/cli.mjs tests/run-all.ts",
     "test:fabricated": "npm --prefix apps/server run test:fabricated",
     "test:mcp": "npm --prefix apps/server run test:mcp",
+    "test:intents": "npm --prefix apps/server run test:intents",
+    "test:near-ai": "npm --prefix apps/server run test:near-ai",
     "test:orchestrator": "cd apps/server && node node_modules/tsx/dist/cli.mjs tests/mission-orchestrator.test.ts",
     "demo:refund": "npm --prefix apps/server run demo:refund",
     "proof:generate": "node scripts/generate-proof.js",

@@ -10,6 +10,10 @@ export interface MarketBidStrategy {
   confidenceBps: number;
   costYocto: string;
   salt: string;
+  /** near_ai_tee_verified = set by the agent's verified NEAR AI Cloud completion */
+  confidenceSource?: "near_ai_tee_verified" | "scripted";
+  aiChatId?: string;
+  aiSigningAddress?: string;
 }
 
 /**
@@ -24,6 +28,8 @@ export interface MarketRoundResult {
   taskId: string;
   taskName: string;
   rewardNear: string;
+  /** How the escrow amount was set (NEAR Intents 1Click dry quote, or fixed fallback) */
+  bountyPricing?: import("./intents-pricer.js").BountyPricing;
   openTxHash?: string;
   winnerAccount: string;
   winnerAgentId?: string;
@@ -36,6 +42,9 @@ export interface MarketRoundResult {
     confidenceBps: number;
     costYocto: string;
     reputation?: number;
+    confidenceSource?: "near_ai_tee_verified" | "scripted";
+    aiChatId?: string;
+    aiSigningAddress?: string;
     revealed: boolean;
     score: number;
     commitTxHash?: string;

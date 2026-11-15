@@ -14,6 +14,8 @@ import os from "node:os";
 import { createHash } from "node:crypto";
 import { createNearClient, loadNearConfig, isFinalExecutionSuccessful } from "./near-client.js";
 import type { MarketRoundResult, MarketBidStrategy, BidSigningMode } from "./market-types.js";
+import { priceBountyViaIntents } from "./intents-pricer.js";
+import type { AgentBidAdvice, TaskId } from "../agents/bid-advisor.js";
 
 const MARKET_CONTRACT = process.env.NEAR_MARKET_CONTRACT || "market.harsha-swarm.testnet";
 const OPERATOR_ACCOUNT = process.env.NEAR_ACCOUNT_ID || "harsha-swarm.testnet";
@@ -44,10 +46,37 @@ export class MarketCoordinator {
     return this.marketState;
   }
 
+  /** Verified NEAR AI bid advice for the current mission (see agents/bid-advisor.ts). */
+  private bidAdvice: AgentBidAdvice[] | null = null;
+
+  public setBidAdvice(advice: AgentBidAdvice[] | null): void {
+    this.bidAdvice = advice;
+  }
+
   /**
-   * Generates scripted bids for specialists and generalists.
+   * Builds each agent's bid. Confidence comes from that agent's NEAR AI
+   * reasoning when (and only when) its TEE-signed completion verified;
+   * otherwise the scripted default is used. The source is recorded per bid.
    */
   public generateBids(taskId: string): MarketBidStrategy[] {
+    return this.scriptedBids(taskId).map((b) => {
+      const advice = this.bidAdvice?.find((a) => a.agentId === b.agentId);
+      const aiBps = advice?.confidences[taskId as TaskId];
+      if (advice?.verification.verified && aiBps !== undefined) {
+        return {
+          ...b,
+          confidenceBps: aiBps,
+          confidenceSource: "near_ai_tee_verified" as const,
+          aiChatId: advice.verification.chatId,
+          aiSigningAddress: advice.verification.signingAddress,
+        };
+      }
+      return { ...b, confidenceSource: "scripted" as const };
+    });
+  }
+
+  /** Scripted defaults (used when NEAR AI is not configured or did not verify). */
+  private scriptedBids(taskId: string): MarketBidStrategy[] {
     const isAccess = taskId === "task-access-control";
     const isInject = taskId === "task-injection";
     const isLogic = taskId === "task-business-logic";
@@ -201,6 +230,9 @@ export class MarketCoordinator {
         confidenceBps: b.confidenceBps,
         costYocto: b.costYocto,
         salt: b.salt,
+        confidenceSource: b.confidenceSource,
+        aiChatId: b.aiChatId,
+        aiSigningAddress: b.aiSigningAddress,
         reputation: rep,
         revealed: false,
         score: Number(score),
@@ -217,6 +249,17 @@ export class MarketCoordinator {
     console.log(
       `  [MARKET] Local preview winner: ${previewWinner.agentId} (${previewWinner.account}) score ${previewWinner.score}`
     );
+
+    // Price the bounty in USD via a live NEAR Intents 1Click dry quote; the
+    // quoted wNEAR amount becomes the escrow attached to open_round.
+    const bountyPricing = await priceBountyViaIntents();
+    if (bountyPricing.pricingSource === "near_intents_1click_dry_quote") {
+      console.log(
+        `  [MARKET] ✓ 1Click dry quote: $${bountyPricing.bountyUsd} USDC ≈ ${bountyPricing.escrowNear} NEAR (correlationId ${bountyPricing.quote?.correlationId})`
+      );
+    } else {
+      console.warn(`  [MARKET] ⚠ 1Click quote unavailable (${bountyPricing.error}); using fixed ${bountyPricing.escrowNear} NEAR escrow`);
+    }
 
     let openTxHash: string | undefined;
     let settleTxHash: string | undefined;
@@ -247,7 +290,7 @@ export class MarketCoordinator {
             task_id: taskId,
           },
           gas: BigInt("30000000000000"),
-          deposit: BigInt("10000000000000000000000"), // 0.01 NEAR escrow
+          deposit: BigInt(bountyPricing.escrowYocto), // escrow priced by 1Click quote
         });
 
         if (isFinalExecutionSuccessful(openTx)) {
@@ -393,7 +436,8 @@ export class MarketCoordinator {
       roundId,
       taskId,
       taskName,
-      rewardNear: "0.01",
+      rewardNear: bountyPricing.escrowNear,
+      bountyPricing,
       openTxHash,
       winnerAccount,
       winnerAgentId: winnerBid?.agentId,

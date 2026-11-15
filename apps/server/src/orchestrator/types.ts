@@ -123,6 +123,8 @@ export interface MissionResult {
   nearAttestation?: NearAttestationRecord;
   /** Swarm Bounty Market auction rounds data */
   marketRounds?: import("../near/market-types.js").MarketRoundResult[];
+  /** Per-agent NEAR AI Cloud bid reasoning with TEE signature/attestation verification */
+  aiBidAdvice?: import("../agents/bid-advisor.js").AgentBidAdvice[];
 }
 
 export interface MissionSummaryItem {

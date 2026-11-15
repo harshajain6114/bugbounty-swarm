@@ -1,5 +1,5 @@
 {
-  "missionId": "test-mission-1794722221081-idor",
+  "missionId": "test-mission-1794723291069-idor",
   "target": "http://localhost:4000/shop",
   "status": "completed",
   "summary": {
@@ -7,7 +7,7 @@
     "candidateEndpointsEvaluated": 1,
     "skippedEndpointsCount": 12,
     "vulnerabilitiesConfirmed": 1,
-    "durationMs": 12
+    "durationMs": 10
   },
   "candidatesEvaluated": [
     "/shop/api/orders/:id"
@@ -151,14 +151,14 @@
         "5. Observe that HTTP 200 is returned with Bob's private data (userId=\"user-bob\") — no ownership validation enforced."
       ],
       "remediation": "Implement server-side object ownership authorization. Verify that the requested order's userId matches the authenticated session's userId (req.userId). If mismatched, return HTTP 403 Forbidden.",
-      "timestamp": "2026-11-15T05:57:49.881Z"
+      "timestamp": "2026-11-15T06:15:54.576Z"
     }
   ],
   "errors": [],
   "metadata": {
     "agentName": "IdorAgent",
     "agentVersion": "1.0.0",
-    "completedAt": "2026-11-15T05:57:49.881Z",
+    "completedAt": "2026-11-15T06:15:54.576Z",
     "targetScope": "http://localhost:4000/shop"
   }
 }

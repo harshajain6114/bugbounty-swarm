@@ -12,6 +12,13 @@ export interface MarketBidStrategy {
   salt: string;
 }
 
+/**
+ * agent_key        — signed by the agent's own sub-account function-call key
+ * missing_key      — agent had no key; its bid was NOT submitted (no operator fallback)
+ * local_simulation — no testnet credentials; nothing was signed or sent
+ */
+export type BidSigningMode = "agent_key" | "missing_key" | "local_simulation";
+
 export interface MarketRoundResult {
   roundId: string;
   taskId: string;
@@ -19,18 +26,22 @@ export interface MarketRoundResult {
   rewardNear: string;
   openTxHash?: string;
   winnerAccount: string;
+  winnerAgentId?: string;
   winnerScore: string;
+  /** on_chain_settle = read back from get_round after settle_round; unsettled = chain settle failed */
+  winnerSource?: "on_chain_settle" | "unsettled" | "local_simulation";
   allBids: {
     agentId: string;
     account: string;
     confidenceBps: number;
     costYocto: string;
+    reputation?: number;
     revealed: boolean;
     score: number;
     commitTxHash?: string;
     revealTxHash?: string;
     relayed?: boolean;
-    signingMode?: "agent_key" | "operator_relayed";
+    signingMode?: BidSigningMode;
   }[];
   commitTxHashes?: Record<string, string>;
   revealTxHashes?: Record<string, string>;

@@ -13,7 +13,7 @@ import path from "node:path";
 import os from "node:os";
 import { createHash } from "node:crypto";
 import { createNearClient, loadNearConfig, isFinalExecutionSuccessful } from "./near-client.js";
-import type { MarketRoundResult, MarketBidStrategy } from "./market-types.js";
+import type { MarketRoundResult, MarketBidStrategy, BidSigningMode } from "./market-types.js";
 
 const MARKET_CONTRACT = process.env.NEAR_MARKET_CONTRACT || "market.harsha-swarm.testnet";
 const OPERATOR_ACCOUNT = process.env.NEAR_ACCOUNT_ID || "harsha-swarm.testnet";
@@ -98,7 +98,7 @@ export class MarketCoordinator {
     accountId: string,
     provider: unknown,
     nearApi: typeof import("near-api-js")
-  ): { signerAccount: unknown; signingMode: "agent_key" | "operator_relayed" } | null {
+  ): { signerAccount: unknown; signingMode: "agent_key" } | null {
     const { KeyPair, KeyPairSigner, Account } = nearApi;
 
     // 1. Check .agent-keys.json in workspace
@@ -138,6 +138,36 @@ export class MarketCoordinator {
   }
 
   /**
+   * Read-only view call against the market contract (no gas, no signing).
+   * Returns null on any RPC/parse error.
+   */
+  private async viewCall<T>(rpcUrl: string, methodName: string, args: Record<string, unknown>): Promise<T | null> {
+    try {
+      const res = await fetch(rpcUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: `view-${methodName}`,
+          method: "query",
+          params: {
+            request_type: "call_function",
+            finality: "optimistic",
+            account_id: MARKET_CONTRACT,
+            method_name: methodName,
+            args_base64: Buffer.from(JSON.stringify(args)).toString("base64"),
+          },
+        }),
+      });
+      const data = (await res.json()) as { result?: { result?: number[] } };
+      if (!data.result?.result) return null;
+      return JSON.parse(Buffer.from(data.result.result).toString("utf8")) as T;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
    * Executes a complete market auction round for a security task.
    */
   public async runMarketRound(
@@ -150,31 +180,50 @@ export class MarketCoordinator {
     const bids = this.generateBids(taskId);
     const nearClient = createNearClient();
 
-    // Calculate deterministic scores: (confidence_bps * 1e12) / cost_numeric
+    // Read each bidder's current on-chain reputation (view call, no gas) so the
+    // local preview uses exactly the contract's formula:
+    //   score = (confidence_bps * (1 + reputation) * 1e12) / cost_yocto
+    const rpcUrl = loadNearConfig()?.rpcUrl;
+    const reputations: Record<string, number> = {};
+    for (const b of bids) {
+      reputations[b.account] = nearClient && rpcUrl
+        ? Number((await this.viewCall<number>(rpcUrl, "get_agent_reputation", { agent: b.account })) ?? 0)
+        : 0;
+    }
+
     const scoredBids = bids.map((b) => {
-      const score = (Number(b.confidenceBps) * 1e12) / Number(b.costYocto);
+      const rep = reputations[b.account] ?? 0;
+      const score =
+        (BigInt(b.confidenceBps) * BigInt(1 + rep) * 1_000_000_000_000n) / BigInt(b.costYocto);
       return {
         agentId: b.agentId,
         account: b.account,
         confidenceBps: b.confidenceBps,
         costYocto: b.costYocto,
         salt: b.salt,
-        revealed: true,
-        score: Math.round(score * 100) / 100,
+        reputation: rep,
+        revealed: false,
+        score: Number(score),
         commitTxHash: undefined as string | undefined,
         revealTxHash: undefined as string | undefined,
         relayed: false,
-        signingMode: "agent_key" as "agent_key" | "operator_relayed",
+        signingMode: "agent_key" as BidSigningMode,
       };
-    }).sort((a, b) => b.score - a.score);
+    }).sort((a, b) => b.score - a.score || (a.account < b.account ? -1 : 1));
 
-    const winner = scoredBids[0];
+    // Local preview only. When testnet is configured, the authoritative winner
+    // is read back from the contract after settle_round (see below).
+    const previewWinner = scoredBids[0];
     console.log(
-      `  [MARKET] ✓ Deterministic Auction Winner: ${winner.agentId} (${winner.account}) with score ${winner.score}`
+      `  [MARKET] Local preview winner: ${previewWinner.agentId} (${previewWinner.account}) score ${previewWinner.score}`
     );
 
     let openTxHash: string | undefined;
     let settleTxHash: string | undefined;
+    let winnerAccount = previewWinner.account;
+    let winnerScore = previewWinner.score;
+    let winnerSource: MarketRoundResult["winnerSource"] = nearClient ? "unsettled" : "local_simulation";
+    const errors: string[] = [];
     const commitTxHashes: Record<string, string> = {};
     const revealTxHashes: Record<string, string> = {};
 
@@ -210,22 +259,23 @@ export class MarketCoordinator {
           console.error(`  [MARKET] ✕ open_round execution failed:`, openTx.status);
         }
 
-        // Phase 1: Submit commit_bid from each of the 5 agents
-        console.log(`  [MARKET] Submitting commit_bid from 5 agents…`);
+        // Phase 1: Each agent signs commit_bid from its OWN sub-account using its
+        // function-call key (scoped to commit_bid/reveal_bid on the market).
+        // There is no operator fallback: an agent without a key does not bid.
+        console.log(`  [MARKET] Submitting commit_bid from each agent's sub-account…`);
         for (const b of scoredBids) {
           try {
             const agentSignerResult = this.loadAgentSigner(b.account, provider, api);
-            let bidderAcc: any = operatorAccount;
-
-            if (agentSignerResult) {
-              bidderAcc = agentSignerResult.signerAccount;
-              b.signingMode = "agent_key";
-              b.relayed = false;
-            } else {
-              b.signingMode = "operator_relayed";
-              b.relayed = true;
-              console.log(`  [MARKET] Note: Agent key missing for ${b.agentId}, bid signed as operator_relayed`);
+            if (!agentSignerResult) {
+              b.signingMode = "missing_key";
+              const msg = `No function-call key for ${b.account}; bid not submitted (run npm run provision:agents)`;
+              errors.push(msg);
+              console.warn(`    ⚠ ${msg}`);
+              continue;
             }
+            const bidderAcc: any = agentSignerResult.signerAccount;
+            b.signingMode = "agent_key";
+            b.relayed = false;
 
             const preimage = `${b.account}|${taskId}|${b.confidenceBps}|${b.costYocto}|${b.salt}`;
             const commitment = createHash("sha256").update(preimage).digest("hex");
@@ -252,12 +302,14 @@ export class MarketCoordinator {
           }
         }
 
-        // Phase 2: Submit reveal_bid from each of the 5 agents
-        console.log(`  [MARKET] Submitting reveal_bid from 5 agents…`);
+        // Phase 2: Reveal from the same agent sub-account (only bids that committed).
+        console.log(`  [MARKET] Submitting reveal_bid from each committed agent…`);
         for (const b of scoredBids) {
+          if (!b.commitTxHash) continue;
           try {
             const agentSignerResult = this.loadAgentSigner(b.account, provider, api);
-            const bidderAcc: any = agentSignerResult ? agentSignerResult.signerAccount : operatorAccount;
+            if (!agentSignerResult) continue;
+            const bidderAcc: any = agentSignerResult.signerAccount;
 
             const revealTx = await bidderAcc.callFunctionRaw({
               contractId: MARKET_CONTRACT,
@@ -278,6 +330,7 @@ export class MarketCoordinator {
                 : Buffer.from(revealTx.transaction.hash).toString("base64");
               revealTxHashes[b.agentId] = hash;
               b.revealTxHash = hash;
+              b.revealed = true;
               console.log(`    ✓ reveal_bid [${b.agentId}]: ${hash}`);
             } else {
               console.error(`    ✕ reveal_bid failed execution for ${b.agentId}:`, revealTx.status);
@@ -302,33 +355,58 @@ export class MarketCoordinator {
             ? settleTx.transaction.hash
             : Buffer.from(settleTx.transaction.hash).toString("base64");
           console.log(`  [MARKET] ✓ Round settled TX: ${settleTxHash}`);
+
+          // The contract is the source of truth for the winner: read it back.
+          const onChainRound = await this.viewCall<{ winner?: string | null; status?: string }>(
+            config.rpcUrl, "get_round", { round_id: roundId }
+          );
+          if (onChainRound?.winner) {
+            winnerAccount = onChainRound.winner;
+            winnerSource = "on_chain_settle";
+            const w = scoredBids.find((b) => b.account === winnerAccount);
+            winnerScore = w?.score ?? 0;
+            if (winnerAccount !== previewWinner.account) {
+              console.warn(`  [MARKET] ⚠ On-chain winner ${winnerAccount} differs from local preview ${previewWinner.account}; using on-chain result.`);
+            }
+            console.log(`  [MARKET] ✓ On-chain winner (get_round): ${winnerAccount} [status ${onChainRound.status}]`);
+          } else {
+            errors.push("settle_round succeeded but get_round returned no winner");
+          }
         } else {
+          errors.push("settle_round failed execution");
           console.error(`  [MARKET] ✕ settle_round failed execution:`, settleTx.status);
         }
       } catch (err) {
+        errors.push(`On-chain execution error: ${(err as Error).message}`);
         console.warn(`  [MARKET] ⚠ On-chain execution notice:`, (err as Error).message);
       }
     } else {
-      console.log(`  [MARKET] LOCAL SIMULATION: Testnet credentials not loaded. Sealed bidding executed locally.`);
+      console.log(`  [MARKET] LOCAL SIMULATION: Testnet credentials not loaded. Sealed bidding executed locally; nothing is signed or sent.`);
       for (const b of scoredBids) {
-        b.signingMode = "operator_relayed";
-        b.relayed = true;
+        b.signingMode = "local_simulation";
+        b.revealed = true;
       }
     }
 
+    const winnerBid = scoredBids.find((b) => b.account === winnerAccount);
     const roundResult: MarketRoundResult = {
       roundId,
       taskId,
       taskName,
       rewardNear: "0.01",
       openTxHash,
-      winnerAccount: winner.account,
-      winnerScore: String(winner.score),
+      winnerAccount,
+      winnerAgentId: winnerBid?.agentId,
+      winnerScore: String(winnerScore),
+      winnerSource,
       allBids: scoredBids,
       commitTxHashes,
       revealTxHashes,
       settleTxHash,
-      payoutStatus: nearClient ? (openTxHash ? "pending" : "failed") : "simulated",
+      payoutStatus: !nearClient
+        ? "simulated"
+        : openTxHash && winnerSource === "on_chain_settle" ? "pending" : "failed",
+      errors: errors.length > 0 ? errors : undefined,
     };
 
     this.marketState.push(roundResult);
@@ -347,6 +425,11 @@ export class MarketCoordinator {
     if (!nearClient) {
       console.log(`  [MARKET] LOCAL SIMULATION: Payout recorded locally (no chain configured)`);
       round.payoutStatus = "simulated";
+      return undefined;
+    }
+    if (round.winnerSource !== "on_chain_settle") {
+      console.error(`  [MARKET] ✕ Round ${roundId} was not settled on-chain; payout not attempted.`);
+      round.payoutStatus = "failed";
       return undefined;
     }
 
@@ -400,6 +483,11 @@ export class MarketCoordinator {
     if (!nearClient) {
       console.log(`  [MARKET] LOCAL SIMULATION: Escrow refund recorded locally (no chain configured)`);
       round.payoutStatus = "simulated";
+      return undefined;
+    }
+    if (round.winnerSource !== "on_chain_settle") {
+      console.error(`  [MARKET] ✕ Round ${roundId} was not settled on-chain; refund not attempted.`);
+      round.payoutStatus = "failed";
       return undefined;
     }
 

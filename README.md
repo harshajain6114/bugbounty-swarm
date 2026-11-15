@@ -22,7 +22,8 @@ BUGBOUNTY SWARM deploys a synchronized swarm of specialist security agents that 
   - **Phase 2 (Reveal)**: Preimages are validated on-chain by the market contract.
   - **Deterministic Formula**:
     $$\text{Score} = \frac{\text{Confidence\_Bps} \times (1 + \text{Reputation}) \times 10^{12}}{\text{Cost\_Units}}$$
-  - **Phase 3 (Gated Payout / Refund)**: Escrowed payout (`0.01 NEAR` per round) is unlocked only when independent replay confirms reproducible exploitation. Otherwise, `refund_round` returns funds to escrow.
+  - **Phase 3 (Settle)**: `settle_round` picks the winner on-chain using each bidder's on-chain reputation. The server then reads the winner back with `get_round` and treats it as authoritative. The local score is only a preview, and payout or refund is refused for any round the contract did not settle.
+  - **Phase 4 (Gated Payout / Refund)**: The escrowed `0.01 NEAR` per round goes to the **on-chain winner** only if *that winner's* finding is independently reproduced by `ReplayVerifier`. Otherwise `refund_round` returns the escrow to the operator and reputation is unchanged.
 
 ---
 
@@ -44,7 +45,7 @@ npm start
 ### Step 2: Run Live Mission (or Start from Scratch)
 1. Open `http://localhost:5173` in your browser.
 2. *(Optional for demo recording)* Click **"Reset Demo State"** to set the dashboard to a fresh scratch state (0 findings, clean slate).
-3. Click **"Start a mission"** (runtime: ~25-30 seconds).
+3. Click **"Start a mission"** (runtime: about 30 seconds without testnet credentials; about 2.5 minutes with them, because roughly 45 testnet transactions are signed and awaited).
 4. **What You See**:
    - The status switches to `RUNNING` and the stages progress.
    - ReconAgent maps 8 pages and 13 endpoints.
@@ -68,18 +69,15 @@ All smart contracts and mission transactions are permanently deployed and confir
 - **Deployment Transaction**: [`FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8`](https://testnet.nearblocks.io/txns/FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8)
 
 ### Live Mission & Market Transactions
-- **Master Mission Attestation**: [`6YHWcRkpGddsxan5Z4DrN4MDDF5CNCAcWWCcfvN1wpkc`](https://testnet.nearblocks.io/txns/6YHWcRkpGddsxan5Z4DrN4MDDF5CNCAcWWCcfvN1wpkc) (Mission `test-mission-1794687289883`)
-- **Auction Round 1 (`task-access-control`)**:
-  - Open Round: [`4C8TRvucksZZMXK6HhkFQhvJQ7YaxWb8j8NqAQk6jvYU`](https://testnet.nearblocks.io/txns/4C8TRvucksZZMXK6HhkFQhvJQ7YaxWb8j8NqAQk6jvYU)
-  - Settle Round: [`8ZJZiyr3SzxduKnMtd2zhDpR9X4p8ZZXahmyy5G31HS8`](https://testnet.nearblocks.io/txns/8ZJZiyr3SzxduKnMtd2zhDpR9X4p8ZZXahmyy5G31HS8)
-  - Verification-Gated Payout: [`Fu7g8a5wBBdm2x2TWAoJy5FeqRe3jTs1QJ1PZTe2NhW4`](https://testnet.nearblocks.io/txns/Fu7g8a5wBBdm2x2TWAoJy5FeqRe3jTs1QJ1PZTe2NhW4) (Awarded to `idor.harsha-swarm.testnet`)
-- **Auction Round 2 (`task-injection`)**:
-  - Open Round: [`EKewTS7zVASn1QqmAVB5R89JCmx2SGxR3NhAGDeeSqoi`](https://testnet.nearblocks.io/txns/EKewTS7zVASn1QqmAVB5R89JCmx2SGxR3NhAGDeeSqoi)
-  - Settle Round: [`H6Rc4En75xi2af4jhy85ZoHGDhRzeWC2z2JUcLnyADtL`](https://testnet.nearblocks.io/txns/H6Rc4En75xi2af4jhy85ZoHGDhRzeWC2z2JUcLnyADtL)
-  - Verification-Gated Payout: [`4iH82Md1jeaNmYUMpzXcGD2odQBC5qMwTwfvnDD9QHLA`](https://testnet.nearblocks.io/txns/4iH82Md1jeaNmYUMpzXcGD2odQBC5qMwTwfvnDD9QHLA) (Awarded to `xss.harsha-swarm.testnet`)
-- **Auction Round 3 (`task-business-logic`)**:
-  - Open Round: [`8AXLFPioroLzz3uGn1jgcuAmHmjTHqx4UZ8JAx8QBCNQ`](https://testnet.nearblocks.io/txns/8AXLFPioroLzz3uGn1jgcuAmHmjTHqx4UZ8JAx8QBCNQ)
-  - Verification-Gated Payout: [`8rY8BrhivqQzrGDDN5qJ21VNMyGRwzRHYEpAenEtRD7C`](https://testnet.nearblocks.io/txns/8rY8BrhivqQzrGDDN5qJ21VNMyGRwzRHYEpAenEtRD7C) (Awarded to `logic.harsha-swarm.testnet`)
+Mission `mission-refund-1794721485135` (`npm run demo:refund`) exercises **both** escrow outcomes in one run. The IDOR bug is patched for this demo, so replay verification fails and round 1 is refunded; rounds 2 and 3 are paid. Every winner below was read back from the contract (`get_round`) after `settle_round`, and every bid was signed by the agent's own sub-account function-call key. The full per-bid list is in [docs/near-proof.md](docs/near-proof.md).
+
+- **Master Mission Attestation**: [`Hq8kCU5rzpNeDHnE5xHzMFxt2jzyQRhYYXLtn52XUvj`](https://testnet.nearblocks.io/txns/Hq8kCU5rzpNeDHnE5xHzMFxt2jzyQRhYYXLtn52XUvj)
+- **Round 1 (`task-access-control`) → REFUNDED** (on-chain winner `idor.harsha-swarm.testnet`, finding not reproducible):
+  - Open: [`74B5m8DH…`](https://testnet.nearblocks.io/txns/74B5m8DHrDk6Z81krqVLnf6ZnEKUw1naWMvifqxYQfrZ) · Settle: [`9G6DexMs…`](https://testnet.nearblocks.io/txns/9G6DexMskd28K2RUr7eFopLocceE7tapACTQDrCZ82He) · `refund_round`: [`5e1J9yZn…`](https://testnet.nearblocks.io/txns/5e1J9yZneCNSpt35Yokvgt1o3ox2mNZVVsnYDjEJkhWC)
+- **Round 2 (`task-injection`) → PAID** to `xss.harsha-swarm.testnet`:
+  - Open: [`8PbLZnDz…`](https://testnet.nearblocks.io/txns/8PbLZnDzTymfwLiWqbH4vwgD2nBpoQsHQiYdLdc5jgpy) · Settle: [`E1RT2mBr…`](https://testnet.nearblocks.io/txns/E1RT2mBrwhFYWLm2dnpnecLvwvd6WKdUMm4U5m8HrmGp) · `payout`: [`26KMPvPS…`](https://testnet.nearblocks.io/txns/26KMPvPSqC7oD7wN3kfbQwxmYhkDkG4LvSxr2B24688U)
+- **Round 3 (`task-business-logic`) → PAID** to `logic.harsha-swarm.testnet`:
+  - Open: [`Ehxcpg4X…`](https://testnet.nearblocks.io/txns/Ehxcpg4XfruFTscXWyUMaGJXCpVLDz43Gvgqjg1NFbBx) · Settle: [`79KJVtGQ…`](https://testnet.nearblocks.io/txns/79KJVtGQ4zEvPX5fdhnBWJRfxbGkhH2oPiQ4iNNna8AT) · `payout`: [`4fiKDzQV…`](https://testnet.nearblocks.io/txns/4fiKDzQV3NS5zpqNCFwNBBeS2BgHyBZu86P79w2pxonj)
 
 ### Zero-Gas Read-Only Verification
 Anyone can verify all on-chain states directly from NEAR testnet without private keys or gas:
@@ -121,10 +119,10 @@ npm run verify:market
 ## 5. Known Limitations & Honest Disclosures
 
 1. **Scripted Bidding Parameters**: Specialist and generalist agents submit bids based on predetermined confidence intervals and scripted cost units rather than live reinforcement learning or external financial models.
-2. **Generalist Agent Implementations**: Generalist agents (`gen1`, `gen2`) participate in the task auction using lower confidence scores; in the current prototype, their execution fallback is coordinated by the core specialist engine.
+2. **Generalist Agents Have No Exploit Code**: `gen1` and `gen2` are real sub-accounts that really commit and reveal bids, but they implement no exploits. The orchestrator always runs the task's specialist. If a generalist ever won a round, no verified finding would come from the winner, so the round would be **refunded**, not paid (`mission-orchestrator.ts`, Stage 3b).
 3. **NEAR Testnet Only**: All contracts and sub-accounts are deployed exclusively on NEAR Protocol Testnet (`harsha-swarm.testnet`, `market.harsha-swarm.testnet`). No mainnet deployment or real financial value is involved.
-4. **NEAR Intents Scope**: NEAR Intents is currently mainnet-focused with specialized solver networks. For this hackathon, task auctioning and escrow release are implemented via custom commit-reveal smart contracts on testnet.
-5. **Operator Relay**: The Mission Orchestrator coordinates round openings and bid relaying using sub-account Function-Call access keys.
+4. **No NEAR Intents / Agent API / MCP integration**: Per the NEAR Intents docs, *"There is no testnet version of NEAR Intents or the Agent API"*, and both need mainnet funds. This project is testnet-only, so it uses neither. See [docs/JUDGES.md §4](docs/JUDGES.md) for why the custom market contract does something the Agent API does not offer. The NEAR MCP server is not integrated.
+5. **Operator Role**: Only the operator account (`harsha-swarm.testnet`, full-access key from `.env`) calls `open_round` (which needs an attached deposit, so a function-call key cannot do it), `settle_round`, `payout` and `refund_round`. Bids are **never** signed by the operator. An agent with no provisioned function-call key simply does not bid (`signingMode: "missing_key"`).
 
 For an exhaustive audit and line-by-line verification guide, see [docs/JUDGES.md](docs/JUDGES.md).
 

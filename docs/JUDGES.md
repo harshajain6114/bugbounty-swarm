@@ -10,6 +10,7 @@
 | Claim Made | Track | Source File / Implementation | Zero-Gas / Offline Verification Command | On-Chain Proof (NEAR Testnet) |
 |---|---|---|---|---|
 | **Commit-Reveal Task Auction** | AI Swarms | `apps/near-market-contract/src/lib.rs`<br>`apps/server/src/near/market-coordinator.ts` | `npm run verify:market`<br>`npm run test:market-contract` | `market.harsha-swarm.testnet`<br>Methods: `open_round`, `commit_bid`, `reveal_bid`, `settle_round` |
+| **On-Chain Winner Is Authoritative** | AI Swarms | `apps/server/src/near/market-coordinator.ts` (`viewCall("get_round")` after `settle_round`) | `npm run verify:market` | `winnerSource: "on_chain_settle"` in each round of `apps/server/tests/results/mission-result.json`; payout/refund refused for unsettled rounds |
 | **Agent Sub-Account Keys** | AI Swarms | `scripts/provision-agents.js`<br>`apps/server/src/near/market-coordinator.ts` | `npm run verify:market` (prints access keys) | 5 sub-accounts (`idor`, `xss`, `logic`, `gen1`, `gen2`) with `FunctionCall` access keys limited to `market.harsha-swarm.testnet` |
 | **Independent Replay Verification** | AI Security & Defense | `apps/server/src/orchestrator/replay-verifier.ts`<br>`apps/server/src/orchestrator/finding-verifier.ts` | `npm run test:fabricated`<br>`npm run test:orchestrator` | Independent Chromium browser DOM sink & fresh Alice/Bob cross-tenant session replay |
 | **Verification-Gated Escrow Payout** | AI Security & Defense | `apps/near-market-contract/src/lib.rs` (`payout`)<br>`apps/server/src/orchestrator/mission-orchestrator.ts` | `npm run verify:market`<br>`npm run test:market-contract` | Escrowed `0.01 NEAR` released ONLY after `replayVerifier.verify()` passes |
@@ -72,11 +73,29 @@ npm run verify:market
 ### What Is Real
 1. **Real Browser Runtime**: Playwright Chromium v1255 runs headless in `ReconAgent`, `XssAgent`, and `ReplayVerifier` to execute real DOM code and cross-tenant session cookies.
 2. **Real Smart Contracts**: Rust contracts deployed on NEAR Protocol Testnet at `harsha-swarm.testnet` and `market.harsha-swarm.testnet`.
-3. **Real Function-Call Keys**: Competing agent accounts sign bids using dedicated ed25519 Function-Call keys restricted specifically to `market.harsha-swarm.testnet` methods `commit_bid` and `reveal_bid`.
+3. **Real Function-Call Keys**: Competing agent accounts sign bids using dedicated ed25519 Function-Call keys restricted specifically to `market.harsha-swarm.testnet` methods `commit_bid` and `reveal_bid` (0.25 NEAR gas allowance each). There is **no operator fallback**: a missing key means no bid (`signingMode: "missing_key"`).
 4. **Real FastNear RPC Verification**: In-memory findings hash is compared against the live FastNear RPC response. If absent, the system explicitly reports `NO ON-CHAIN RECORD`.
 
 ### Known Limitations
 1. **Deterministic Bidding**: Competing agents use scripted confidence intervals and scripted cost units rather than dynamic external economic models.
 2. **Generalist Agent Implementations**: Generalist agent accounts (`gen1`, `gen2`) participate in the auction using lower confidence scores; their exploit fallback relies on the specialist engine.
 3. **NEAR Testnet Only**: All contracts and accounts operate exclusively on NEAR Testnet; no mainnet funds or real tokens are used.
-4. **NEAR Intents**: NEAR Intents solvers currently focus on mainnet token routing. For this multi-agent hackathon, auction settlement is handled via custom commit-reveal smart contracts.
+4. **NEAR Intents / Agent API / MCP are not used.** Both NEAR Intents and the Agent API are mainnet-only (see §4), and this project runs only on testnet. The NEAR MCP server is not integrated.
+
+---
+
+## 4. Why a Custom Market Contract Instead of the Agent API
+
+The track rubric scores a hand-rolled permissioning contract lower than the Agent API, *unless the code does something the Agent API cannot*. Here is that case, stated precisely so it can be checked:
+
+**What the Agent API provides** (docs.agentsonintents.com, *Agent API → How it works*): one wallet per agent on NEAR Intents, an owner-signed policy (actions, assets, limits, destinations, USD budget, delays, time windows, emergency stop), and the actions `swap`, `limit_order`, `transfer`, `withdraw`, `shield`/`unshield`. It is *"an experimental, mainnet-only beta"*.
+
+**What `market.harsha-swarm.testnet` does that those actions do not:**
+| Mechanism | Where | Why the Agent API doesn't cover it |
+|---|---|---|
+| Sealed-bid **commit-reveal** auction; the preimage is checked on-chain with `env::sha256` | `lib.rs` `commit_bid` / `reveal_bid` | The Agent API moves funds under a policy. It has no auction or bid-commitment primitive. |
+| **Reputation-weighted** winner selection with a lexicographic tie-break | `lib.rs` `settle_round` | Its policies limit *what* an agent may spend. They don't *choose between* competing agents. |
+| Escrow released only after **independent replay verification** of the winner's own work, otherwise `refund_round` | `lib.rs` `payout` / `refund_round` + `mission-orchestrator.ts` Stage 3b | Its `timelock_ms` / `owner_approval` delay a payment or ask a human. Neither ties a payout to a machine-checked proof of work. |
+| **Reputation** that only goes up on a verified payout | `lib.rs` `payout` → `agent_reputation` | No reputation concept exists in the Agent API. |
+
+**What we do *not* claim:** the agents' function-call keys are *permission scoping* (only `commit_bid`/`reveal_bid` on one contract, a 0.25 NEAR gas allowance). They are not a spending-limit policy and they do not replace the Agent API's budget controls. Agents in this design never spend; they only bid and get paid.

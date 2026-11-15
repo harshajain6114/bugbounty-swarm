@@ -345,16 +345,20 @@ export class MissionOrchestrator {
 
       for (const round of marketCoordinator.getMarketRounds()) {
         if (round.roundId.startsWith(missionId)) {
-          const expectedAgent = taskAgentMap[round.taskId];
-          const hasVerifiedFinding = verifiedFindings.some(
-            (vf) => vf.sourceAgent === expectedAgent
-          );
+          // Pay only the agent the contract selected, and only if THAT agent's
+          // finding for this task survived independent replay verification.
+          const winnerAgent = round.winnerAgentId;
+          const taskSpecialist = taskAgentMap[round.taskId];
+          const hasVerifiedFinding =
+            !!winnerAgent &&
+            winnerAgent === taskSpecialist &&
+            verifiedFindings.some((vf) => vf.sourceAgent === winnerAgent);
 
           if (hasVerifiedFinding) {
             console.log(`  ✓ Finding verified for ${round.taskId}. Releasing payout to winner (${round.winnerAccount})…`);
             await marketCoordinator.releasePayout(round.roundId);
           } else {
-            console.warn(`  ⚠ Finding NOT verified for ${round.taskId}. Verification failed -> Refunding escrow to operator…`);
+            console.warn(`  ⚠ No verified finding from winner ${winnerAgent ?? "(none)"} for ${round.taskId} -> Refunding escrow to operator…`);
             await marketCoordinator.refundRound(round.roundId);
           }
         }

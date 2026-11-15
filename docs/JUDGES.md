@@ -11,6 +11,7 @@
 |---|---|---|---|---|
 | **Commit-Reveal Task Auction** | AI Swarms | `apps/near-market-contract/src/lib.rs`<br>`apps/server/src/near/market-coordinator.ts` | `npm run verify:market`<br>`npm run test:market-contract` | `market.harsha-swarm.testnet`<br>Methods: `open_round`, `commit_bid`, `reveal_bid`, `settle_round` |
 | **On-Chain Winner Is Authoritative** | AI Swarms | `apps/server/src/near/market-coordinator.ts` (`viewCall("get_round")` after `settle_round`) | `npm run verify:market` | `winnerSource: "on_chain_settle"` in each round of `apps/server/tests/results/mission-result.json`; payout/refund refused for unsettled rounds |
+| **NEAR MCP Pre-Payout Audit** | AI Swarms / AI Security | `apps/server/src/near/mcp-auditor.ts`<br>`apps/server/src/orchestrator/mission-orchestrator.ts` (Stage 3b) | `npm run test:mcp` (read-only) | Launches `@nearai/near-mcp` over stdio; `contract_call_raw_function_as_read_only` (`get_round` = Settled + same winner) and `account_list_access_keys` (bid key is FunctionCall-scoped) must both pass or the round is refunded. Result stored as `mcpAudit` on every round in `mission-result.json` |
 | **Agent Sub-Account Keys** | AI Swarms | `scripts/provision-agents.js`<br>`apps/server/src/near/market-coordinator.ts` | `npm run verify:market` (prints access keys) | 5 sub-accounts (`idor`, `xss`, `logic`, `gen1`, `gen2`) with `FunctionCall` access keys limited to `market.harsha-swarm.testnet` |
 | **Independent Replay Verification** | AI Security & Defense | `apps/server/src/orchestrator/replay-verifier.ts`<br>`apps/server/src/orchestrator/finding-verifier.ts` | `npm run test:fabricated`<br>`npm run test:orchestrator` | Independent Chromium browser DOM sink & fresh Alice/Bob cross-tenant session replay |
 | **Verification-Gated Escrow Payout** | AI Security & Defense | `apps/near-market-contract/src/lib.rs` (`payout`)<br>`apps/server/src/orchestrator/mission-orchestrator.ts` | `npm run verify:market`<br>`npm run test:market-contract` | Escrowed `0.01 NEAR` released ONLY after `replayVerifier.verify()` passes |
@@ -80,7 +81,8 @@ npm run verify:market
 1. **Deterministic Bidding**: Competing agents use scripted confidence intervals and scripted cost units rather than dynamic external economic models.
 2. **Generalist Agent Implementations**: Generalist agent accounts (`gen1`, `gen2`) participate in the auction using lower confidence scores; their exploit fallback relies on the specialist engine.
 3. **NEAR Testnet Only**: All contracts and accounts operate exclusively on NEAR Testnet; no mainnet funds or real tokens are used.
-4. **NEAR Intents / Agent API / MCP are not used.** Both NEAR Intents and the Agent API are mainnet-only (see §4), and this project runs only on testnet. The NEAR MCP server is not integrated.
+4. **NEAR Intents / Agent API are not used.** Both are mainnet-only (see §4), and this project runs only on testnet.
+5. **Agent sub-accounts also hold their creator full-access key** (kept in the owner's `~/.near-credentials`, used only by `provision:agents`). The runtime signs bids only with the scoped function-call key, and the MCP audit checks that this exact key is scoped.
 
 ---
 

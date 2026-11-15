@@ -17,6 +17,7 @@
     "test:business-logic-agent": "node node_modules/tsx/dist/cli.mjs tests/business-logic-agent.test.ts",
     "test:mission": "node node_modules/tsx/dist/cli.mjs tests/mission-orchestrator.test.ts",
     "test:fabricated": "node node_modules/tsx/dist/cli.mjs tests/fabricated-finding.test.ts",
+    "test:mcp": "node node_modules/tsx/dist/cli.mjs tests/mcp-auditor.test.ts",
     "demo:refund": "node node_modules/tsx/dist/cli.mjs tests/demo-refund.ts",
     "test:all": "node node_modules/tsx/dist/cli.mjs tests/run-all.ts",
     "typecheck": "node node_modules/typescript/bin/tsc --noEmit"
@@ -25,6 +26,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@nearai/near-mcp": "^0.0.35",
     "cors": "^2.8.6",
     "dotenv": "^18.0.10",
     "express": "^5.3.0",

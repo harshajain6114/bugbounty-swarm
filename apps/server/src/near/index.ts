@@ -29,4 +29,6 @@ export {
 } from "./near-client.js";
 
 export { MarketCoordinator } from "./market-coordinator.js";
+export { McpAuditor } from "./mcp-auditor.js";
+export type { McpRoundAudit } from "./mcp-auditor.js";
 export type { MarketBidStrategy, MarketRoundResult, SwarmMarketState } from "./market-types.js";

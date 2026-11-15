@@ -21,6 +21,7 @@ import {
   hashFindings,
   hashAgentFindings,
   MarketCoordinator,
+  McpAuditor,
 } from "../near/index.js";
 import type {
   AgentExecutionRecord,
@@ -343,8 +344,13 @@ export class MissionOrchestrator {
         "task-business-logic": "BusinessLogicAgent",
       };
 
-      for (const round of marketCoordinator.getMarketRounds()) {
-        if (round.roundId.startsWith(missionId)) {
+      // Rounds settled on-chain get a second, independent read of chain state
+      // through the NEAR MCP server before any escrow is released.
+      const mcpAuditor = new McpAuditor();
+      try {
+        for (const round of marketCoordinator.getMarketRounds()) {
+          if (!round.roundId.startsWith(missionId)) continue;
+
           // Pay only the agent the contract selected, and only if THAT agent's
           // finding for this task survived independent replay verification.
           const winnerAgent = round.winnerAgentId;
@@ -354,14 +360,29 @@ export class MissionOrchestrator {
             winnerAgent === taskSpecialist &&
             verifiedFindings.some((vf) => vf.sourceAgent === winnerAgent);
 
-          if (hasVerifiedFinding) {
-            console.log(`  ✓ Finding verified for ${round.taskId}. Releasing payout to winner (${round.winnerAccount})…`);
-            await marketCoordinator.releasePayout(round.roundId);
-          } else {
+          if (!hasVerifiedFinding) {
             console.warn(`  ⚠ No verified finding from winner ${winnerAgent ?? "(none)"} for ${round.taskId} -> Refunding escrow to operator…`);
             await marketCoordinator.refundRound(round.roundId);
+            continue;
           }
+
+          if (round.winnerSource === "on_chain_settle") {
+            console.log(`  → NEAR MCP pre-payout audit for ${round.roundId}…`);
+            const audit = await mcpAuditor.auditRoundBeforePayout(round.roundId, round.winnerAccount);
+            round.mcpAudit = audit;
+            if (!audit.approved) {
+              console.warn(`  ⚠ NEAR MCP audit REJECTED payout: ${audit.reasons.join("; ")} -> Refunding escrow…`);
+              await marketCoordinator.refundRound(round.roundId);
+              continue;
+            }
+            console.log(`  ✓ NEAR MCP audit approved: round ${audit.roundStatus}, winner ${audit.onChainWinner}, bid key scoped to market.`);
+          }
+
+          console.log(`  ✓ Finding verified for ${round.taskId}. Releasing payout to winner (${round.winnerAccount})…`);
+          await marketCoordinator.releasePayout(round.roundId);
         }
+      } finally {
+        await mcpAuditor.close();
       }
 
       // ── Stage 5: Synthesis & Summary Statistics ────────────────────────────

@@ -1,5 +1,5 @@
 {
-  "missionId": "mission-refund-1794721485135-bizlogic",
+  "missionId": "test-mission-1794722221081-bizlogic",
   "target": "http://localhost:4000/shop",
   "status": "completed",
   "summary": {
@@ -8,7 +8,7 @@
     "skippedEndpointsCount": 12,
     "vulnerabilitiesConfirmed": 1,
     "priceDiscrepancyCents": 7998,
-    "durationMs": 13
+    "durationMs": 8
   },
   "candidatesEvaluated": [
     {
@@ -122,7 +122,7 @@
               }
             ],
             "total": 1,
-            "createdAt": "2026-11-15T05:46:45.562Z"
+            "createdAt": "2026-11-15T05:59:12.091Z"
           },
           "warning": "[VULN] Price was accepted from client payload — no server-side validation."
         },
@@ -136,14 +136,14 @@
         "Observe that the server accepts the client-supplied price without validating against the product database, creating order order-alice-100 for 1 cent(s) instead of 7999 cents."
       ],
       "remediation": "Never accept product price fields from client-side checkout payloads. When processing orders, ignore any client-supplied price and look up the authoritative price server-side directly from the database using productId.",
-      "timestamp": "2026-11-15T05:46:45.563Z"
+      "timestamp": "2026-11-15T05:59:12.095Z"
     }
   ],
   "errors": [],
   "metadata": {
     "agentName": "BusinessLogicAgent",
     "agentVersion": "1.0.0",
-    "completedAt": "2026-11-15T05:46:45.565Z",
+    "completedAt": "2026-11-15T05:59:12.096Z",
     "targetScope": "http://localhost:4000/shop"
   }
 }

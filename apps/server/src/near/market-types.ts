@@ -47,6 +47,18 @@ export interface MarketRoundResult {
   revealTxHashes?: Record<string, string>;
   settleTxHash?: string;
   payoutTxHash?: string;
+  /** Pre-payout audit performed through the NEAR MCP server (see mcp-auditor.ts) */
+  mcpAudit?: {
+    approved: boolean;
+    source: "near-mcp";
+    roundStatus?: string;
+    onChainWinner?: string;
+    winnerMatches: boolean;
+    winnerBidKey?: string;
+    winnerKeyScoped: boolean;
+    reasons: string[];
+    auditedAt: string;
+  };
   payoutStatus: "not_configured" | "simulated" | "pending" | "confirmed" | "failed" | "refunded";
   errors?: string[];
 }

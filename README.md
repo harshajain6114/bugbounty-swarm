@@ -23,6 +23,7 @@ BUGBOUNTY SWARM deploys a synchronized swarm of specialist security agents that 
   - **Deterministic Formula**:
     $$\text{Score} = \frac{\text{Confidence\_Bps} \times (1 + \text{Reputation}) \times 10^{12}}{\text{Cost\_Units}}$$
   - **Phase 3 (Settle)**: `settle_round` picks the winner on-chain using each bidder's on-chain reputation. The server then reads the winner back with `get_round` and treats it as authoritative. The local score is only a preview, and payout or refund is refused for any round the contract did not settle.
+  - **Phase 3b (NEAR MCP Audit)**: Before any escrow moves, the orchestrator launches the official NEAR MCP server (`@nearai/near-mcp`, stdio) and re-reads chain state through it, independently of the path that sent the transactions. `contract_call_raw_function_as_read_only` → `get_round` must show `Settled` with the recorded winner, and `account_list_access_keys` must show the winner's bid key as a FunctionCall key scoped to `commit_bid`/`reveal_bid` on the market. A failed audit means a refund, not a payout (`apps/server/src/near/mcp-auditor.ts`).
   - **Phase 4 (Gated Payout / Refund)**: The escrowed `0.01 NEAR` per round goes to the **on-chain winner** only if *that winner's* finding is independently reproduced by `ReplayVerifier`. Otherwise `refund_round` returns the escrow to the operator and reputation is unchanged.
 
 ---
@@ -71,7 +72,8 @@ All smart contracts and mission transactions are permanently deployed and confir
 ### Live Mission & Market Transactions
 Mission `mission-refund-1794721485135` (`npm run demo:refund`) exercises **both** escrow outcomes in one run. The IDOR bug is patched for this demo, so replay verification fails and round 1 is refunded; rounds 2 and 3 are paid. Every winner below was read back from the contract (`get_round`) after `settle_round`, and every bid was signed by the agent's own sub-account function-call key. The full per-bid list is in [docs/near-proof.md](docs/near-proof.md).
 
-- **Master Mission Attestation**: [`Hq8kCU5rzpNeDHnE5xHzMFxt2jzyQRhYYXLtn52XUvj`](https://testnet.nearblocks.io/txns/Hq8kCU5rzpNeDHnE5xHzMFxt2jzyQRhYYXLtn52XUvj)
+- **NEAR MCP-audited mission** `test-mission-1794722221081`: all three rounds passed the MCP pre-payout audit, then paid. Payouts: [`BzSrhfQF…`](https://testnet.nearblocks.io/txns/BzSrhfQFHzirWe4XeEty5Tds5XQMbeGFzpYw29JqCrXq) · [`HifsvhH2…`](https://testnet.nearblocks.io/txns/HifsvhH2nHjNfLSbjMCPd87eyyA8fDh7aDyANqK7DpSx) · [`29WbVuNx…`](https://testnet.nearblocks.io/txns/29WbVuNxgppAz9tKYXYfSHLUMMycpzeQrSwzD3ewtB9X); attestation [`HRYHqy1W…`](https://testnet.nearblocks.io/txns/HRYHqy1WYHR7XdD99z9jiJsiz1TjUs1Zvkf28mSGdUN2). The `mcpAudit` record is in `apps/server/tests/results/mission-test-mission-1794722221081.json`.
+- **Master Mission Attestation** (refund-demo mission): [`Hq8kCU5rzpNeDHnE5xHzMFxt2jzyQRhYYXLtn52XUvj`](https://testnet.nearblocks.io/txns/Hq8kCU5rzpNeDHnE5xHzMFxt2jzyQRhYYXLtn52XUvj)
 - **Round 1 (`task-access-control`) → REFUNDED** (on-chain winner `idor.harsha-swarm.testnet`, finding not reproducible):
   - Open: [`74B5m8DH…`](https://testnet.nearblocks.io/txns/74B5m8DHrDk6Z81krqVLnf6ZnEKUw1naWMvifqxYQfrZ) · Settle: [`9G6DexMs…`](https://testnet.nearblocks.io/txns/9G6DexMskd28K2RUr7eFopLocceE7tapACTQDrCZ82He) · `refund_round`: [`5e1J9yZn…`](https://testnet.nearblocks.io/txns/5e1J9yZneCNSpt35Yokvgt1o3ox2mNZVVsnYDjEJkhWC)
 - **Round 2 (`task-injection`) → PAID** to `xss.harsha-swarm.testnet`:
@@ -103,6 +105,7 @@ npm run verify:market
   npm run test:server          # Unit tests for recon, IDOR, XSS, and price logic
   npm run test:orchestrator    # End-to-end swarm mission pipeline
   npm run test:fabricated      # Proves replay verifier REJECTS fabricated findings
+  npm run test:mcp             # Read-only: NEAR MCP audit rejects paid / wrong-winner / missing rounds
   ```
 - Run live testnet demo scenarios:
   ```bash
@@ -121,7 +124,8 @@ npm run verify:market
 1. **Scripted Bidding Parameters**: Specialist and generalist agents submit bids based on predetermined confidence intervals and scripted cost units rather than live reinforcement learning or external financial models.
 2. **Generalist Agents Have No Exploit Code**: `gen1` and `gen2` are real sub-accounts that really commit and reveal bids, but they implement no exploits. The orchestrator always runs the task's specialist. If a generalist ever won a round, no verified finding would come from the winner, so the round would be **refunded**, not paid (`mission-orchestrator.ts`, Stage 3b).
 3. **NEAR Testnet Only**: All contracts and sub-accounts are deployed exclusively on NEAR Protocol Testnet (`harsha-swarm.testnet`, `market.harsha-swarm.testnet`). No mainnet deployment or real financial value is involved.
-4. **No NEAR Intents / Agent API / MCP integration**: Per the NEAR Intents docs, *"There is no testnet version of NEAR Intents or the Agent API"*, and both need mainnet funds. This project is testnet-only, so it uses neither. See [docs/JUDGES.md §4](docs/JUDGES.md) for why the custom market contract does something the Agent API does not offer. The NEAR MCP server is not integrated.
+4. **No NEAR Intents / Agent API integration**: Per the NEAR Intents docs, *"There is no testnet version of NEAR Intents or the Agent API"*, and both need mainnet funds. This project is testnet-only, so it uses neither. See [docs/JUDGES.md §4](docs/JUDGES.md) for why the custom market contract does something the Agent API does not offer. (The NEAR MCP server **is** integrated; see the payout audit above.)
+6. **Agent Sub-Accounts Also Hold a Full-Access Key**: Each agent sub-account was created with a full-access key, which stays in the owner's local `~/.near-credentials` and is used only by `provision:agents` to add the scoped key. The agent runtime loads and signs with the scoped function-call key from `.agent-keys.json`, and the MCP audit checks that this exact key is the scoped one.
 5. **Operator Role**: Only the operator account (`harsha-swarm.testnet`, full-access key from `.env`) calls `open_round` (which needs an attached deposit, so a function-call key cannot do it), `settle_round`, `payout` and `refund_round`. Bids are **never** signed by the operator. An agent with no provisioned function-call key simply does not bid (`signingMode: "missing_key"`).
 
 For an exhaustive audit and line-by-line verification guide, see [docs/JUDGES.md](docs/JUDGES.md).

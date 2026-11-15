@@ -10,8 +10,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import os from "node:os";
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { createNearClient, loadNearConfig, isFinalExecutionSuccessful } from "./near-client.js";
 import type { MarketRoundResult, MarketBidStrategy, BidSigningMode } from "./market-types.js";
 import { priceBountyViaIntents } from "./intents-pricer.js";
@@ -19,6 +18,17 @@ import type { AgentBidAdvice, TaskId } from "../agents/bid-advisor.js";
 
 const MARKET_CONTRACT = process.env.NEAR_MARKET_CONTRACT || "market.harsha-swarm.testnet";
 const OPERATOR_ACCOUNT = process.env.NEAR_ACCOUNT_ID || "harsha-swarm.testnet";
+
+/** 32 random bytes: a commitment's salt must not be guessable from the bid values or the clock. */
+const randomSalt = () => randomBytes(32).toString("hex");
+
+/** .agent-keys.json lives at the repo root; the server may run from the root or from apps/server. */
+const AGENT_KEYS_FILES = () =>
+  [...new Set([
+    process.env.AGENT_KEYS_FILE,
+    path.resolve(process.cwd(), ".agent-keys.json"),
+    path.resolve(process.cwd(), "../../.agent-keys.json"),
+  ].filter((p): p is string => !!p))];
 
 export class MarketCoordinator {
   private static instance: MarketCoordinator;
@@ -87,35 +97,35 @@ export class MarketCoordinator {
         account: "idor.harsha-swarm.testnet",
         confidenceBps: isAccess ? 9800 : 2000,
         costYocto: "10000000000", // scripted cost units (10 billion)
-        salt: `salt-idor-${Date.now()}`,
+        salt: randomSalt(),
       },
       {
         agentId: "XssAgent",
         account: "xss.harsha-swarm.testnet",
         confidenceBps: isInject ? 9900 : 2500,
         costYocto: "10000000000",
-        salt: `salt-xss-${Date.now()}`,
+        salt: randomSalt(),
       },
       {
         agentId: "BusinessLogicAgent",
         account: "logic.harsha-swarm.testnet",
         confidenceBps: isLogic ? 9700 : 1500,
         costYocto: "10000000000",
-        salt: `salt-logic-${Date.now()}`,
+        salt: randomSalt(),
       },
       {
         agentId: "GeneralistAlpha",
         account: "gen1.harsha-swarm.testnet",
         confidenceBps: 6000,
         costYocto: "8000000000", // discount bidder
-        salt: `salt-gen1-${Date.now()}`,
+        salt: randomSalt(),
       },
       {
         agentId: "GeneralistBeta",
         account: "gen2.harsha-swarm.testnet",
         confidenceBps: 5500,
         costYocto: "6000000000", // ultra-discount bidder
-        salt: `salt-gen2-${Date.now()}`,
+        salt: randomSalt(),
       },
     ];
   }
@@ -127,42 +137,28 @@ export class MarketCoordinator {
     accountId: string,
     provider: unknown,
     nearApi: typeof import("near-api-js")
-  ): { signerAccount: unknown; signingMode: "agent_key" } | null {
+  ): { signerAccount: unknown; signingMode: "agent_key"; publicKey: string } | null {
     const { KeyPair, KeyPairSigner, Account } = nearApi;
 
-    // 1. Check .agent-keys.json in workspace
-    const agentKeysFile = path.resolve(process.cwd(), ".agent-keys.json");
-    if (fs.existsSync(agentKeysFile)) {
+    // ONLY the scoped FunctionCall key from .agent-keys.json (written by
+    // provision:agents) may sign bids. The agent's full-access creator key in
+    // ~/.near-credentials is deliberately never used here.
+    for (const agentKeysFile of AGENT_KEYS_FILES()) {
+      if (!fs.existsSync(agentKeysFile)) continue;
       try {
-        const agentKeys = JSON.parse(fs.readFileSync(agentKeysFile, "utf8"));
-        if (agentKeys[accountId]?.privateKey) {
-          const kp = KeyPair.fromString(agentKeys[accountId].privateKey);
-          const signer = new KeyPairSigner(kp);
+        const entry = JSON.parse(fs.readFileSync(agentKeysFile, "utf8"))[accountId];
+        if (entry?.privateKey && entry.contractId === MARKET_CONTRACT) {
+          const kp = KeyPair.fromString(entry.privateKey);
           return {
-            signerAccount: new Account(accountId, provider as any, signer),
+            signerAccount: new Account(accountId, provider as any, new KeyPairSigner(kp)),
             signingMode: "agent_key",
+            publicKey: kp.getPublicKey().toString(),
           };
         }
-      } catch {}
+      } catch {
+        // ignore malformed key file
+      }
     }
-
-    // 2. Check ~/.near-credentials/testnet/<accountId>.json
-    const credPath = path.join(os.homedir(), ".near-credentials", "testnet", `${accountId}.json`);
-    if (fs.existsSync(credPath)) {
-      try {
-        const raw = JSON.parse(fs.readFileSync(credPath, "utf8"));
-        const key = raw.private_key || raw.secret_key;
-        if (key) {
-          const kp = KeyPair.fromString(key);
-          const signer = new KeyPairSigner(kp);
-          return {
-            signerAccount: new Account(accountId, provider as any, signer),
-            signingMode: "agent_key",
-          };
-        }
-      } catch {}
-    }
-
     return null;
   }
 
@@ -178,7 +174,7 @@ export class MarketCoordinator {
     fullAccessAccount: unknown
   ): { account: any; mode: "function_call_key" | "full_access_key" } {
     const { KeyPair, KeyPairSigner, Account } = nearApi;
-    for (const f of [path.resolve(process.cwd(), ".agent-keys.json"), path.resolve(process.cwd(), "../../.agent-keys.json")]) {
+    for (const f of AGENT_KEYS_FILES()) {
       if (!fs.existsSync(f)) continue;
       try {
         const op = JSON.parse(fs.readFileSync(f, "utf8")).__operator__;
@@ -264,6 +260,7 @@ export class MarketCoordinator {
         revealed: false,
         score: Number(score),
         commitTxHash: undefined as string | undefined,
+        signerPublicKey: undefined as string | undefined,
         revealTxHash: undefined as string | undefined,
         relayed: false,
         signingMode: "agent_key" as BidSigningMode,
@@ -289,6 +286,8 @@ export class MarketCoordinator {
     }
 
     let openTxHash: string | undefined;
+    let startRevealTxHash: string | undefined;
+    let phaseEnforcement: MarketRoundResult["phaseEnforcement"] = nearClient ? undefined : "local_simulation";
     let settleTxHash: string | undefined;
     let winnerAccount = previewWinner.account;
     let winnerScore = previewWinner.score;
@@ -366,13 +365,45 @@ export class MarketCoordinator {
                 : Buffer.from(commitTx.transaction.hash).toString("base64");
               commitTxHashes[b.agentId] = hash;
               b.commitTxHash = hash;
-              console.log(`    ✓ commit_bid [${b.agentId}]: ${hash} (${b.signingMode})`);
+              // The signer key as reported by the chain for this transaction.
+              b.signerPublicKey = String(commitTx.transaction.public_key ?? "");
+              if (b.signerPublicKey !== agentSignerResult.publicKey) {
+                errors.push(`commit_bid for ${b.account} signed by ${b.signerPublicKey}, expected scoped key ${agentSignerResult.publicKey}`);
+              }
+              console.log(`    ✓ commit_bid [${b.agentId}]: ${hash} (signed by scoped key ${b.signerPublicKey.slice(0, 16)}…)`);
             } else {
               console.error(`    ✕ commit_bid failed execution for ${b.agentId}:`, commitTx.status);
             }
           } catch (cErr) {
             console.error(`    ✕ commit_bid error for ${b.agentId}:`, (cErr as Error).message);
           }
+        }
+
+        // Phase 2a: Close the commit phase on-chain. From here the contract
+        // rejects any new commit_bid, so no one can commit after seeing reveals.
+        // Only contract versions with get_round_phase enforce phases; older
+        // deployments are detected and recorded instead of failing the round.
+        const phase = await this.viewCall<string>(config.rpcUrl, "get_round_phase", { round_id: roundId });
+        if (phase === "commit") {
+          const phaseOp = this.loadOperatorScopedAccount(provider, api, operatorAccount);
+          const revealTx = await phaseOp.account.callFunctionRaw({
+            contractId: MARKET_CONTRACT,
+            methodName: "start_reveal",
+            args: { round_id: roundId },
+            gas: BigInt("20000000000000"),
+            deposit: BigInt(0),
+          });
+          if (isFinalExecutionSuccessful(revealTx)) {
+            startRevealTxHash = String(revealTx.transaction.hash);
+            phaseEnforcement = "on_chain";
+            console.log(`  [MARKET] ✓ Commit phase closed (start_reveal): ${startRevealTxHash} (${phaseOp.mode})`);
+          } else {
+            errors.push("start_reveal failed execution");
+            console.error(`  [MARKET] ✕ start_reveal failed:`, revealTx.status);
+          }
+        } else {
+          phaseEnforcement = "not_supported_by_deployed_contract";
+          console.warn(`  [MARKET] ⚠ Deployed market contract has no commit/reveal phases; reveals not phase-gated on-chain.`);
         }
 
         // Phase 2: Reveal from the same agent sub-account (only bids that committed).
@@ -478,6 +509,8 @@ export class MarketCoordinator {
       allBids: scoredBids,
       commitTxHashes,
       revealTxHashes,
+      startRevealTxHash,
+      phaseEnforcement,
       settleTxHash,
       payoutStatus: !nearClient
         ? "simulated"
@@ -493,9 +526,10 @@ export class MarketCoordinator {
   /**
    * Releases escrowed payout only after independent verification confirmation.
    */
-  public async releasePayout(roundId: string): Promise<string | undefined> {
+  public async releasePayout(roundId: string, proofHash: string): Promise<string | undefined> {
     const round = this.marketState.find((r) => r.roundId === roundId);
     if (!round) return undefined;
+    round.proofHash = proofHash;
 
     console.log(`  [MARKET] ── Releasing Verification-Gated Payout for ${roundId} ──`);
     const nearClient = createNearClient();
@@ -525,7 +559,7 @@ export class MarketCoordinator {
       const payoutTx = await account.callFunctionRaw({
         contractId: MARKET_CONTRACT,
         methodName: "payout",
-        args: { round_id: roundId },
+        args: { round_id: roundId, proof_hash: proofHash },
         gas: BigInt("30000000000000"),
         deposit: BigInt(0),
       });
@@ -537,6 +571,7 @@ export class MarketCoordinator {
       if (isFinalExecutionSuccessful(payoutTx)) {
         round.payoutTxHash = payoutTxHash;
         round.payoutStatus = "confirmed";
+        round.proofStoredOnChain = (await this.viewCall<string>(config.rpcUrl, "get_round_proof", { round_id: roundId })) === proofHash;
         console.log(`  [MARKET] ✓ Reward Payout Confirmed TX: ${payoutTxHash}`);
         return payoutTxHash;
       } else {
@@ -554,9 +589,10 @@ export class MarketCoordinator {
   /**
    * Refunds escrowed payout to operator when independent finding verification fails.
    */
-  public async refundRound(roundId: string): Promise<string | undefined> {
+  public async refundRound(roundId: string, proofHash: string): Promise<string | undefined> {
     const round = this.marketState.find((r) => r.roundId === roundId);
     if (!round) return undefined;
+    round.proofHash = proofHash;
 
     console.log(`  [MARKET] ── Refunding Escrow for ${roundId} (Verification Failed) ──`);
     const nearClient = createNearClient();
@@ -586,7 +622,7 @@ export class MarketCoordinator {
       const refundTx = await account.callFunctionRaw({
         contractId: MARKET_CONTRACT,
         methodName: "refund_round",
-        args: { round_id: roundId },
+        args: { round_id: roundId, proof_hash: proofHash },
         gas: BigInt("30000000000000"),
         deposit: BigInt(0),
       });
@@ -598,6 +634,7 @@ export class MarketCoordinator {
       if (isFinalExecutionSuccessful(refundTx)) {
         round.payoutTxHash = refundTxHash;
         round.payoutStatus = "refunded";
+        round.proofStoredOnChain = (await this.viewCall<string>(config.rpcUrl, "get_round_proof", { round_id: roundId })) === proofHash;
         console.log(`  [MARKET] ✓ Escrow Refund Confirmed TX: ${refundTxHash}`);
         return refundTxHash;
       } else {

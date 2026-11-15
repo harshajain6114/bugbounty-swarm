@@ -32,7 +32,7 @@ Status: Complete Hackathon Submission (All Tracks Verified On-Chain)
 ### Attestation Smart Contract on NEAR Testnet
 - **Attestation Contract** (`apps/near-contract/`): Rust contract with 13/13 passing unit tests.
 - **Live Deployment**: Deployed and active at `harsha-swarm.testnet`.
-- **Master Attestation**: Live transaction `9ndGZJ2F8sWAQTgTnkzPgMKbtgs5upbQwQKtabLLvGhm` (mission `mission-refund-1794725357805`) storing root mission hash, finding count, and timestamp.
+- **Master Attestation**: Live transaction `544jKbms359rQVBrEw1JZUMhrAn9iYj2HMV1AzhggMyL` (mission `mission-refund-1794726348171`) storing root mission hash, finding count, and timestamp.
 
 ### Web Dashboard & Demo System
 - **React + Vite UI** (`apps/web/`):

@@ -48,13 +48,23 @@ export interface MarketRoundResult {
     revealed: boolean;
     score: number;
     commitTxHash?: string;
+    /** public_key of the commit_bid transaction as returned by the chain */
+    signerPublicKey?: string;
     revealTxHash?: string;
     relayed?: boolean;
     signingMode?: BidSigningMode;
   }[];
   commitTxHashes?: Record<string, string>;
   revealTxHashes?: Record<string, string>;
+  /** start_reveal tx: closes the commit phase on-chain before any reveal */
+  startRevealTxHash?: string;
+  /** on_chain = contract rejected late commits / early reveals for this round */
+  phaseEnforcement?: "on_chain" | "not_supported_by_deployed_contract" | "local_simulation";
+  /** true if get_round_proof returned proofHash after payout/refund */
+  proofStoredOnChain?: boolean;
   settleTxHash?: string;
+  /** sha256 passed to payout/refund_round and stored on-chain (get_round_proof) */
+  proofHash?: string;
   payoutTxHash?: string;
   /** Pre-payout audit performed through the NEAR MCP server (see mcp-auditor.ts) */
   mcpAudit?: {

@@ -8,6 +8,7 @@
  */
 
 import fs from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { runReconMission } from "../agents/recon/index.js";
@@ -394,26 +395,43 @@ export class MissionOrchestrator {
             winnerAgent === taskSpecialist &&
             verifiedFindings.some((vf) => vf.sourceAgent === winnerAgent);
 
+          // Proof of the refund decision: hash of the rejection record for this round.
+          const refundProof = (reason: string) =>
+            createHash("sha256")
+              .update(JSON.stringify({
+                roundId: round.roundId,
+                winner: round.winnerAccount,
+                reason,
+                rejected: rejectedFindings
+                  .filter((rf) => rf.sourceAgent === winnerAgent)
+                  .map((rf) => ({ id: rf.originalFindingId, type: rf.vulnerabilityType, reason: rf.reason })),
+              }))
+              .digest("hex");
+
           if (!hasVerifiedFinding) {
             console.warn(`  ⚠ No verified finding from winner ${winnerAgent ?? "(none)"} for ${round.taskId} -> Refunding escrow to operator…`);
-            await marketCoordinator.refundRound(round.roundId);
+            await marketCoordinator.refundRound(round.roundId, refundProof("no_verified_finding_from_winner"));
             continue;
           }
 
           if (round.winnerSource === "on_chain_settle") {
             console.log(`  → NEAR MCP pre-payout audit for ${round.roundId}…`);
-            const audit = await mcpAuditor.auditRoundBeforePayout(round.roundId, round.winnerAccount);
+            const winnerBid = round.allBids.find((b) => b.account === round.winnerAccount);
+            const audit = await mcpAuditor.auditRoundBeforePayout(round.roundId, round.winnerAccount, winnerBid?.commitTxHash);
             round.mcpAudit = audit;
             if (!audit.approved) {
               console.warn(`  ⚠ NEAR MCP audit REJECTED payout: ${audit.reasons.join("; ")} -> Refunding escrow…`);
-              await marketCoordinator.refundRound(round.roundId);
+              await marketCoordinator.refundRound(round.roundId, refundProof(`mcp_audit_rejected: ${audit.reasons.join("; ")}`));
               continue;
             }
-            console.log(`  ✓ NEAR MCP audit approved: round ${audit.roundStatus}, winner ${audit.onChainWinner}, bid key scoped to market.`);
+            console.log(`  ✓ NEAR MCP audit approved: round ${audit.roundStatus}, winner ${audit.onChainWinner}, bid signed by scoped key.`);
           }
 
-          console.log(`  ✓ Finding verified for ${round.taskId}. Releasing payout to winner (${round.winnerAccount})…`);
-          await marketCoordinator.releasePayout(round.roundId);
+          // Payout proof = the winner's contribution hash over its replay-verified
+          // findings (the same hash recorded for that agent in the attestation contract).
+          const payoutProof = hashAgentFindings(winnerAgent!, verifiedFindings);
+          console.log(`  ✓ Finding verified for ${round.taskId}. Releasing payout to winner (${round.winnerAccount}), proof ${payoutProof.slice(0, 16)}…`);
+          await marketCoordinator.releasePayout(round.roundId, payoutProof);
         }
       } finally {
         await mcpAuditor.close();

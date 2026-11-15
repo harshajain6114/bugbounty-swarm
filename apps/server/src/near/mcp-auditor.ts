@@ -73,6 +73,32 @@ function loadAgentPublicKey(accountId: string): string | undefined {
   return undefined;
 }
 
+/**
+ * Reads the signer public key of a transaction from NEAR RPC (`tx` method).
+ * near-mcp exposes no transaction-lookup tool, so this one check uses RPC.
+ */
+async function fetchTxSignerKey(txHash: string, senderId: string): Promise<string | undefined> {
+  const rpcUrl = process.env.NEAR_RPC_URL || "https://test.rpc.fastnear.com";
+  try {
+    const res = await fetch(rpcUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "tx-signer",
+        method: "tx",
+        params: { tx_hash: txHash, sender_account_id: senderId, wait_until: "FINAL" },
+      }),
+      signal: AbortSignal.timeout(20_000),
+    });
+    const data = (await res.json()) as { result?: { transaction?: { public_key?: string; signer_id?: string } } };
+    const tx = data.result?.transaction;
+    return tx?.signer_id === senderId ? tx.public_key : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export class McpAuditor {
   private client: Client | null = null;
 
@@ -102,7 +128,11 @@ export class McpAuditor {
   /**
    * Audits one settled round before payout. Never throws.
    */
-  public async auditRoundBeforePayout(roundId: string, recordedWinner: string): Promise<McpRoundAudit> {
+  public async auditRoundBeforePayout(
+    roundId: string,
+    recordedWinner: string,
+    winnerCommitTxHash?: string
+  ): Promise<McpRoundAudit> {
     const audit: McpRoundAudit = {
       approved: false,
       source: "near-mcp",
@@ -136,12 +166,22 @@ export class McpAuditor {
         audit.reasons.push(`On-chain winner ${round.winner ?? "(none)"} != recorded winner ${recordedWinner}`);
       }
 
-      // 2. Winner's bidding key must be a FunctionCall key scoped to the market
-      const bidKey = loadAgentPublicKey(recordedWinner);
-      audit.winnerBidKey = bidKey;
-      if (!bidKey) {
-        audit.reasons.push(`No local bid key recorded for ${recordedWinner}`);
+      // 2. The key that ACTUALLY signed the winner's commit_bid (as reported by
+      //    the chain for that transaction) must be a FunctionCall key scoped to
+      //    commit_bid/reveal_bid on the market.
+      let bidKey: string | undefined;
+      if (winnerCommitTxHash) {
+        bidKey = await fetchTxSignerKey(winnerCommitTxHash, recordedWinner);
+        if (!bidKey) audit.reasons.push(`Could not read signer of commit tx ${winnerCommitTxHash}`);
       } else {
+        audit.reasons.push(`No commit_bid transaction recorded for winner ${recordedWinner}`);
+      }
+      audit.winnerBidKey = bidKey;
+      const localScopedKey = loadAgentPublicKey(recordedWinner);
+      if (bidKey && localScopedKey && bidKey !== localScopedKey) {
+        audit.reasons.push(`Winner's bid was signed by ${bidKey}, not the provisioned scoped key ${localScopedKey}`);
+      }
+      if (bidKey) {
         const keysRes = await client.callTool({
           name: "account_list_access_keys",
           arguments: { accountId: recordedWinner, networkId: NETWORK_ID },

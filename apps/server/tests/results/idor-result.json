@@ -51,5 +51,5 @@
   "testPassed": true,
   "vulnerabilityReproduced": true,
   "details": "GET /shop/api/orders/:id returns order data without verifying ownership. Alice (user-alice) retrieved Bob's order (order-bob-001, userId=user-bob) using only her own Bearer token. Fix: add \"if (order.userId !== req.userId) return res.status(403).json(...)\" before returning.",
-  "testedAt": "2026-11-15T06:40:59.743Z"
+  "testedAt": "2026-11-15T07:11:43.107Z"
 }

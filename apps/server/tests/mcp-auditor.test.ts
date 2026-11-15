@@ -1,16 +1,17 @@
 /**
  * apps/server/tests/mcp-auditor.test.ts
  *
- * Read-only test (no gas, no keys needed beyond the public .agent-keys.json
- * entries) for the NEAR MCP pre-payout auditor. Uses rounds already on
- * market.harsha-swarm.testnet to prove the audit REJECTS bad payouts.
+ * Read-only test (no gas) for the NEAR MCP pre-payout auditor, using rounds
+ * already on market.harsha-swarm.testnet to prove the audit REJECTS bad payouts.
  */
 
 import { McpAuditor } from "../src/near/mcp-auditor.js";
 
-// A round from the documented refund demo: status is now Paid (payout done).
-const PAID_ROUND = "mission-refund-1794721485135-r2";
+// Round 2 of mission-refund-1794725357805: already Paid, and its winning bid was
+// signed by the agent's FULL-ACCESS key (a bug since fixed). Both must be caught.
+const PAID_ROUND = "mission-refund-1794725357805-r2";
 const PAID_ROUND_WINNER = "xss.harsha-swarm.testnet";
+const FULL_KEY_COMMIT_TX = "CHzy2nJL7mR8mhw2naaAUkFoyqFFQL8NF1sBVhdgTDbX";
 
 let failures = 0;
 function check(cond: boolean, label: string) {
@@ -20,15 +21,16 @@ function check(cond: boolean, label: string) {
 
 const auditor = new McpAuditor();
 try {
-  console.log("\n[1] Already-paid round must not be approved again");
-  const a1 = await auditor.auditRoundBeforePayout(PAID_ROUND, PAID_ROUND_WINNER);
+  console.log("\n[1] Paid round whose bid was signed by a full-access key");
+  const a1 = await auditor.auditRoundBeforePayout(PAID_ROUND, PAID_ROUND_WINNER, FULL_KEY_COMMIT_TX);
   check(a1.roundStatus === "Paid", `MCP read round status via get_round (got ${a1.roundStatus})`);
   check(a1.winnerMatches, "MCP read on-chain winner matches");
-  check(a1.winnerKeyScoped, "MCP confirmed winner's bid key is FunctionCall-scoped to market commit_bid/reveal_bid");
+  check(!!a1.winnerBidKey, `read actual signer of winner's commit_bid from chain (${a1.winnerBidKey?.slice(0, 20)}…)`);
+  check(!a1.winnerKeyScoped, "detected the signer is NOT a scoped FunctionCall key");
   check(!a1.approved, `Audit rejected: ${a1.reasons.join("; ")}`);
 
   console.log("\n[2] Wrong recorded winner must be rejected");
-  const a2 = await auditor.auditRoundBeforePayout(PAID_ROUND, "gen2.harsha-swarm.testnet");
+  const a2 = await auditor.auditRoundBeforePayout(PAID_ROUND, "gen2.harsha-swarm.testnet", FULL_KEY_COMMIT_TX);
   check(!a2.winnerMatches && !a2.approved, `Audit rejected: ${a2.reasons.join("; ")}`);
 
   console.log("\n[3] Non-existent round must be rejected");

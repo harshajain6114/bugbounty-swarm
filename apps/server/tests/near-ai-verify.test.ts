@@ -7,7 +7,7 @@
 
 import { secp256k1 } from "@noble/curves/secp256k1";
 import { keccak_256 } from "@noble/hashes/sha3";
-import { recoverEip191Address } from "../src/near/near-ai-client.js";
+import { recoverEip191Address, tdxReportData, reportDataBindsSigner } from "../src/near/near-ai-client.js";
 
 let failures = 0;
 const check = (cond: boolean, label: string) => {
@@ -34,6 +34,29 @@ const text = "a".repeat(64) + ":" + "b".repeat(64); // shape of NEAR AI signed t
 const sig = personalSign(text);
 check(recoverEip191Address(text, sig) === EXPECTED, "recovers signer of request_hash:response_hash text");
 check(recoverEip191Address(text.replace("a", "c"), sig) !== EXPECTED, "tampered text recovers a different signer");
+
+// ── TDX quote report_data binding (signer + fresh nonce) ──────────────────
+const nonce = "11".repeat(32);
+function fakeQuote(version: 4 | 5, signer: string, nonceHex: string): string {
+  const bodyStart = version === 4 ? 48 : 54;
+  const q = Buffer.alloc(bodyStart + 584);
+  q.writeUInt16LE(version, 0);
+  const rd = Buffer.alloc(64);
+  Buffer.from(signer.replace(/^0x/, ""), "hex").copy(rd, 0); // bytes 0..20, then zero padding to 32
+  Buffer.from(nonceHex, "hex").copy(rd, 32);
+  rd.copy(q, bodyStart + 520);
+  return q.toString("hex");
+}
+for (const v of [4, 5] as const) {
+  const rd = tdxReportData(fakeQuote(v, EXPECTED, nonce))!;
+  check(!!rd && reportDataBindsSigner(rd, EXPECTED), `TDX v${v}: report_data binds signer`);
+  check(Buffer.from(rd.subarray(32, 64)).toString("hex") === nonce, `TDX v${v}: report_data carries our nonce`);
+}
+const other = tdxReportData(fakeQuote(4, "0x" + "22".repeat(20), nonce))!;
+check(!reportDataBindsSigner(other, EXPECTED), "report_data for another signer is rejected");
+const stale = tdxReportData(fakeQuote(4, EXPECTED, "33".repeat(32)))!;
+check(Buffer.from(stale.subarray(32, 64)).toString("hex") !== nonce, "stale nonce is detected");
+check(tdxReportData("0300" + "00".repeat(700)) === null, "unknown quote version is not parsed");
 
 if (failures) {
   console.error(`\n✕ NEAR AI VERIFY TEST FAILED (${failures})`);

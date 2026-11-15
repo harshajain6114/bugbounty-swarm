@@ -1,7 +1,7 @@
 # BUGBOUNTY SWARM — Judge's Verification Guide
 
 > **For Hackathon Judges & Automated Evaluation Evaluators**  
-> Every claim in this submission is backed by reproducible source code, passing unit tests, and live, verifiable transactions on the NEAR Protocol Testnet.
+> Each claim below points to the code that implements it, a command that checks it, and (where relevant) testnet transactions. Known limitations and one corrected defect are listed in §3. Note: commits and missions after `9e2d027` are dated after the 14 Nov 23:59 UTC submission deadline.
 
 ---
 
@@ -14,15 +14,15 @@
 | **Deployed Code == This Source** | All | `scripts/verify-deployment.js` | `npm run verify:deployment` | Rebuilds both wasm files from source. SHA-256 equals on-chain `code_hash`: market `f2e3d93a…7ad9`, attestation `cf50e9bb…013b` |
 | **Operator Scoped Key** | AI Security | `scripts/provision-agents.js` (`__operator__`)<br>`market-coordinator.ts` (`loadOperatorScopedAccount`) | Check the signer `public_key` of any `settle_round`/`payout`/`refund_round` tx | FunctionCall key on `harsha-swarm.testnet`, receiver `market.harsha-swarm.testnet`, methods `settle_round, payout, refund_round`, 0.25 NEAR allowance. Full key is used only for `open_round` (deposit) and attestation |
 | **Winning Grants Execution** | AI Swarms / Agent Economy | `mission-orchestrator.ts` (`assertAwarded`) | `npm run test:orchestrator` | A specialist runs only if it is the on-chain round winner; otherwise it is `skipped` and the escrow is refunded |
-| **AI Bid Reasoning on NEAR AI Cloud (TEE)** | AI Swarms / AI Security | `apps/server/src/near/near-ai-client.ts`<br>`apps/server/src/agents/bid-advisor.ts` | `npm run test:near-ai` (offline signer recovery)<br>full run needs `NEAR_AI_API_KEY` | Per completion: signed text == `sha256(req):sha256(resp)`, EIP-191 signer == `signing_address`, signer listed in an attestation report fetched with a fresh nonce that the report echoes. Unverified → scripted bid. **Not verified:** TDX quote / NVIDIA evidence. Stored as `aiBidAdvice` + per-bid `confidenceSource` |
+| **AI Bid Reasoning on NEAR AI Cloud (TEE)** | AI Swarms / AI Security | `apps/server/src/near/near-ai-client.ts`<br>`apps/server/src/agents/bid-advisor.ts` | `npm run test:near-ai` (offline signer recovery)<br>full run needs `NEAR_AI_API_KEY` | Preflight attestation with fresh 32-byte nonce; per completion: signed text == `sha256(req):sha256(resp)`, EIP-191 signer == `signing_address`, exactly one model attestation for that signer, and its TDX quote `report_data` contains signer + nonce. Unverified → scripted bid. **Not verified:** the TDX quote's own DCAP signature/cert chain and NVIDIA evidence (binding, not genuineness). **No recorded mission has run with a key yet.** Stored as `aiBidAdvice` + per-bid `confidenceSource` |
 | **Escrow Priced via NEAR Intents 1Click** | Agent Economy | `apps/server/src/near/intents-pricer.ts`<br>`market-coordinator.ts` (`open_round` deposit) | `npm run test:intents` | Live `POST https://1click.chaindefuser.com/v0/quote` (`dry: true`); quoted wNEAR `amountIn` = escrow. `bountyPricing` (correlationId, signature) on each round. No Intents settlement (mainnet-only) |
-| **NEAR MCP Pre-Payout Audit** | AI Swarms / AI Security | `apps/server/src/near/mcp-auditor.ts`<br>`apps/server/src/orchestrator/mission-orchestrator.ts` (Stage 3b) | `npm run test:mcp` (read-only) | Launches `@nearai/near-mcp` over stdio; `contract_call_raw_function_as_read_only` (`get_round` = Settled + same winner) and `account_list_access_keys` (bid key is FunctionCall-scoped) must both pass or the round is refunded. Result stored as `mcpAudit` on every round in `mission-result.json` |
+| **NEAR MCP Pre-Payout Audit** | AI Swarms / AI Security | `apps/server/src/near/mcp-auditor.ts`<br>`apps/server/src/orchestrator/mission-orchestrator.ts` (Stage 3b) | `npm run test:mcp` (read-only) | Launches `@nearai/near-mcp` over stdio; `contract_call_raw_function_as_read_only` (`get_round` = Settled + same winner) and `account_list_access_keys` on the key that actually signed the winner's `commit_bid` (read from RPC `tx`) must be FunctionCall-scoped; both must pass or the round is refunded. Result stored as `mcpAudit` on every round in `mission-result.json` |
 | **Agent Sub-Account Keys** | AI Swarms | `scripts/provision-agents.js`<br>`apps/server/src/near/market-coordinator.ts` | `npm run verify:market` (prints access keys) | 5 sub-accounts (`idor`, `xss`, `logic`, `gen1`, `gen2`) with `FunctionCall` access keys limited to `market.harsha-swarm.testnet` |
 | **Independent Replay Verification** | AI Security & Defense | `apps/server/src/orchestrator/replay-verifier.ts`<br>`apps/server/src/orchestrator/finding-verifier.ts` | `npm run test:fabricated`<br>`npm run test:orchestrator` | Independent Chromium browser DOM sink & fresh Alice/Bob cross-tenant session replay |
-| **Verification-Gated Escrow Payout** | AI Security & Defense | `apps/near-market-contract/src/lib.rs` (`payout`)<br>`apps/server/src/orchestrator/mission-orchestrator.ts` | `npm run verify:market`<br>`npm run test:market-contract` | Escrowed `0.01 NEAR` released ONLY after `replayVerifier.verify()` passes |
-| **Automated Escrow Refund on Rejection** | AI Security & Defense | `apps/near-market-contract/src/lib.rs` (`refund_round`)<br>`apps/server/tests/demo-refund.ts` | `npm run demo:refund` | Live refund tx: [`4VfpiRVzLVm18Aa1nvFoeWzLX5BvqNF9c19pnof5Vtqn`](https://testnet.nearblocks.io/txns/4VfpiRVzLVm18Aa1nvFoeWzLX5BvqNF9c19pnof5Vtqn)<br>Status: `Refunded`, 0 reputation change |
+| **Verification-Gated Escrow Payout** | AI Security & Defense | `apps/near-market-contract/src/lib.rs` (`payout`)<br>`apps/server/src/orchestrator/mission-orchestrator.ts` | `npm run verify:market`<br>`npm run test:market-contract` | Escrow (1Click-priced, ~0.011 NEAR) released by the orchestrator only after replay verification + MCP audit pass. **Operator-enforced policy**: the deployed contract checks operator/status/winner, not the verification itself |
+| **Automated Escrow Refund on Rejection** | AI Security & Defense | `apps/near-market-contract/src/lib.rs` (`refund_round`)<br>`apps/server/tests/demo-refund.ts` | `npm run demo:refund` | Live refund tx: [`Dur3WG8nRhQrXgXw43ig6Z26SPLzgyDbnB1maZNRim2J`](https://testnet.nearblocks.io/txns/Dur3WG8nRhQrXgXw43ig6Z26SPLzgyDbnB1maZNRim2J)<br>Status: `Refunded`, 0 reputation change |
 | **On-Chain Agent Reputation** | Agent Economy | `apps/near-market-contract/src/lib.rs`<br>`apps/near-contract/src/lib.rs` | `npm run verify:near`<br>`npm run verify:market` | Method `get_agent_reputation`<br>Reputation accumulates upon verified payout |
-| **Cryptographic Mission Attestation** | Open Innovation | `apps/near-contract/src/lib.rs`<br>`apps/server/src/near/near-client.ts` | `npm run verify:near`<br>`npm run test:contract` | `harsha-swarm.testnet`<br>Master Attestation Tx: [`9ndGZJ2F8sWAQTgTnkzPgMKbtgs5upbQwQKtabLLvGhm`](https://testnet.nearblocks.io/txns/9ndGZJ2F8sWAQTgTnkzPgMKbtgs5upbQwQKtabLLvGhm) |
+| **Cryptographic Mission Attestation** | Open Innovation | `apps/near-contract/src/lib.rs`<br>`apps/server/src/near/near-client.ts` | `npm run verify:near`<br>`npm run test:contract` | `harsha-swarm.testnet`<br>Master Attestation Tx: [`544jKbms359rQVBrEw1JZUMhrAn9iYj2HMV1AzhggMyL`](https://testnet.nearblocks.io/txns/544jKbms359rQVBrEw1JZUMhrAn9iYj2HMV1AzhggMyL) |
 | **Cryptographic Integrity & Tamper Proof** | AI Security & Defense | `apps/server/src/index.ts` (`/api/missions/verify-integrity`)<br>`apps/web/src/App.tsx` | Run UI, click **Verify integrity** (MATCH) and **Simulate Local Tamper** (MISMATCH) | Real-time RPC comparison between local in-memory findings hash and immutable on-chain record |
 
 ---
@@ -35,7 +35,7 @@ Run tests for both smart contracts:
 # 1. Attestation Contract (13 tests passing)
 npm run test:contract
 
-# 2. Swarm Bounty Market Contract (10 tests passing: commit, reveal, settle, gated payout, refund once, no double spend, non-operator rejection)
+# 2. Swarm Bounty Market Contract (10 tests passing: commit, reveal, settle, payout, refund once, no double spend, non-operator rejection)
 npm run test:market-contract
 
 # 3. Mission Orchestrator Pipeline (12/12 checks passing)
@@ -79,15 +79,15 @@ npm run verify:market
 ### What Is Real
 1. **Real Browser Runtime**: Playwright Chromium v1255 runs headless in `ReconAgent`, `XssAgent`, and `ReplayVerifier` to execute real DOM code and cross-tenant session cookies.
 2. **Real Smart Contracts**: Rust contracts deployed on NEAR Protocol Testnet at `harsha-swarm.testnet` and `market.harsha-swarm.testnet`.
-3. **Real Function-Call Keys**: Competing agent accounts sign bids using dedicated ed25519 Function-Call keys restricted specifically to `market.harsha-swarm.testnet` methods `commit_bid` and `reveal_bid` (0.25 NEAR gas allowance each). There is **no operator fallback**: a missing key means no bid (`signingMode: "missing_key"`).
+3. **Real Function-Call Keys**: Competing agent accounts sign bids using dedicated ed25519 Function-Call keys restricted specifically to `market.harsha-swarm.testnet` methods `commit_bid` and `reveal_bid` (0.25 NEAR gas allowance each). There is **no fallback** to the operator or to the agent's full-access key: a missing scoped key means no bid (`signingMode: "missing_key"`). Mission `mission-refund-1794726348171`: 30/30 bid txs signed by the scoped keys (RPC `tx.public_key`). Earlier missions were full-access signed due to a since-fixed key-path bug (see README §3).
 4. **Real FastNear RPC Verification**: In-memory findings hash is compared against the live FastNear RPC response. If absent, the system explicitly reports `NO ON-CHAIN RECORD`.
 
 ### Known Limitations
-1. **Deterministic Bidding**: Competing agents use scripted confidence intervals and scripted cost units rather than dynamic external economic models.
-2. **Generalist Agent Implementations**: Generalist agent accounts (`gen1`, `gen2`) participate in the auction using lower confidence scores; their exploit fallback relies on the specialist engine.
-3. **NEAR Testnet Only**: All contracts and accounts operate exclusively on NEAR Testnet; no mainnet funds or real tokens are used.
+1. **Bids in recorded missions are scripted**: cost units are always fixed per agent; confidence comes from verified NEAR AI reasoning only when `NEAR_AI_API_KEY` is set, which no recorded mission had. With the scripted values the specialist always wins its own task.
+2. **Generalists have no exploit code**: `gen1`/`gen2` really commit and reveal, but if one won, `assertAwarded` would run no task and the escrow would be refunded.
+3. **NEAR Testnet Only for Funds**: every signed transaction is on testnet; the only mainnet contact is the read-only 1Click dry quote.
 4. **NEAR Intents is used only for price discovery (1Click dry quotes); the Agent API is not used.** Both are mainnet-only (see §4). Escrow and payouts are native testnet NEAR in the market contract.
-5. **Agent sub-accounts also hold their creator full-access key** (kept in the owner's `~/.near-credentials`, used only by `provision:agents`). The runtime signs bids only with the scoped function-call key, and the MCP audit checks that this exact key is scoped.
+5. **Agent sub-accounts also hold their creator full-access key** (kept in the owner's `~/.near-credentials`, used only by `provision:agents`). The runtime loads only the scoped key (no full-access fallback), and the MCP audit checks the signer of the winner's actual commit tx.
 
 ---
 
@@ -100,9 +100,9 @@ The track rubric scores a hand-rolled permissioning contract lower than the Agen
 **What `market.harsha-swarm.testnet` does that those actions do not:**
 | Mechanism | Where | Why the Agent API doesn't cover it |
 |---|---|---|
-| Sealed-bid **commit-reveal** auction; the preimage is checked on-chain with `env::sha256` | `lib.rs` `commit_bid` / `reveal_bid` | The Agent API moves funds under a policy. It has no auction or bid-commitment primitive. |
+| **Commit-reveal** auction; the preimage is checked on-chain with `env::sha256` (no separate on-chain commit/reveal phases in the deployed version) | `lib.rs` `commit_bid` / `reveal_bid` | The Agent API moves funds under a policy. It has no auction or bid-commitment primitive. |
 | **Reputation-weighted** winner selection with a lexicographic tie-break | `lib.rs` `settle_round` | Its policies limit *what* an agent may spend. They don't *choose between* competing agents. |
-| Escrow released only after **independent replay verification** of the winner's own work, otherwise `refund_round` | `lib.rs` `payout` / `refund_round` + `mission-orchestrator.ts` Stage 3b | Its `timelock_ms` / `owner_approval` delay a payment or ask a human. Neither ties a payout to a machine-checked proof of work. |
+| Escrow released by the orchestrator only after **independent replay verification** of the winner's own work, otherwise `refund_round` (operator-enforced, not contract-enforced) | `lib.rs` `payout` / `refund_round` + `mission-orchestrator.ts` Stage 3b | Its `timelock_ms` / `owner_approval` delay a payment or ask a human. Neither ties a payout to a machine-checked proof of work. |
 | **Reputation** that only goes up on a verified payout | `lib.rs` `payout` → `agent_reputation` | No reputation concept exists in the Agent API. |
 
 **What we do *not* claim:** the agents' function-call keys are *permission scoping* (only `commit_bid`/`reveal_bid` on one contract, a 0.25 NEAR gas allowance). They are not a spending-limit policy and they do not replace the Agent API's budget controls. Agents in this design never spend; they only bid and get paid.

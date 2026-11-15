@@ -12,7 +12,7 @@ BUGBOUNTY SWARM deploys a synchronized swarm of specialist security agents that 
 |---|---|---|
 | **AI Swarms** *(Primary)* | **Multi-Agent Coordination & Task Auction** | Multi-agent pipeline coordinated by Mission Orchestrator and Market Coordinator. Features 5 agent accounts (`idor`, `xss`, `logic`, `gen1`, `gen2`) bidding in a 3-round commit-reveal auction. |
 | **Agent Economy** | **Escrow Bounties & On-Chain Reputation** | Agents earn testnet NEAR bounties escrowed in `market.harsha-swarm.testnet`. Reputation accumulates on-chain upon verified vulnerability submission (`get_agent_reputation`). |
-| **AI Security & Defense** | **Verification-Gated Payouts** | Rewards are held in smart contract escrow. The orchestrator releases them only after `ReplayVerifier` independently reproduces the winner's finding and a NEAR MCP audit passes; otherwise it calls `refund_round`. This gate is **operator policy**: the deployed contract checks operator, status and winner, but does not itself see the verification. |
+| **AI Security & Defense** | **Verification-Gated Payouts** | Rewards are held in smart contract escrow. The orchestrator releases them only after `ReplayVerifier` independently reproduces the winner's finding and a NEAR MCP audit passes; otherwise it calls `refund_round`. The contract requires a 64-hex `proof_hash` on every `payout`/`refund_round` and stores it permanently (`get_round_proof`); for payouts it equals the winner's contribution hash in the attestation contract. The contract cannot re-run the exploit, so *deciding* to pay is still the operator's verification policy; what the contract guarantees is that every release is bound to a public proof hash. |
 
 ### Swarm Architecture: AI Decides What to Bid, Code Proves What Is Paid
 - **Pipeline**: Recon → AI bid reasoning (NEAR AI Cloud) → 1Click-priced escrow → Commit-Reveal Auction → IDOR/BOLA → Stored XSS → Price Tampering → Independent Replay Verification → NEAR MCP Audit → Escrow Payout or Refund → Master Attestation.
@@ -28,12 +28,13 @@ BUGBOUNTY SWARM deploys a synchronized swarm of specialist security agents that 
 - **Deterministic Exploitation**: The exploits themselves are rule-based code, with no LLM in the attack path. Headless Playwright Chromium runs real JavaScript sinks and cross-user sessions.
 - **Commit-Reveal Task Auction**:
   - **Phase 1 (Commit)**: Each agent submits `sha256(bidder|taskId|confidence|cost|salt)` from its own sub-account, signed with its scoped function-call key. The salt is 32 random bytes, so a commitment can't be brute-forced from the possible bid values.
-  - **Phase 2 (Reveal)**: Preimages are validated on-chain by the market contract (`env::sha256`). *Limitation:* the deployed contract has no separate commit and reveal phases. Both are allowed while a round is `Open`, so a bidder could in principle commit after seeing others' reveals; each round records `phaseEnforcement`. Also, all five agents are run by one coordinator process, so the sealing guards against outside observers, not against the operator.
+  - **Phase 2a (Close commits)**: The operator calls `start_reveal`. From then on the contract **rejects any new `commit_bid`** ("Commit phase closed"), and `reveal_bid` and `settle_round` are rejected *before* it. So no bidder can commit after seeing another's reveal. Each round records `phaseEnforcement: "on_chain"` and its `startRevealTxHash`; `npm run demo:phases` shows a live late commit being rejected.
+  - **Phase 2 (Reveal)**: Preimages are validated on-chain by the market contract (`env::sha256`). Commitments must be 64-hex sha256 values, and a round accepts at most 16 bids. *Limitation:* all five agents are run by one coordinator process, so sealing protects against outside observers and late bidders, not against the operator itself.
   - **Deterministic Formula**:
     $$\text{Score} = \frac{\text{Confidence\_Bps} \times (1 + \text{Reputation}) \times 10^{12}}{\text{Cost\_Units}}$$
   - **Phase 3 (Settle)**: `settle_round` picks the winner on-chain using each bidder's on-chain reputation. The server then reads the winner back with `get_round` and treats it as authoritative. The local score is only a preview, and payout or refund is refused for any round the contract did not settle.
   - **Phase 3b (NEAR MCP Audit)**: Before any escrow moves, the orchestrator launches the official NEAR MCP server (`@nearai/near-mcp`, stdio) and re-reads chain state through it, independently of the path that sent the transactions. `contract_call_raw_function_as_read_only` → `get_round` must show `Settled` with the recorded winner, and the signer key of the winner's actual `commit_bid` transaction (read via RPC `tx`, since near-mcp has no tx tool) must, per MCP `account_list_access_keys`, be a FunctionCall key scoped to `commit_bid`/`reveal_bid` on the market. A failed audit means a refund, not a payout (`apps/server/src/near/mcp-auditor.ts`).
-  - **Phase 4 (Gated Payout / Refund)**: The escrow (1Click-quoted, about 0.011 NEAR for $0.03; fixed 0.01 NEAR if the quote fails) per round goes to the **on-chain winner** only if *that winner's* finding is independently reproduced by `ReplayVerifier`. Otherwise `refund_round` returns the escrow to the operator and reputation is unchanged.
+  - **Phase 4 (Gated Payout / Refund)**: The escrow (1Click-quoted, about 0.011 NEAR for $0.03; fixed 0.01 NEAR if the quote fails) per round goes to the **on-chain winner** only if *that winner's* finding is independently reproduced by `ReplayVerifier`; `payout(round_id, proof_hash)` records that agent's verified-findings hash on-chain. Otherwise `refund_round(round_id, proof_hash)` returns the escrow to the operator, records the hash of the rejection record, and leaves reputation unchanged.
 
 ---
 
@@ -79,24 +80,32 @@ All smart contracts and mission transactions are permanently deployed and confir
 - **Attestation Contract Deploy** (`DeployContract` + init on `harsha-swarm.testnet`): [`FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8`](https://testnet.nearblocks.io/txns/FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8). For proof that the code *currently* deployed on both accounts is this source, run `npm run verify:deployment` (below).
 
 ### Live Mission & Market Transactions
-Mission `mission-refund-1794726348171` (`npm run demo:refund`) shows **both** escrow outcomes in one run. The IDOR bug is patched for this demo, so replay verification fails and round 1 is refunded; rounds 2 and 3 pass the NEAR MCP audit and are paid. In every round:
-- each escrow was set from a live 1Click quote ($0.03 ≈ 0.011 NEAR);
+Mission `mission-refund-1794727136998` (`npm run demo:refund`, against the upgraded market contract) shows **both** escrow outcomes in one run. The IDOR bug is patched for this demo, so replay verification fails and round 1 is refunded; rounds 2 and 3 pass the NEAR MCP audit and are paid. In every round:
+- the escrow was set from a live 1Click quote ($0.03 ≈ 0.011 NEAR);
+- all bids were committed, then `start_reveal` closed the commit phase **on-chain**, then bids were revealed (`phaseEnforcement: "on_chain"`);
 - the winner was read back from the contract (`get_round`);
-- `settle_round` and `payout`/`refund_round` were signed by the operator's function-call key scoped to those methods.
+- `start_reveal`, `settle_round` and `payout`/`refund_round` were signed by the operator's function-call key scoped to exactly those methods;
+- the `proof_hash` passed to `payout`/`refund_round` is stored on-chain, and `get_round_proof` returns exactly the recorded value for all 3 rounds.
 
-**Signer audit:** all **30** bid transactions (15 `commit_bid`, 15 `reveal_bid`) were checked against RPC `tx` → `public_key`. All 30 were signed by each agent's **scoped function-call key**, and none by a full-access key.
+**Payout proofs = attested work.** Round 2's on-chain proof `80b00fdc…` is identical to XssAgent's contribution hash in the attestation contract (`get_mission_contributions`), and round 3's `323f9d9a…` equals BusinessLogicAgent's. Each payout is therefore tied, on-chain, to the hash of that agent's replay-verified findings.
+
+**Signer audit** (same check, on mission `mission-refund-1794726348171`): all **30** bid transactions (15 `commit_bid`, 15 `reveal_bid`) were checked against RPC `tx` → `public_key`. All 30 were signed by each agent's **scoped function-call key**, and none by a full-access key.
+
+**Phase enforcement, live:** `npm run demo:phases` opens a round, commits one bid, calls `start_reveal`, then sends a second agent's `commit_bid`. The contract **rejects** it, and `get_round_bids` afterwards lists only the first bidder. The demo then reveals, settles and refunds to clean up. Last run: open [`HZs8PykaoNSM…`](https://testnet.nearblocks.io/txns/HZs8PykaoNSM6G75EhHbq1gMLJPHrpANrnwDY1DfHcUn) · start_reveal [`5j4CFTAViFW7…`](https://testnet.nearblocks.io/txns/5j4CFTAViFW7R19G96QEEj2PRfipjXATREkwYjKhGvp) · cleanup refund [`FH2pKZZt5oiy…`](https://testnet.nearblocks.io/txns/FH2pKZZt5oiyXtqTAVWwVw7gzgufBHQthNAnoftWGUag). (Release wasm builds report contract panics as a generic `unreachable` trap; the exact `"Commit phase closed"` message is asserted by the Rust unit test.)
+
+**Contract upgrade:** the market contract was upgraded in place (state layout unchanged; existing rounds and reputation still read correctly) by `scripts/deploy-market.js`, tx [`AnKLyPrTSvgi…`](https://testnet.nearblocks.io/txns/AnKLyPrTSvgiHCAeACe3qhMbbcpWxr4FYxf1DwMSg5B3).
 
 > **Correction, stated openly:** in earlier recorded missions (e.g. `mission-refund-1794725357805`), the bids were signed with the agents' *full-access* keys. The coordinator only looked for `.agent-keys.json` in the working directory and silently fell back to `~/.near-credentials`, while the MCP audit only checked that a scoped key *existed*. Both are fixed: the full-access fallback is removed, and the audit now checks the signer of the winner's actual commit transaction. `npm run test:mcp` uses that old full-key-signed round as a regression case the audit must reject.
 
-Per-bid detail (including `signerPublicKey`) is in [docs/near-proof.md](docs/near-proof.md) and `apps/server/tests/results/mission-mission-refund-1794726348171.json`.
+Per-bid detail (including `signerPublicKey`) is in [docs/near-proof.md](docs/near-proof.md) and `apps/server/tests/results/mission-mission-refund-1794727136998.json`.
 
-- **Master Mission Attestation**: [`544jKbms…`](https://testnet.nearblocks.io/txns/544jKbms359rQVBrEw1JZUMhrAn9iYj2HMV1AzhggMyL)
+- **Master Mission Attestation**: [`Euf52aUX…`](https://testnet.nearblocks.io/txns/Euf52aUXrC7m2KbjuLwXn6ygfByayRyny5UNuUKoiq4F)
 - **Round 1 (`task-access-control`) → REFUNDED** (on-chain winner `idor.harsha-swarm.testnet`, finding not reproducible):
-  - Open: [`52SkZyVw…`](https://testnet.nearblocks.io/txns/52SkZyVwsatGpSnAYmq1ddKEaepQTNsGfZA8czva2am2) · Settle: [`Aqy7QkSk…`](https://testnet.nearblocks.io/txns/Aqy7QkSkJbDRGcbrJca7p371CcFmaif8Yj49s4j1PHmt) · `refund_round`: [`Dur3WG8n…`](https://testnet.nearblocks.io/txns/Dur3WG8nRhQrXgXw43ig6Z26SPLzgyDbnB1maZNRim2J)
+  - Open: [`DEhBx4yG…`](https://testnet.nearblocks.io/txns/DEhBx4yGwjJ77n7CkLgqEPk9XHpFWUc9XKgkMpSUUeba) · start_reveal: [`B66mFpQc…`](https://testnet.nearblocks.io/txns/B66mFpQchX5Hes6qhvfE3WrJVURAgnFfKxv2pkVkB2ur) · Settle: [`C2GwarnY…`](https://testnet.nearblocks.io/txns/C2GwarnYu5JmpRFxXhswNkBGCe9YZfKCWJhGmZS4x6f) · `refund_round`: [`HCjKLJEB…`](https://testnet.nearblocks.io/txns/HCjKLJEBH19f5UqLGPSafoMMVvBiupBD8nGEL4ZiXTGg) (proof `db1032b3…`)
 - **Round 2 (`task-injection`) → PAID** to `xss.harsha-swarm.testnet`:
-  - Open: [`5v5kB9fi…`](https://testnet.nearblocks.io/txns/5v5kB9fiTG7QMixpJqXFkUHfw8ZarpzQH1yhzefZdUXP) · Settle: [`BTkX4ekX…`](https://testnet.nearblocks.io/txns/BTkX4ekXFAMN3gFSSQ4uox8Zc8Ja1z97dnaQdyUPsxoW) · `payout`: [`4beQyfZR…`](https://testnet.nearblocks.io/txns/4beQyfZRy8R25hRZd8aGu1nB3yjZoa39NPemu99FvKoX)
+  - Open: [`36Zmb295…`](https://testnet.nearblocks.io/txns/36Zmb2952KwWVFRXYiariHPpwrCmTqhjxqKZGdSppbtg) · start_reveal: [`J2WowmGv…`](https://testnet.nearblocks.io/txns/J2WowmGvkiyxVYR3ahvuF2tBAnQzFCNatAhXHD74umb4) · Settle: [`3wJcqcJc…`](https://testnet.nearblocks.io/txns/3wJcqcJcoz4sAAkEXZNxDeheiYM7E1Bqo3ByMbqvFqaG) · `payout`: [`EryXFdwt…`](https://testnet.nearblocks.io/txns/EryXFdwtE3PtPPKxYk8n7WPJJxXyVwE44gfaJotEa2g5) (proof `80b00fdc…`)
 - **Round 3 (`task-business-logic`) → PAID** to `logic.harsha-swarm.testnet`:
-  - Open: [`6vy2oz5q…`](https://testnet.nearblocks.io/txns/6vy2oz5qtt7j5sGiG7t2dQfXe4iesZZsBpEE3VXdf9B9) · Settle: [`Xwtc2beJ…`](https://testnet.nearblocks.io/txns/Xwtc2beJ5D9e1eTosA7DSGcvkfVHv16NymQkHNVQEab) · `payout`: [`HxXQsiEj…`](https://testnet.nearblocks.io/txns/HxXQsiEjkiJ8oPCkUhPDW4g5gX7DfVFQw4ckCFyWAWfq)
+  - Open: [`HQUCPjzS…`](https://testnet.nearblocks.io/txns/HQUCPjzSCfmidrqf9K5aqPeJfZrsNX19xV1GtFtcua8f) · start_reveal: [`CjhYL5xP…`](https://testnet.nearblocks.io/txns/CjhYL5xPWGMuY22Y7JfsXTLPdxCbCRXbZVrxKkHWdRkF) · Settle: [`wq95Zbmz…`](https://testnet.nearblocks.io/txns/wq95ZbmzSG7AaHNAKffNLixmxrE1sPpK4VQ1nqWQKPT) · `payout`: [`6yDANauB…`](https://testnet.nearblocks.io/txns/6yDANauBBUHb1rGaRFv1pj9pmq6DEjEKddWZffKiQsBa) (proof `323f9d9a…`)
 
 ### Zero-Gas Read-Only Verification
 Anyone can verify on-chain state without private keys or gas:
@@ -105,7 +114,7 @@ npm run verify:near         # master attestation, contributions, reputation
 npm run verify:market       # market rounds, sealed/revealed bids, escrow outcomes
 npm run verify:deployment   # rebuilds both contracts from source; sha256 must equal on-chain code_hash
 ```
-`verify:deployment` currently reports **MATCH** for both contracts (market `f2e3d93a…`, attestation `cf50e9bb…`). The code running on testnet is exactly this repository's source.
+`verify:deployment` currently reports **MATCH** for both contracts (market `52e0e789…`, attestation `cf50e9bb…`). The code running on testnet is exactly this repository's source.
 
 ---
 
@@ -119,7 +128,7 @@ npm run verify:deployment   # rebuilds both contracts from source; sha256 must e
 - Run smart contract unit tests:
   ```bash
   npm run test:contract        # 13/13 passing in apps/near-contract
-  npm run test:market-contract # 10/10 passing in apps/near-market-contract
+  npm run test:market-contract # 16/16 passing in apps/near-market-contract (incl. phase + proof-hash rules)
   ```
 - Run agent & exploitation test suites individually:
   ```bash
@@ -133,6 +142,7 @@ npm run verify:deployment   # rebuilds both contracts from source; sha256 must e
 - Run live testnet demo scenarios:
   ```bash
   npm run demo:refund          # Executes live mission where patched IDOR triggers testnet refund_round
+  npm run demo:phases          # Live: contract rejects a commit_bid sent after start_reveal (self-cleaning)
   npm run proof:generate       # Dynamically generates docs/near-proof.md from latest mission state
   ```
 - Build frontend bundle:
@@ -150,8 +160,9 @@ npm run verify:deployment   # rebuilds both contracts from source; sha256 must e
 4. **NEAR Intents is used for pricing only, not settlement; the Agent API is not used**: Per the NEAR Intents docs, *"There is no testnet version of NEAR Intents or the Agent API"*. The project calls the live 1Click quote API (dry, no funds moved) to set each escrow, but pays out with native testnet NEAR transfers from the market contract. See [docs/JUDGES.md §4](docs/JUDGES.md) for why the custom market contract does something the Agent API does not offer.
 5. **AI Is Optional and Limited to Bidding**: Without `NEAR_AI_API_KEY`, all bids use scripted confidences, and `confidenceSource: "scripted"` says so on every bid. The AI never decides whether a finding is real or whether anyone gets paid. The NEAR AI path is implemented against the NEAR AI Cloud docs, and its signer recovery is unit-tested offline. The recorded missions in this repo ran **without** a key, so all their bids are `scripted`.
 6. **Agent Sub-Accounts Also Hold a Full-Access Key**: Each agent sub-account was created with a full-access key, which stays in the owner's local `~/.near-credentials` and is used only by `provision:agents` to add the scoped key. The agent runtime loads **only** the scoped function-call key from `.agent-keys.json`; there is no fallback to the full-access key. The MCP audit checks that the key which actually signed the winner's `commit_bid` is the scoped one.
-7. **Operator Keys**: The operator (`harsha-swarm.testnet`) uses its full-access key from `.env` only for `open_round` (it attaches the escrow deposit, which a function-call key cannot do) and for attestation writes. `settle_round`, `payout` and `refund_round` are signed with a **function-call key scoped to exactly those three methods on the market**, added by `npm run provision:agents`; each round records this in `operatorKeyModes`. Bids are **never** signed by the operator. An agent with no provisioned key simply does not bid (`signingMode: "missing_key"`).
-8. **Account Provisioning**: `npm run provision:agents` creates any missing agent sub-account (0.5 NEAR each, from the operator) and adds every scoped key. It is idempotent; the recorded runs reused existing accounts.
+7. **Operator Keys**: The operator (`harsha-swarm.testnet`) uses its full-access key from `.env` only for `open_round` (it attaches the escrow deposit, which a function-call key cannot do) and for attestation writes. `start_reveal`, `settle_round`, `payout` and `refund_round` are signed with a **function-call key scoped to exactly those four methods on the market**, added by `npm run provision:agents`; each round records this in `operatorKeyModes`. Bids are **never** signed by the operator. An agent with no provisioned key simply does not bid (`signingMode: "missing_key"`).
+8. **Contract Is Upgradable by Its Owner Key**: `market.harsha-swarm.testnet` keeps a full-access key (used by `scripts/deploy-market.js`), so its code can be replaced. `npm run verify:deployment` lets anyone confirm the code currently deployed is exactly this source.
+9. **Account Provisioning**: `npm run provision:agents` creates any missing agent sub-account (0.5 NEAR each, from the operator) and adds every scoped key. It is idempotent; the recorded runs reused existing accounts.
 
 For an exhaustive audit and line-by-line verification guide, see [docs/JUDGES.md](docs/JUDGES.md).
 

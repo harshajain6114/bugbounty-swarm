@@ -20,6 +20,7 @@
     "test:intents": "node node_modules/tsx/dist/cli.mjs tests/intents-pricer.test.ts",
     "test:near-ai": "node node_modules/tsx/dist/cli.mjs tests/near-ai-verify.test.ts",
     "test:mcp": "node node_modules/tsx/dist/cli.mjs tests/mcp-auditor.test.ts",
+    "demo:phases": "node node_modules/tsx/dist/cli.mjs tests/phase-enforcement.demo.ts",
     "demo:refund": "node node_modules/tsx/dist/cli.mjs tests/demo-refund.ts",
     "test:all": "node node_modules/tsx/dist/cli.mjs tests/run-all.ts",
     "typecheck": "node node_modules/typescript/bin/tsc --noEmit"

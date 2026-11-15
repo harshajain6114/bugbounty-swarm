@@ -54,5 +54,5 @@
   "testPassed": true,
   "vulnerabilityReproduced": true,
   "details": "Review content is accepted and stored without server-side sanitization. The product page renders it via \"innerHTML = <content>\" — a dangerous unescaped sink. Playwright Chromium automation confirmed that the injected onerror handler executed, setting window.__bugbounty_xss_test to \"EXECUTED\". Remediation: escape HTML entities before storage and use textContent instead of innerHTML.",
-  "testedAt": "2026-11-15T07:11:58.984Z"
+  "testedAt": "2026-11-15T07:27:56.822Z"
 }

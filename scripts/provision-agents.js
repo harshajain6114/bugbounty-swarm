@@ -195,11 +195,11 @@ async function main() {
     }
   }
 
-  // ── Operator: scoped key for settle_round / payout / refund_round ──────────
+  // ── Operator: scoped key for start_reveal / settle_round / payout / refund_round ──
   // These methods take no deposit, so a FunctionCall key scoped to the market
   // can sign them. The operator's full-access key is then needed only for
   // open_round (which attaches the escrow deposit) and the attestation contract.
-  const OPERATOR_METHODS = ['settle_round', 'payout', 'refund_round'];
+  const OPERATOR_METHODS = ['start_reveal', 'settle_round', 'payout', 'refund_round'];
   console.log(`\nChecking operator scoped key on ${OPERATOR_ID}…`);
   const opKeysRes = await fetch(RPC_URL, {
     method: 'POST',
@@ -231,6 +231,15 @@ async function main() {
         methodNames: OPERATOR_METHODS,
         allowance: BigInt('250000000000000000000000'), // 0.25 NEAR gas allowance
       });
+      // Remove the previously provisioned operator scoped key (method list changed).
+      if (storedOp?.publicKey && opKeys.some((k) => k.public_key === storedOp.publicKey)) {
+        try {
+          await opAcc.deleteKey(storedOp.publicKey);
+          console.log(`  ✓ Deleted superseded operator scoped key ${storedOp.publicKey.slice(0, 20)}…`);
+        } catch (err) {
+          console.warn(`  ⚠ Could not delete superseded operator key:`, err.message);
+        }
+      }
       storedKeys.__operator__ = {
         accountId: OPERATOR_ID,
         publicKey: opKp.getPublicKey().toString(),

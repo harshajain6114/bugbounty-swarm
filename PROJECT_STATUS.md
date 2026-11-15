@@ -15,7 +15,7 @@ Status: Complete Hackathon Submission (All Tracks Verified On-Chain)
 - **Mission Orchestrator & ReplayVerifier** (`apps/server/src/orchestrator/`): Coordinates sequential execution, enforces authorized target scope, deduplicates root causes, independently reproduces each finding via fresh HTTP/DOM replay, and handles escrow release or contract refund.
 
 ### Swarm Bounty Market on NEAR Testnet
-- **Market Smart Contract** (`apps/near-market-contract/`): Rust contract with 10/10 passing unit tests:
+- **Market Smart Contract** (`apps/near-market-contract/`): Rust contract with 16/16 passing unit tests:
   - Commit-reveal sealed bidding (SHA-256 preimages).
   - Deterministic scoring: `(confidence_bps * (1 + rep) * 1e12) / cost_units`.
   - Verification-gated payouts: operator releases escrowed reward only after independent replay reproduction.
@@ -32,7 +32,7 @@ Status: Complete Hackathon Submission (All Tracks Verified On-Chain)
 ### Attestation Smart Contract on NEAR Testnet
 - **Attestation Contract** (`apps/near-contract/`): Rust contract with 13/13 passing unit tests.
 - **Live Deployment**: Deployed and active at `harsha-swarm.testnet`.
-- **Master Attestation**: Live transaction `544jKbms359rQVBrEw1JZUMhrAn9iYj2HMV1AzhggMyL` (mission `mission-refund-1794726348171`) storing root mission hash, finding count, and timestamp.
+- **Master Attestation**: Live transaction `Euf52aUXrC7m2KbjuLwXn6ygfByayRyny5UNuUKoiq4F` (mission `mission-refund-1794727136998`) storing root mission hash, finding count, and timestamp.
 
 ### Web Dashboard & Demo System
 - **React + Vite UI** (`apps/web/`):

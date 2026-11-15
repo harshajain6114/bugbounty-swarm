@@ -1,46 +1,46 @@
 {
-  "missionId": "mission-refund-1794726348171",
+  "missionId": "test-mission-1794727842011",
   "target": "http://localhost:4000/shop",
   "status": "completed",
-  "startedAt": "2026-11-15T07:05:48.185Z",
-  "completedAt": "2026-11-15T07:08:53.474Z",
-  "durationMs": 185289,
+  "startedAt": "2026-11-15T07:30:42.024Z",
+  "completedAt": "2026-11-15T07:34:13.085Z",
+  "durationMs": 211060,
   "reconSummary": {
     "pagesDiscovered": 8,
     "endpointsDiscovered": 13,
     "formsDiscovered": 7,
     "authenticatedPages": 1,
-    "crawlDurationMs": 14578
+    "crawlDurationMs": 14609
   },
   "agentsExecuted": [
     {
       "agentName": "ReconAgent",
-      "startedAt": "2026-11-15T07:05:48.185Z",
-      "completedAt": "2026-11-15T07:06:02.815Z",
-      "durationMs": 14630,
+      "startedAt": "2026-11-15T07:30:42.025Z",
+      "completedAt": "2026-11-15T07:30:56.689Z",
+      "durationMs": 14664,
       "status": "completed",
       "findingsCount": 0
     },
     {
       "agentName": "IdorAgent",
-      "startedAt": "2026-11-15T07:06:34.183Z",
-      "completedAt": "2026-11-15T07:06:34.193Z",
-      "durationMs": 10,
+      "startedAt": "2026-11-15T07:31:27.560Z",
+      "completedAt": "2026-11-15T07:31:27.575Z",
+      "durationMs": 15,
       "status": "completed",
-      "findingsCount": 0
+      "findingsCount": 1
     },
     {
       "agentName": "XssAgent",
-      "startedAt": "2026-11-15T07:07:05.054Z",
-      "completedAt": "2026-11-15T07:07:19.958Z",
-      "durationMs": 14904,
+      "startedAt": "2026-11-15T07:32:00.209Z",
+      "completedAt": "2026-11-15T07:32:15.141Z",
+      "durationMs": 14932,
       "status": "completed",
       "findingsCount": 1
     },
     {
       "agentName": "BusinessLogicAgent",
-      "startedAt": "2026-11-15T07:07:49.713Z",
-      "completedAt": "2026-11-15T07:07:49.723Z",
+      "startedAt": "2026-11-15T07:32:46.692Z",
+      "completedAt": "2026-11-15T07:32:46.702Z",
       "durationMs": 10,
       "status": "completed",
       "findingsCount": 1
@@ -48,7 +48,7 @@
   ],
   "agentResults": {
     "recon": {
-      "missionId": "mission-refund-1794726348171-recon",
+      "missionId": "test-mission-1794727842011-recon",
       "target": "http://localhost:4000/shop",
       "status": "completed",
       "summary": {
@@ -56,7 +56,7 @@
         "endpointsDiscovered": 13,
         "formsDiscovered": 7,
         "authenticatedPages": 1,
-        "crawlDurationMs": 14578
+        "crawlDurationMs": 14609
       },
       "pages": [
         {
@@ -72,7 +72,7 @@
             "http://localhost:4000/shop/checkout"
           ],
           "formsDiscovered": 1,
-          "discoveredAt": "2026-11-15T07:06:02.309Z"
+          "discoveredAt": "2026-11-15T07:30:56.189Z"
         },
         {
           "url": "http://localhost:4000/shop/products",
@@ -91,7 +91,7 @@
             "http://localhost:4000/shop/products/prod-004"
           ],
           "formsDiscovered": 0,
-          "discoveredAt": "2026-11-15T07:06:02.355Z"
+          "discoveredAt": "2026-11-15T07:30:56.238Z"
         },
         {
           "url": "http://localhost:4000/shop/orders",
@@ -106,7 +106,7 @@
             "http://localhost:4000/shop/checkout"
           ],
           "formsDiscovered": 1,
-          "discoveredAt": "2026-11-15T07:06:02.389Z"
+          "discoveredAt": "2026-11-15T07:30:56.272Z"
         },
         {
           "url": "http://localhost:4000/shop/checkout",
@@ -121,7 +121,7 @@
             "http://localhost:4000/shop/checkout"
           ],
           "formsDiscovered": 0,
-          "discoveredAt": "2026-11-15T07:06:02.417Z"
+          "discoveredAt": "2026-11-15T07:30:56.303Z"
         },
         {
           "url": "http://localhost:4000/shop/products/prod-001",
@@ -136,7 +136,7 @@
             "http://localhost:4000/shop/checkout"
           ],
           "formsDiscovered": 1,
-          "discoveredAt": "2026-11-15T07:06:02.460Z"
+          "discoveredAt": "2026-11-15T07:30:56.343Z"
         },
         {
           "url": "http://localhost:4000/shop/products/prod-002",
@@ -151,7 +151,7 @@
             "http://localhost:4000/shop/checkout"
           ],
           "formsDiscovered": 1,
-          "discoveredAt": "2026-11-15T07:06:02.491Z"
+          "discoveredAt": "2026-11-15T07:30:56.375Z"
         },
         {
           "url": "http://localhost:4000/shop/products/prod-003",
@@ -166,7 +166,7 @@
             "http://localhost:4000/shop/checkout"
           ],
           "formsDiscovered": 1,
-          "discoveredAt": "2026-11-15T07:06:02.522Z"
+          "discoveredAt": "2026-11-15T07:30:56.405Z"
         },
         {
           "url": "http://localhost:4000/shop/products/prod-004",
@@ -181,7 +181,7 @@
             "http://localhost:4000/shop/checkout"
           ],
           "formsDiscovered": 1,
-          "discoveredAt": "2026-11-15T07:06:02.552Z"
+          "discoveredAt": "2026-11-15T07:30:56.436Z"
         }
       ],
       "endpoints": [
@@ -520,20 +520,20 @@
       "metadata": {
         "agentName": "ReconAgent",
         "agentVersion": "1.0.0",
-        "completedAt": "2026-11-15T07:06:02.764Z",
+        "completedAt": "2026-11-15T07:30:56.634Z",
         "externalOriginsVisited": []
       }
     },
     "idor": {
-      "missionId": "mission-refund-1794726348171-idor",
+      "missionId": "test-mission-1794727842011-idor",
       "target": "http://localhost:4000/shop",
       "status": "completed",
       "summary": {
         "totalDiscoveredEndpoints": 13,
         "candidateEndpointsEvaluated": 1,
         "skippedEndpointsCount": 12,
-        "vulnerabilitiesConfirmed": 0,
-        "durationMs": 9
+        "vulnerabilitiesConfirmed": 1,
+        "durationMs": 11
       },
       "candidatesEvaluated": [
         "/shop/api/orders/:id"
@@ -600,17 +600,96 @@
           "reason": "Public catalog entity without per-user ownership boundaries."
         }
       ],
-      "findings": [],
+      "findings": [
+        {
+          "findingId": "idor-finding-1",
+          "vulnerabilityType": "Insecure Direct Object Reference (IDOR / BOLA)",
+          "title": "BOLA / IDOR Authorization Bypass on /shop/api/orders/:id",
+          "severity": "High",
+          "affectedEndpoint": "/shop/api/orders/:id",
+          "httpMethod": "GET",
+          "authenticatedUser": "Alice (alice@example.com)",
+          "resourceOwner": "Bob (bob@example.com)",
+          "testResult": "VULNERABILITY_CONFIRMED",
+          "reproducible": true,
+          "evidence": {
+            "authenticatedUser": {
+              "id": "user-alice",
+              "name": "Alice",
+              "email": "alice@example.com"
+            },
+            "resourceOwner": {
+              "id": "user-bob",
+              "name": "Bob",
+              "email": "bob@example.com"
+            },
+            "aliceOwnResource": {
+              "resourceId": "order-alice-001",
+              "httpStatus": 200,
+              "responseBody": {
+                "id": "order-alice-001",
+                "userId": "user-alice",
+                "items": [
+                  {
+                    "productId": "prod-001",
+                    "quantity": 1,
+                    "priceAtPurchase": 7999
+                  }
+                ],
+                "total": 7999,
+                "createdAt": "2026-11-01T10:00:00Z"
+              }
+            },
+            "crossUserAccessAttempt": {
+              "targetResourceId": "order-bob-001",
+              "httpStatus": 200,
+              "responseBody": {
+                "id": "order-bob-001",
+                "userId": "user-bob",
+                "items": [
+                  {
+                    "productId": "prod-002",
+                    "quantity": 1,
+                    "priceAtPurchase": 11999
+                  }
+                ],
+                "total": 11999,
+                "createdAt": "2026-11-02T12:30:00Z"
+              }
+            },
+            "ownershipComparison": {
+              "expectedOwnerId": "user-bob",
+              "actualOwnerInResponse": "user-bob",
+              "crossUserLeakageConfirmed": true,
+              "leakedFields": [
+                "items",
+                "total",
+                "createdAt",
+                "userId"
+              ]
+            }
+          },
+          "reproductionSteps": [
+            "1. Authenticate as alice@example.com via POST /shop/api/auth/login.",
+            "2. Obtain session Bearer token for alice@example.com.",
+            "3. Verify legitimate baseline: GET /shop/api/orders/order-alice-001 returns HTTP 200 with Alice's order.",
+            "4. Send cross-user request: GET /shop/api/orders/order-bob-001 with Alice's Bearer token.",
+            "5. Observe that HTTP 200 is returned with Bob's private data (userId=\"user-bob\") — no ownership validation enforced."
+          ],
+          "remediation": "Implement server-side object ownership authorization. Verify that the requested order's userId matches the authenticated session's userId (req.userId). If mismatched, return HTTP 403 Forbidden.",
+          "timestamp": "2026-11-15T07:31:27.573Z"
+        }
+      ],
       "errors": [],
       "metadata": {
         "agentName": "IdorAgent",
         "agentVersion": "1.0.0",
-        "completedAt": "2026-11-15T07:06:34.192Z",
+        "completedAt": "2026-11-15T07:31:27.574Z",
         "targetScope": "http://localhost:4000/shop"
       }
     },
     "xss": {
-      "missionId": "mission-refund-1794726348171-xss",
+      "missionId": "test-mission-1794727842011-xss",
       "target": "http://localhost:4000/shop",
       "status": "completed",
       "summary": {
@@ -619,7 +698,7 @@
         "skippedFieldsCount": 8,
         "testedInputsCount": 4,
         "vulnerabilitiesConfirmed": 1,
-        "durationMs": 14901
+        "durationMs": 14929
       },
       "candidatesEvaluated": [
         {
@@ -808,9 +887,9 @@
             "targetUrl": "http://localhost:4000/shop/products/prod-001",
             "authenticatedAs": "alice@example.com",
             "payloadSubmitted": {
-              "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\">",
-              "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_1",
-              "sentinelValue": "SENTINEL_uyb4adb",
+              "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\">",
+              "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_1",
+              "sentinelValue": "SENTINEL_33k67ew",
               "inputSelector": "#review-content",
               "submissionUrl": "/shop/api/products/:id/reviews"
             },
@@ -818,17 +897,17 @@
               "reviewId": "review-1",
               "storedVerbatim": true,
               "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
-              "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-15T07:07:19.355Z\"}"
+              "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-15T07:32:14.553Z\"}"
             },
             "renderVerification": {
               "pageUrl": "http://localhost:4000/shop/products/prod-001",
               "containsDangerousSink": true,
-              "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\\\">\";"
+              "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\\\">\";"
             },
             "browserExecution": {
-              "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_1",
-              "expectedValue": "SENTINEL_uyb4adb",
-              "actualValue": "SENTINEL_uyb4adb",
+              "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_1",
+              "expectedValue": "SENTINEL_33k67ew",
+              "actualValue": "SENTINEL_33k67ew",
               "executed": true
             }
           },
@@ -838,9 +917,9 @@
               "targetUrl": "http://localhost:4000/shop/products/prod-001",
               "authenticatedAs": "alice@example.com",
               "payloadSubmitted": {
-                "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\">",
-                "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_1",
-                "sentinelValue": "SENTINEL_uyb4adb",
+                "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\">",
+                "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_1",
+                "sentinelValue": "SENTINEL_33k67ew",
                 "inputSelector": "#review-content",
                 "submissionUrl": "/shop/api/products/:id/reviews"
               },
@@ -848,17 +927,17 @@
                 "reviewId": "review-1",
                 "storedVerbatim": true,
                 "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
-                "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-15T07:07:19.355Z\"}"
+                "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-15T07:32:14.553Z\"}"
               },
               "renderVerification": {
                 "pageUrl": "http://localhost:4000/shop/products/prod-001",
                 "containsDangerousSink": true,
-                "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\\\">\";"
+                "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\\\">\";"
               },
               "browserExecution": {
-                "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_1",
-                "expectedValue": "SENTINEL_uyb4adb",
-                "actualValue": "SENTINEL_uyb4adb",
+                "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_1",
+                "expectedValue": "SENTINEL_33k67ew",
+                "actualValue": "SENTINEL_33k67ew",
                 "executed": true
               }
             },
@@ -867,9 +946,9 @@
               "targetUrl": "http://localhost:4000/shop/products/prod-002",
               "authenticatedAs": "alice@example.com",
               "payloadSubmitted": {
-                "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_2='SENTINEL_wpby1vw'\">",
-                "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_2",
-                "sentinelValue": "SENTINEL_wpby1vw",
+                "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_2='SENTINEL_xzcltdz'\">",
+                "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_2",
+                "sentinelValue": "SENTINEL_xzcltdz",
                 "inputSelector": "#review-content",
                 "submissionUrl": "/shop/api/products/:id/reviews"
               },
@@ -877,17 +956,17 @@
                 "reviewId": "review-2",
                 "storedVerbatim": true,
                 "apiEndpointQueried": "/shop/api/products/prod-002/reviews",
-                "apiResponseSnippet": "{\"productId\":\"prod-002\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_2='SENTINEL_wpby1vw'\\\">\",\"rating\":5,\"id\":\"review-2\",\"createdAt\":\"2026-11-15T07:07:19.521Z\"}"
+                "apiResponseSnippet": "{\"productId\":\"prod-002\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_2='SENTINEL_xzcltdz'\\\">\",\"rating\":5,\"id\":\"review-2\",\"createdAt\":\"2026-11-15T07:32:14.719Z\"}"
               },
               "renderVerification": {
                 "pageUrl": "http://localhost:4000/shop/products/prod-002",
                 "containsDangerousSink": true,
-                "sinkSnippet": "document.getElementById('review-content-review-2').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_2='SENTINEL_wpby1vw'\\\">\";"
+                "sinkSnippet": "document.getElementById('review-content-review-2').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_2='SENTINEL_xzcltdz'\\\">\";"
               },
               "browserExecution": {
-                "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_2",
-                "expectedValue": "SENTINEL_wpby1vw",
-                "actualValue": "SENTINEL_wpby1vw",
+                "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_2",
+                "expectedValue": "SENTINEL_xzcltdz",
+                "actualValue": "SENTINEL_xzcltdz",
                 "executed": true
               }
             },
@@ -896,9 +975,9 @@
               "targetUrl": "http://localhost:4000/shop/products/prod-003",
               "authenticatedAs": "alice@example.com",
               "payloadSubmitted": {
-                "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_3='SENTINEL_t77crrr'\">",
-                "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_3",
-                "sentinelValue": "SENTINEL_t77crrr",
+                "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_3='SENTINEL_iob8td5'\">",
+                "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_3",
+                "sentinelValue": "SENTINEL_iob8td5",
                 "inputSelector": "#review-content",
                 "submissionUrl": "/shop/api/products/:id/reviews"
               },
@@ -906,17 +985,17 @@
                 "reviewId": "review-3",
                 "storedVerbatim": true,
                 "apiEndpointQueried": "/shop/api/products/prod-003/reviews",
-                "apiResponseSnippet": "{\"productId\":\"prod-003\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_3='SENTINEL_t77crrr'\\\">\",\"rating\":5,\"id\":\"review-3\",\"createdAt\":\"2026-11-15T07:07:19.671Z\"}"
+                "apiResponseSnippet": "{\"productId\":\"prod-003\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_3='SENTINEL_iob8td5'\\\">\",\"rating\":5,\"id\":\"review-3\",\"createdAt\":\"2026-11-15T07:32:14.870Z\"}"
               },
               "renderVerification": {
                 "pageUrl": "http://localhost:4000/shop/products/prod-003",
                 "containsDangerousSink": true,
-                "sinkSnippet": "document.getElementById('review-content-review-3').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_3='SENTINEL_t77crrr'\\\">\";"
+                "sinkSnippet": "document.getElementById('review-content-review-3').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_3='SENTINEL_iob8td5'\\\">\";"
               },
               "browserExecution": {
-                "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_3",
-                "expectedValue": "SENTINEL_t77crrr",
-                "actualValue": "SENTINEL_t77crrr",
+                "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_3",
+                "expectedValue": "SENTINEL_iob8td5",
+                "actualValue": "SENTINEL_iob8td5",
                 "executed": true
               }
             },
@@ -925,9 +1004,9 @@
               "targetUrl": "http://localhost:4000/shop/products/prod-004",
               "authenticatedAs": "alice@example.com",
               "payloadSubmitted": {
-                "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_4='SENTINEL_uyxp4o9'\">",
-                "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_4",
-                "sentinelValue": "SENTINEL_uyxp4o9",
+                "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_4='SENTINEL_xs9mk1e'\">",
+                "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_4",
+                "sentinelValue": "SENTINEL_xs9mk1e",
                 "inputSelector": "#review-content",
                 "submissionUrl": "/shop/api/products/:id/reviews"
               },
@@ -935,17 +1014,17 @@
                 "reviewId": "review-4",
                 "storedVerbatim": true,
                 "apiEndpointQueried": "/shop/api/products/prod-004/reviews",
-                "apiResponseSnippet": "{\"productId\":\"prod-004\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_4='SENTINEL_uyxp4o9'\\\">\",\"rating\":5,\"id\":\"review-4\",\"createdAt\":\"2026-11-15T07:07:19.838Z\"}"
+                "apiResponseSnippet": "{\"productId\":\"prod-004\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_4='SENTINEL_xs9mk1e'\\\">\",\"rating\":5,\"id\":\"review-4\",\"createdAt\":\"2026-11-15T07:32:15.018Z\"}"
               },
               "renderVerification": {
                 "pageUrl": "http://localhost:4000/shop/products/prod-004",
                 "containsDangerousSink": true,
-                "sinkSnippet": "document.getElementById('review-content-review-4').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_4='SENTINEL_uyxp4o9'\\\">\";"
+                "sinkSnippet": "document.getElementById('review-content-review-4').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_4='SENTINEL_xs9mk1e'\\\">\";"
               },
               "browserExecution": {
-                "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_4",
-                "expectedValue": "SENTINEL_uyxp4o9",
-                "actualValue": "SENTINEL_uyxp4o9",
+                "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_4",
+                "expectedValue": "SENTINEL_xs9mk1e",
+                "actualValue": "SENTINEL_xs9mk1e",
                 "executed": true
               }
             }
@@ -954,7 +1033,7 @@
           "reproductionSteps": [
             "Authenticate to the application as demo user (alice@example.com).",
             "Navigate to any product detail page containing the review form (e.g. http://localhost:4000/shop/products/prod-001).",
-            "Submit a review payload containing an HTML element with an event handler into 'review-content': <img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\">.",
+            "Submit a review payload containing an HTML element with an event handler into 'review-content': <img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\">.",
             "Verify that the API endpoint /shop/api/products/:id/reviews stores the payload without encoding or sanitization.",
             "Navigate to the product render page.",
             "Observe that the client script injects the raw review content into the DOM using document.getElementById(...).innerHTML = ...",
@@ -962,19 +1041,19 @@
             "Confirmed identical execution across 4 product endpoints: [prod-001, prod-002, prod-003, prod-004]."
           ],
           "remediation": "Avoid assigning untrusted user-supplied content to element.innerHTML. Use element.textContent or safe DOM templating. Alternatively, sanitize input using DOMPurify before DOM insertion.",
-          "timestamp": "2026-11-15T07:07:19.915Z"
+          "timestamp": "2026-11-15T07:32:15.104Z"
         }
       ],
       "errors": [],
       "metadata": {
         "agentName": "XssAgent",
         "agentVersion": "1.0.0",
-        "completedAt": "2026-11-15T07:07:19.956Z",
+        "completedAt": "2026-11-15T07:32:15.140Z",
         "targetScope": "http://localhost:4000/shop"
       }
     },
     "businessLogic": {
-      "missionId": "mission-refund-1794726348171-bizlogic",
+      "missionId": "test-mission-1794727842011-bizlogic",
       "target": "http://localhost:4000/shop",
       "status": "completed",
       "summary": {
@@ -983,7 +1062,7 @@
         "skippedEndpointsCount": 12,
         "vulnerabilitiesConfirmed": 1,
         "priceDiscrepancyCents": 7998,
-        "durationMs": 7
+        "durationMs": 8
       },
       "candidatesEvaluated": [
         {
@@ -1097,7 +1176,7 @@
                   }
                 ],
                 "total": 1,
-                "createdAt": "2026-11-15T07:07:49.721Z"
+                "createdAt": "2026-11-15T07:32:46.698Z"
               },
               "warning": "[VULN] Price was accepted from client payload — no server-side validation."
             },
@@ -1111,19 +1190,97 @@
             "Observe that the server accepts the client-supplied price without validating against the product database, creating order order-alice-100 for 1 cent(s) instead of 7999 cents."
           ],
           "remediation": "Never accept product price fields from client-side checkout payloads. When processing orders, ignore any client-supplied price and look up the authoritative price server-side directly from the database using productId.",
-          "timestamp": "2026-11-15T07:07:49.721Z"
+          "timestamp": "2026-11-15T07:32:46.699Z"
         }
       ],
       "errors": [],
       "metadata": {
         "agentName": "BusinessLogicAgent",
         "agentVersion": "1.0.0",
-        "completedAt": "2026-11-15T07:07:49.722Z",
+        "completedAt": "2026-11-15T07:32:46.700Z",
         "targetScope": "http://localhost:4000/shop"
       }
     }
   },
   "allFindings": [
+    {
+      "findingId": "idor-finding-1",
+      "vulnerabilityType": "Insecure Direct Object Reference (IDOR / BOLA)",
+      "title": "BOLA / IDOR Authorization Bypass on /shop/api/orders/:id",
+      "severity": "High",
+      "affectedEndpoint": "/shop/api/orders/:id",
+      "httpMethod": "GET",
+      "authenticatedUser": "Alice (alice@example.com)",
+      "resourceOwner": "Bob (bob@example.com)",
+      "testResult": "VULNERABILITY_CONFIRMED",
+      "reproducible": true,
+      "evidence": {
+        "authenticatedUser": {
+          "id": "user-alice",
+          "name": "Alice",
+          "email": "alice@example.com"
+        },
+        "resourceOwner": {
+          "id": "user-bob",
+          "name": "Bob",
+          "email": "bob@example.com"
+        },
+        "aliceOwnResource": {
+          "resourceId": "order-alice-001",
+          "httpStatus": 200,
+          "responseBody": {
+            "id": "order-alice-001",
+            "userId": "user-alice",
+            "items": [
+              {
+                "productId": "prod-001",
+                "quantity": 1,
+                "priceAtPurchase": 7999
+              }
+            ],
+            "total": 7999,
+            "createdAt": "2026-11-01T10:00:00Z"
+          }
+        },
+        "crossUserAccessAttempt": {
+          "targetResourceId": "order-bob-001",
+          "httpStatus": 200,
+          "responseBody": {
+            "id": "order-bob-001",
+            "userId": "user-bob",
+            "items": [
+              {
+                "productId": "prod-002",
+                "quantity": 1,
+                "priceAtPurchase": 11999
+              }
+            ],
+            "total": 11999,
+            "createdAt": "2026-11-02T12:30:00Z"
+          }
+        },
+        "ownershipComparison": {
+          "expectedOwnerId": "user-bob",
+          "actualOwnerInResponse": "user-bob",
+          "crossUserLeakageConfirmed": true,
+          "leakedFields": [
+            "items",
+            "total",
+            "createdAt",
+            "userId"
+          ]
+        }
+      },
+      "reproductionSteps": [
+        "1. Authenticate as alice@example.com via POST /shop/api/auth/login.",
+        "2. Obtain session Bearer token for alice@example.com.",
+        "3. Verify legitimate baseline: GET /shop/api/orders/order-alice-001 returns HTTP 200 with Alice's order.",
+        "4. Send cross-user request: GET /shop/api/orders/order-bob-001 with Alice's Bearer token.",
+        "5. Observe that HTTP 200 is returned with Bob's private data (userId=\"user-bob\") — no ownership validation enforced."
+      ],
+      "remediation": "Implement server-side object ownership authorization. Verify that the requested order's userId matches the authenticated session's userId (req.userId). If mismatched, return HTTP 403 Forbidden.",
+      "timestamp": "2026-11-15T07:31:27.573Z"
+    },
     {
       "findingId": "xss-find-001",
       "vulnerabilityType": "Stored Cross-Site Scripting (Stored XSS)",
@@ -1146,9 +1303,9 @@
         "targetUrl": "http://localhost:4000/shop/products/prod-001",
         "authenticatedAs": "alice@example.com",
         "payloadSubmitted": {
-          "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\">",
-          "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_1",
-          "sentinelValue": "SENTINEL_uyb4adb",
+          "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\">",
+          "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_1",
+          "sentinelValue": "SENTINEL_33k67ew",
           "inputSelector": "#review-content",
           "submissionUrl": "/shop/api/products/:id/reviews"
         },
@@ -1156,17 +1313,17 @@
           "reviewId": "review-1",
           "storedVerbatim": true,
           "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
-          "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-15T07:07:19.355Z\"}"
+          "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-15T07:32:14.553Z\"}"
         },
         "renderVerification": {
           "pageUrl": "http://localhost:4000/shop/products/prod-001",
           "containsDangerousSink": true,
-          "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\\\">\";"
+          "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\\\">\";"
         },
         "browserExecution": {
-          "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_1",
-          "expectedValue": "SENTINEL_uyb4adb",
-          "actualValue": "SENTINEL_uyb4adb",
+          "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_1",
+          "expectedValue": "SENTINEL_33k67ew",
+          "actualValue": "SENTINEL_33k67ew",
           "executed": true
         }
       },
@@ -1176,9 +1333,9 @@
           "targetUrl": "http://localhost:4000/shop/products/prod-001",
           "authenticatedAs": "alice@example.com",
           "payloadSubmitted": {
-            "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\">",
-            "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_1",
-            "sentinelValue": "SENTINEL_uyb4adb",
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_1",
+            "sentinelValue": "SENTINEL_33k67ew",
             "inputSelector": "#review-content",
             "submissionUrl": "/shop/api/products/:id/reviews"
           },
@@ -1186,17 +1343,17 @@
             "reviewId": "review-1",
             "storedVerbatim": true,
             "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
-            "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-15T07:07:19.355Z\"}"
+            "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-15T07:32:14.553Z\"}"
           },
           "renderVerification": {
             "pageUrl": "http://localhost:4000/shop/products/prod-001",
             "containsDangerousSink": true,
-            "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\\\">\";"
+            "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\\\">\";"
           },
           "browserExecution": {
-            "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_1",
-            "expectedValue": "SENTINEL_uyb4adb",
-            "actualValue": "SENTINEL_uyb4adb",
+            "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_1",
+            "expectedValue": "SENTINEL_33k67ew",
+            "actualValue": "SENTINEL_33k67ew",
             "executed": true
           }
         },
@@ -1205,9 +1362,9 @@
           "targetUrl": "http://localhost:4000/shop/products/prod-002",
           "authenticatedAs": "alice@example.com",
           "payloadSubmitted": {
-            "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_2='SENTINEL_wpby1vw'\">",
-            "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_2",
-            "sentinelValue": "SENTINEL_wpby1vw",
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_2='SENTINEL_xzcltdz'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_2",
+            "sentinelValue": "SENTINEL_xzcltdz",
             "inputSelector": "#review-content",
             "submissionUrl": "/shop/api/products/:id/reviews"
           },
@@ -1215,17 +1372,17 @@
             "reviewId": "review-2",
             "storedVerbatim": true,
             "apiEndpointQueried": "/shop/api/products/prod-002/reviews",
-            "apiResponseSnippet": "{\"productId\":\"prod-002\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_2='SENTINEL_wpby1vw'\\\">\",\"rating\":5,\"id\":\"review-2\",\"createdAt\":\"2026-11-15T07:07:19.521Z\"}"
+            "apiResponseSnippet": "{\"productId\":\"prod-002\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_2='SENTINEL_xzcltdz'\\\">\",\"rating\":5,\"id\":\"review-2\",\"createdAt\":\"2026-11-15T07:32:14.719Z\"}"
           },
           "renderVerification": {
             "pageUrl": "http://localhost:4000/shop/products/prod-002",
             "containsDangerousSink": true,
-            "sinkSnippet": "document.getElementById('review-content-review-2').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_2='SENTINEL_wpby1vw'\\\">\";"
+            "sinkSnippet": "document.getElementById('review-content-review-2').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_2='SENTINEL_xzcltdz'\\\">\";"
           },
           "browserExecution": {
-            "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_2",
-            "expectedValue": "SENTINEL_wpby1vw",
-            "actualValue": "SENTINEL_wpby1vw",
+            "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_2",
+            "expectedValue": "SENTINEL_xzcltdz",
+            "actualValue": "SENTINEL_xzcltdz",
             "executed": true
           }
         },
@@ -1234,9 +1391,9 @@
           "targetUrl": "http://localhost:4000/shop/products/prod-003",
           "authenticatedAs": "alice@example.com",
           "payloadSubmitted": {
-            "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_3='SENTINEL_t77crrr'\">",
-            "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_3",
-            "sentinelValue": "SENTINEL_t77crrr",
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_3='SENTINEL_iob8td5'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_3",
+            "sentinelValue": "SENTINEL_iob8td5",
             "inputSelector": "#review-content",
             "submissionUrl": "/shop/api/products/:id/reviews"
           },
@@ -1244,17 +1401,17 @@
             "reviewId": "review-3",
             "storedVerbatim": true,
             "apiEndpointQueried": "/shop/api/products/prod-003/reviews",
-            "apiResponseSnippet": "{\"productId\":\"prod-003\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_3='SENTINEL_t77crrr'\\\">\",\"rating\":5,\"id\":\"review-3\",\"createdAt\":\"2026-11-15T07:07:19.671Z\"}"
+            "apiResponseSnippet": "{\"productId\":\"prod-003\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_3='SENTINEL_iob8td5'\\\">\",\"rating\":5,\"id\":\"review-3\",\"createdAt\":\"2026-11-15T07:32:14.870Z\"}"
           },
           "renderVerification": {
             "pageUrl": "http://localhost:4000/shop/products/prod-003",
             "containsDangerousSink": true,
-            "sinkSnippet": "document.getElementById('review-content-review-3').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_3='SENTINEL_t77crrr'\\\">\";"
+            "sinkSnippet": "document.getElementById('review-content-review-3').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_3='SENTINEL_iob8td5'\\\">\";"
           },
           "browserExecution": {
-            "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_3",
-            "expectedValue": "SENTINEL_t77crrr",
-            "actualValue": "SENTINEL_t77crrr",
+            "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_3",
+            "expectedValue": "SENTINEL_iob8td5",
+            "actualValue": "SENTINEL_iob8td5",
             "executed": true
           }
         },
@@ -1263,9 +1420,9 @@
           "targetUrl": "http://localhost:4000/shop/products/prod-004",
           "authenticatedAs": "alice@example.com",
           "payloadSubmitted": {
-            "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_4='SENTINEL_uyxp4o9'\">",
-            "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_4",
-            "sentinelValue": "SENTINEL_uyxp4o9",
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_4='SENTINEL_xs9mk1e'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_4",
+            "sentinelValue": "SENTINEL_xs9mk1e",
             "inputSelector": "#review-content",
             "submissionUrl": "/shop/api/products/:id/reviews"
           },
@@ -1273,17 +1430,17 @@
             "reviewId": "review-4",
             "storedVerbatim": true,
             "apiEndpointQueried": "/shop/api/products/prod-004/reviews",
-            "apiResponseSnippet": "{\"productId\":\"prod-004\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_4='SENTINEL_uyxp4o9'\\\">\",\"rating\":5,\"id\":\"review-4\",\"createdAt\":\"2026-11-15T07:07:19.838Z\"}"
+            "apiResponseSnippet": "{\"productId\":\"prod-004\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_4='SENTINEL_xs9mk1e'\\\">\",\"rating\":5,\"id\":\"review-4\",\"createdAt\":\"2026-11-15T07:32:15.018Z\"}"
           },
           "renderVerification": {
             "pageUrl": "http://localhost:4000/shop/products/prod-004",
             "containsDangerousSink": true,
-            "sinkSnippet": "document.getElementById('review-content-review-4').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_4='SENTINEL_uyxp4o9'\\\">\";"
+            "sinkSnippet": "document.getElementById('review-content-review-4').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_4='SENTINEL_xs9mk1e'\\\">\";"
           },
           "browserExecution": {
-            "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_4",
-            "expectedValue": "SENTINEL_uyxp4o9",
-            "actualValue": "SENTINEL_uyxp4o9",
+            "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_4",
+            "expectedValue": "SENTINEL_xs9mk1e",
+            "actualValue": "SENTINEL_xs9mk1e",
             "executed": true
           }
         }
@@ -1292,7 +1449,7 @@
       "reproductionSteps": [
         "Authenticate to the application as demo user (alice@example.com).",
         "Navigate to any product detail page containing the review form (e.g. http://localhost:4000/shop/products/prod-001).",
-        "Submit a review payload containing an HTML element with an event handler into 'review-content': <img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\">.",
+        "Submit a review payload containing an HTML element with an event handler into 'review-content': <img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\">.",
         "Verify that the API endpoint /shop/api/products/:id/reviews stores the payload without encoding or sanitization.",
         "Navigate to the product render page.",
         "Observe that the client script injects the raw review content into the DOM using document.getElementById(...).innerHTML = ...",
@@ -1300,7 +1457,7 @@
         "Confirmed identical execution across 4 product endpoints: [prod-001, prod-002, prod-003, prod-004]."
       ],
       "remediation": "Avoid assigning untrusted user-supplied content to element.innerHTML. Use element.textContent or safe DOM templating. Alternatively, sanitize input using DOMPurify before DOM insertion.",
-      "timestamp": "2026-11-15T07:07:19.915Z"
+      "timestamp": "2026-11-15T07:32:15.104Z"
     },
     {
       "findingId": "bizlogic-find-001",
@@ -1343,7 +1500,7 @@
               }
             ],
             "total": 1,
-            "createdAt": "2026-11-15T07:07:49.721Z"
+            "createdAt": "2026-11-15T07:32:46.698Z"
           },
           "warning": "[VULN] Price was accepted from client payload — no server-side validation."
         },
@@ -1357,12 +1514,90 @@
         "Observe that the server accepts the client-supplied price without validating against the product database, creating order order-alice-100 for 1 cent(s) instead of 7999 cents."
       ],
       "remediation": "Never accept product price fields from client-side checkout payloads. When processing orders, ignore any client-supplied price and look up the authoritative price server-side directly from the database using productId.",
-      "timestamp": "2026-11-15T07:07:49.721Z"
+      "timestamp": "2026-11-15T07:32:46.699Z"
     }
   ],
   "verifiedFindings": [
     {
       "findingId": "VF-001",
+      "originalFindingId": "idor-finding-1",
+      "sourceAgent": "IdorAgent",
+      "vulnerabilityType": "Insecure Direct Object Reference (IDOR / BOLA)",
+      "title": "BOLA / IDOR Authorization Bypass on /shop/api/orders/:id",
+      "severity": "High",
+      "affectedEndpoint": "/shop/api/orders/:id",
+      "verificationStatus": "VERIFIED_CONFIRMED",
+      "verificationRationale": "Differential cross-user access control probe verified: User 'Alice (alice@example.com)' retrieved private object belonging to 'user-bob' with HTTP 200, exposing sensitive fields: [items, total, createdAt, userId]. Independently reproduced via fresh session replay.",
+      "testedInputsCount": 1,
+      "evidence": {
+        "authenticatedUser": {
+          "id": "user-alice",
+          "name": "Alice",
+          "email": "alice@example.com"
+        },
+        "resourceOwner": {
+          "id": "user-bob",
+          "name": "Bob",
+          "email": "bob@example.com"
+        },
+        "aliceOwnResource": {
+          "resourceId": "order-alice-001",
+          "httpStatus": 200,
+          "responseBody": {
+            "id": "order-alice-001",
+            "userId": "user-alice",
+            "items": [
+              {
+                "productId": "prod-001",
+                "quantity": 1,
+                "priceAtPurchase": 7999
+              }
+            ],
+            "total": 7999,
+            "createdAt": "2026-11-01T10:00:00Z"
+          }
+        },
+        "crossUserAccessAttempt": {
+          "targetResourceId": "order-bob-001",
+          "httpStatus": 200,
+          "responseBody": {
+            "id": "order-bob-001",
+            "userId": "user-bob",
+            "items": [
+              {
+                "productId": "prod-002",
+                "quantity": 1,
+                "priceAtPurchase": 11999
+              }
+            ],
+            "total": 11999,
+            "createdAt": "2026-11-02T12:30:00Z"
+          }
+        },
+        "ownershipComparison": {
+          "expectedOwnerId": "user-bob",
+          "actualOwnerInResponse": "user-bob",
+          "crossUserLeakageConfirmed": true,
+          "leakedFields": [
+            "items",
+            "total",
+            "createdAt",
+            "userId"
+          ]
+        }
+      },
+      "reproductionSteps": [
+        "1. Authenticate as alice@example.com via POST /shop/api/auth/login.",
+        "2. Obtain session Bearer token for alice@example.com.",
+        "3. Verify legitimate baseline: GET /shop/api/orders/order-alice-001 returns HTTP 200 with Alice's order.",
+        "4. Send cross-user request: GET /shop/api/orders/order-bob-001 with Alice's Bearer token.",
+        "5. Observe that HTTP 200 is returned with Bob's private data (userId=\"user-bob\") — no ownership validation enforced."
+      ],
+      "remediation": "Implement server-side object ownership authorization. Verify that the requested order's userId matches the authenticated session's userId (req.userId). If mismatched, return HTTP 403 Forbidden.",
+      "timestamp": "2026-11-15T07:31:27.573Z"
+    },
+    {
+      "findingId": "VF-002",
       "originalFindingId": "xss-find-001",
       "sourceAgent": "XssAgent",
       "vulnerabilityType": "Stored Cross-Site Scripting (Stored XSS)",
@@ -1384,9 +1619,9 @@
           "targetUrl": "http://localhost:4000/shop/products/prod-001",
           "authenticatedAs": "alice@example.com",
           "payloadSubmitted": {
-            "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\">",
-            "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_1",
-            "sentinelValue": "SENTINEL_uyb4adb",
+            "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\">",
+            "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_1",
+            "sentinelValue": "SENTINEL_33k67ew",
             "inputSelector": "#review-content",
             "submissionUrl": "/shop/api/products/:id/reviews"
           },
@@ -1394,17 +1629,17 @@
             "reviewId": "review-1",
             "storedVerbatim": true,
             "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
-            "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-15T07:07:19.355Z\"}"
+            "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-15T07:32:14.553Z\"}"
           },
           "renderVerification": {
             "pageUrl": "http://localhost:4000/shop/products/prod-001",
             "containsDangerousSink": true,
-            "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\\\">\";"
+            "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\\\">\";"
           },
           "browserExecution": {
-            "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_1",
-            "expectedValue": "SENTINEL_uyb4adb",
-            "actualValue": "SENTINEL_uyb4adb",
+            "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_1",
+            "expectedValue": "SENTINEL_33k67ew",
+            "actualValue": "SENTINEL_33k67ew",
             "executed": true
           }
         },
@@ -1414,9 +1649,9 @@
             "targetUrl": "http://localhost:4000/shop/products/prod-001",
             "authenticatedAs": "alice@example.com",
             "payloadSubmitted": {
-              "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\">",
-              "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_1",
-              "sentinelValue": "SENTINEL_uyb4adb",
+              "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\">",
+              "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_1",
+              "sentinelValue": "SENTINEL_33k67ew",
               "inputSelector": "#review-content",
               "submissionUrl": "/shop/api/products/:id/reviews"
             },
@@ -1424,17 +1659,17 @@
               "reviewId": "review-1",
               "storedVerbatim": true,
               "apiEndpointQueried": "/shop/api/products/prod-001/reviews",
-              "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-15T07:07:19.355Z\"}"
+              "apiResponseSnippet": "{\"productId\":\"prod-001\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\\\">\",\"rating\":5,\"id\":\"review-1\",\"createdAt\":\"2026-11-15T07:32:14.553Z\"}"
             },
             "renderVerification": {
               "pageUrl": "http://localhost:4000/shop/products/prod-001",
               "containsDangerousSink": true,
-              "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\\\">\";"
+              "sinkSnippet": "document.getElementById('review-content-review-1').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\\\">\";"
             },
             "browserExecution": {
-              "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_1",
-              "expectedValue": "SENTINEL_uyb4adb",
-              "actualValue": "SENTINEL_uyb4adb",
+              "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_1",
+              "expectedValue": "SENTINEL_33k67ew",
+              "actualValue": "SENTINEL_33k67ew",
               "executed": true
             }
           },
@@ -1443,9 +1678,9 @@
             "targetUrl": "http://localhost:4000/shop/products/prod-002",
             "authenticatedAs": "alice@example.com",
             "payloadSubmitted": {
-              "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_2='SENTINEL_wpby1vw'\">",
-              "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_2",
-              "sentinelValue": "SENTINEL_wpby1vw",
+              "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_2='SENTINEL_xzcltdz'\">",
+              "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_2",
+              "sentinelValue": "SENTINEL_xzcltdz",
               "inputSelector": "#review-content",
               "submissionUrl": "/shop/api/products/:id/reviews"
             },
@@ -1453,17 +1688,17 @@
               "reviewId": "review-2",
               "storedVerbatim": true,
               "apiEndpointQueried": "/shop/api/products/prod-002/reviews",
-              "apiResponseSnippet": "{\"productId\":\"prod-002\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_2='SENTINEL_wpby1vw'\\\">\",\"rating\":5,\"id\":\"review-2\",\"createdAt\":\"2026-11-15T07:07:19.521Z\"}"
+              "apiResponseSnippet": "{\"productId\":\"prod-002\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_2='SENTINEL_xzcltdz'\\\">\",\"rating\":5,\"id\":\"review-2\",\"createdAt\":\"2026-11-15T07:32:14.719Z\"}"
             },
             "renderVerification": {
               "pageUrl": "http://localhost:4000/shop/products/prod-002",
               "containsDangerousSink": true,
-              "sinkSnippet": "document.getElementById('review-content-review-2').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_2='SENTINEL_wpby1vw'\\\">\";"
+              "sinkSnippet": "document.getElementById('review-content-review-2').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_2='SENTINEL_xzcltdz'\\\">\";"
             },
             "browserExecution": {
-              "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_2",
-              "expectedValue": "SENTINEL_wpby1vw",
-              "actualValue": "SENTINEL_wpby1vw",
+              "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_2",
+              "expectedValue": "SENTINEL_xzcltdz",
+              "actualValue": "SENTINEL_xzcltdz",
               "executed": true
             }
           },
@@ -1472,9 +1707,9 @@
             "targetUrl": "http://localhost:4000/shop/products/prod-003",
             "authenticatedAs": "alice@example.com",
             "payloadSubmitted": {
-              "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_3='SENTINEL_t77crrr'\">",
-              "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_3",
-              "sentinelValue": "SENTINEL_t77crrr",
+              "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_3='SENTINEL_iob8td5'\">",
+              "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_3",
+              "sentinelValue": "SENTINEL_iob8td5",
               "inputSelector": "#review-content",
               "submissionUrl": "/shop/api/products/:id/reviews"
             },
@@ -1482,17 +1717,17 @@
               "reviewId": "review-3",
               "storedVerbatim": true,
               "apiEndpointQueried": "/shop/api/products/prod-003/reviews",
-              "apiResponseSnippet": "{\"productId\":\"prod-003\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_3='SENTINEL_t77crrr'\\\">\",\"rating\":5,\"id\":\"review-3\",\"createdAt\":\"2026-11-15T07:07:19.671Z\"}"
+              "apiResponseSnippet": "{\"productId\":\"prod-003\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_3='SENTINEL_iob8td5'\\\">\",\"rating\":5,\"id\":\"review-3\",\"createdAt\":\"2026-11-15T07:32:14.870Z\"}"
             },
             "renderVerification": {
               "pageUrl": "http://localhost:4000/shop/products/prod-003",
               "containsDangerousSink": true,
-              "sinkSnippet": "document.getElementById('review-content-review-3').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_3='SENTINEL_t77crrr'\\\">\";"
+              "sinkSnippet": "document.getElementById('review-content-review-3').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_3='SENTINEL_iob8td5'\\\">\";"
             },
             "browserExecution": {
-              "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_3",
-              "expectedValue": "SENTINEL_t77crrr",
-              "actualValue": "SENTINEL_t77crrr",
+              "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_3",
+              "expectedValue": "SENTINEL_iob8td5",
+              "actualValue": "SENTINEL_iob8td5",
               "executed": true
             }
           },
@@ -1501,9 +1736,9 @@
             "targetUrl": "http://localhost:4000/shop/products/prod-004",
             "authenticatedAs": "alice@example.com",
             "payloadSubmitted": {
-              "content": "<img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_4='SENTINEL_uyxp4o9'\">",
-              "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_4",
-              "sentinelValue": "SENTINEL_uyxp4o9",
+              "content": "<img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_4='SENTINEL_xs9mk1e'\">",
+              "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_4",
+              "sentinelValue": "SENTINEL_xs9mk1e",
               "inputSelector": "#review-content",
               "submissionUrl": "/shop/api/products/:id/reviews"
             },
@@ -1511,17 +1746,17 @@
               "reviewId": "review-4",
               "storedVerbatim": true,
               "apiEndpointQueried": "/shop/api/products/prod-004/reviews",
-              "apiResponseSnippet": "{\"productId\":\"prod-004\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_4='SENTINEL_uyxp4o9'\\\">\",\"rating\":5,\"id\":\"review-4\",\"createdAt\":\"2026-11-15T07:07:19.838Z\"}"
+              "apiResponseSnippet": "{\"productId\":\"prod-004\",\"userId\":\"user-alice\",\"authorName\":\"Alice\",\"content\":\"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_4='SENTINEL_xs9mk1e'\\\">\",\"rating\":5,\"id\":\"review-4\",\"createdAt\":\"2026-11-15T07:32:15.018Z\"}"
             },
             "renderVerification": {
               "pageUrl": "http://localhost:4000/shop/products/prod-004",
               "containsDangerousSink": true,
-              "sinkSnippet": "document.getElementById('review-content-review-4').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_mission_refund_1794726348171_xss_4='SENTINEL_uyxp4o9'\\\">\";"
+              "sinkSnippet": "document.getElementById('review-content-review-4').innerHTML = \"<img src=\\\"x\\\" onerror=\\\"window.__bb_xss_test_mission_1794727842011_xss_4='SENTINEL_xs9mk1e'\\\">\";"
             },
             "browserExecution": {
-              "sentinelKey": "__bb_xss_mission_refund_1794726348171_xss_4",
-              "expectedValue": "SENTINEL_uyxp4o9",
-              "actualValue": "SENTINEL_uyxp4o9",
+              "sentinelKey": "__bb_xss_test_mission_1794727842011_xss_4",
+              "expectedValue": "SENTINEL_xs9mk1e",
+              "actualValue": "SENTINEL_xs9mk1e",
               "executed": true
             }
           }
@@ -1530,7 +1765,7 @@
       "reproductionSteps": [
         "Authenticate to the application as demo user (alice@example.com).",
         "Navigate to any product detail page containing the review form (e.g. http://localhost:4000/shop/products/prod-001).",
-        "Submit a review payload containing an HTML element with an event handler into 'review-content': <img src=\"x\" onerror=\"window.__bb_xss_mission_refund_1794726348171_xss_1='SENTINEL_uyb4adb'\">.",
+        "Submit a review payload containing an HTML element with an event handler into 'review-content': <img src=\"x\" onerror=\"window.__bb_xss_test_mission_1794727842011_xss_1='SENTINEL_33k67ew'\">.",
         "Verify that the API endpoint /shop/api/products/:id/reviews stores the payload without encoding or sanitization.",
         "Navigate to the product render page.",
         "Observe that the client script injects the raw review content into the DOM using document.getElementById(...).innerHTML = ...",
@@ -1538,10 +1773,10 @@
         "Confirmed identical execution across 4 product endpoints: [prod-001, prod-002, prod-003, prod-004]."
       ],
       "remediation": "Avoid assigning untrusted user-supplied content to element.innerHTML. Use element.textContent or safe DOM templating. Alternatively, sanitize input using DOMPurify before DOM insertion.",
-      "timestamp": "2026-11-15T07:07:19.915Z"
+      "timestamp": "2026-11-15T07:32:15.104Z"
     },
     {
-      "findingId": "VF-002",
+      "findingId": "VF-003",
       "originalFindingId": "bizlogic-find-001",
       "sourceAgent": "BusinessLogicAgent",
       "vulnerabilityType": "Business Logic Flaw: Client-Side Price Manipulation",
@@ -1584,7 +1819,7 @@
               }
             ],
             "total": 1,
-            "createdAt": "2026-11-15T07:07:49.721Z"
+            "createdAt": "2026-11-15T07:32:46.698Z"
           },
           "warning": "[VULN] Price was accepted from client payload — no server-side validation."
         },
@@ -1598,14 +1833,14 @@
         "Observe that the server accepts the client-supplied price without validating against the product database, creating order order-alice-100 for 1 cent(s) instead of 7999 cents."
       ],
       "remediation": "Never accept product price fields from client-side checkout payloads. When processing orders, ignore any client-supplied price and look up the authoritative price server-side directly from the database using productId.",
-      "timestamp": "2026-11-15T07:07:49.721Z"
+      "timestamp": "2026-11-15T07:32:46.699Z"
     }
   ],
   "rejectedFindings": [],
   "deduplicationSummary": {
-    "rawFindingsCount": 2,
+    "rawFindingsCount": 3,
     "deduplicatedCount": 0,
-    "distinctRootCauses": 2,
+    "distinctRootCauses": 3,
     "details": []
   },
   "summary": {
@@ -1613,40 +1848,40 @@
     "totalDiscoveredEndpoints": 13,
     "totalDiscoveredForms": 7,
     "totalAgentsRun": 4,
-    "totalRawFindings": 2,
-    "totalVerifiedVulnerabilities": 2,
+    "totalRawFindings": 3,
+    "totalVerifiedVulnerabilities": 3,
     "totalRejectedFindings": 0,
-    "totalTestedInputs": 5,
+    "totalTestedInputs": 6,
     "allAgentsSucceeded": true
   },
   "metadata": {
     "orchestratorVersion": "1.0.0",
     "targetScope": "http://localhost:4000/shop",
-    "completedAt": "2026-11-15T07:08:53.474Z"
+    "completedAt": "2026-11-15T07:34:13.085Z"
   },
   "marketRounds": [
     {
-      "roundId": "mission-refund-1794726348171-r1",
+      "roundId": "test-mission-1794727842011-r1",
       "taskId": "task-access-control",
       "taskName": "BOLA / IDOR Authorization Bypass",
-      "rewardNear": "0.010963",
+      "rewardNear": "0.010937",
       "bountyPricing": {
         "pricingSource": "near_intents_1click_dry_quote",
         "bountyUsd": 0.03,
-        "escrowYocto": "10963955444296789246463",
-        "escrowNear": "0.010963",
+        "escrowYocto": "10937862588406391289736",
+        "escrowNear": "0.010937",
         "quote": {
-          "amountIn": "10963955444296789246463",
-          "amountInUsd": "0.034317180541",
+          "amountIn": "10937862588406391289736",
+          "amountInUsd": "0.034344888528",
           "amountOut": "30000",
-          "amountOutUsd": "0.029990970000",
+          "amountOutUsd": "0.029990580000",
           "timeEstimateSec": 22,
-          "signature": "ed25519:3KQHXewef27rS8byw61bsGZbnGsE4QRjK3sXZpK9vRbkU3wkDJuiQSEKnDCzVPbHZoL9ivi8QfuSmBdUPtCV57Py",
-          "correlationId": "e30ab294-9c07-422b-8fd4-9928af348743",
-          "timestamp": "2026-11-15T07:06:04.612Z"
+          "signature": "ed25519:4gyZx8Ha3tb847VtfH5asEbxYtA732NcFoFcXH3gFnViyDcWXDikybUe4ZqDXqzST6fnQRgutrSSB1jY8Bc5psoZ",
+          "correlationId": "0e0f0d02-9f25-4273-81f6-fcc175ee5673",
+          "timestamp": "2026-11-15T07:30:58.375Z"
         }
       },
-      "openTxHash": "52SkZyVwsatGpSnAYmq1ddKEaepQTNsGfZA8czva2am2",
+      "openTxHash": "9yQgMUWxQjdy8sGTGUoEt5Ti1uAYCt4y7Cq8yiSTRzK7",
       "winnerAccount": "idor.harsha-swarm.testnet",
       "winnerAgentId": "IdorAgent",
       "winnerScore": "13720000",
@@ -1657,14 +1892,14 @@
           "account": "idor.harsha-swarm.testnet",
           "confidenceBps": 9800,
           "costYocto": "10000000000",
-          "salt": "116a75b570555b7a396e4aff3d8fdf4c581a5f6a96b97d419d337bf49594753f",
+          "salt": "ab695bde101bfd07998ba77f58fdae10c6e7c58212c647e00a6324934bb1ec41",
           "confidenceSource": "scripted",
           "reputation": 13,
           "revealed": true,
           "score": 13720000,
-          "commitTxHash": "GbKHrDX1CTSvEZkF1XTuTrGRAUEs4v8zurAU3GDwh7Up",
+          "commitTxHash": "2VXXtWfZpJotgcEfxNyAXfMUCmsR5JAV14r5WPM81L3z",
           "signerPublicKey": "ed25519:FL23zoLDSGZWHb1WZ5muuRUTJosmsCqg6aVnTkAZfQUE",
-          "revealTxHash": "GhfVgZJqh8apAVxQS29KTE2XFABe1QjhwY1tM9m1vhic",
+          "revealTxHash": "7x6rpjBc5gok8nrHeQzPqidYtTf2iRT8J8ZvCd2HL3ET",
           "relayed": false,
           "signingMode": "agent_key"
         },
@@ -1673,14 +1908,14 @@
           "account": "xss.harsha-swarm.testnet",
           "confidenceBps": 2500,
           "costYocto": "10000000000",
-          "salt": "449c364689a7c88a5a00bb79c53676459f37e840484617c7122c31b630bf3b2d",
+          "salt": "6ef820b4fc6a14c23fac64f134c0e50d6e8220c60c2a728171adcc1e7e8541b7",
           "confidenceSource": "scripted",
-          "reputation": 15,
+          "reputation": 17,
           "revealed": true,
-          "score": 4000000,
-          "commitTxHash": "Hb6brmvJz8pwE5zqcCvRtS5qnMR8TLoZ8sgnajCrozk4",
+          "score": 4500000,
+          "commitTxHash": "t9KnyVXSsYUzbHnPvmphDBHNUpqgo3B2qCNDTeqGPAx",
           "signerPublicKey": "ed25519:J5cjV1gM4sSmLGy6etyxgJKGMQkEdiPR99fChcqG6Bow",
-          "revealTxHash": "33x5KF6y4A2osEaWmEJAESpHjui9LA4fvdDNDoBpiXHE",
+          "revealTxHash": "22ugkB85kZaZiGusJLanqZbyMEKFbmrn8bXXkYGyGntw",
           "relayed": false,
           "signingMode": "agent_key"
         },
@@ -1689,14 +1924,14 @@
           "account": "logic.harsha-swarm.testnet",
           "confidenceBps": 1500,
           "costYocto": "10000000000",
-          "salt": "5d3507b38bfbe1892e612898d285d2eb16f034d6c349b987e0e709c9aede9eb1",
+          "salt": "81b2043892763769cf3c1629aba5504a21fcdfa22a5f56fda72b018655644981",
           "confidenceSource": "scripted",
-          "reputation": 15,
+          "reputation": 17,
           "revealed": true,
-          "score": 2400000,
-          "commitTxHash": "AEVwTDmr6Z9ynStK8Xsjo8ksCxeGJ2RxVk5ziEkMcTsF",
+          "score": 2700000,
+          "commitTxHash": "4EbXFMLsquQav4bXVr7NXCSZqGy77NXttFUfhYtvucWF",
           "signerPublicKey": "ed25519:3Rt6SfPmV9jMGYDVVFFvtBTukahFNn5XRTnenT89jZym",
-          "revealTxHash": "8EDbC2VVDy228gGqLJ7ANAZb4bhT7MYsLXXUk5XU3iCd",
+          "revealTxHash": "FQ8MQUTBZ25NhQanYBWPPPBYqWwU34pNjFY8r3eehM2x",
           "relayed": false,
           "signingMode": "agent_key"
         },
@@ -1705,14 +1940,14 @@
           "account": "gen2.harsha-swarm.testnet",
           "confidenceBps": 5500,
           "costYocto": "6000000000",
-          "salt": "09cf38e1830557f427d6f791fb13f287350985b9102436c9aaafd1b8a12828d2",
+          "salt": "2e70918db6c334e8ba848fb23f85ba7c27544802b3624ea04f984b05c0099147",
           "confidenceSource": "scripted",
           "reputation": 0,
           "revealed": true,
           "score": 916666,
-          "commitTxHash": "Dyzhjfqjk2BCWxixkouBY6MybiPXyqKAr6N3snKpnxN3",
+          "commitTxHash": "7oH8exrZaCZTsRPrJ4CeHTwT5943UG9hPyivfMJygxtU",
           "signerPublicKey": "ed25519:ErHJwHY5UThhvVZUFoUhizYNQXWxCPkJHrR8YziVa2Ff",
-          "revealTxHash": "51pcQTvZArKAB7Aq7QUTywGMFVynNCDr9nxiWZndq2Ef",
+          "revealTxHash": "6vg3feeZSq8tb4sEFV6D4hU3GqhxEjfAA9ZQQyFhQvvP",
           "relayed": false,
           "signingMode": "agent_key"
         },
@@ -1721,69 +1956,81 @@
           "account": "gen1.harsha-swarm.testnet",
           "confidenceBps": 6000,
           "costYocto": "8000000000",
-          "salt": "134b3c0a4721b21f60c00a7ae1149758aa52f87d1f1f337ef4b78621a2ee98c9",
+          "salt": "73432cf8730646ecdb7d82d3ee78c9e006b0b11a6a4c8eecccec5b5c955b1953",
           "confidenceSource": "scripted",
           "reputation": 0,
           "revealed": true,
           "score": 750000,
-          "commitTxHash": "6RxBRKVQXjgZqtdqbK6LVH8daJyDKseoasQYhb4RyQyb",
+          "commitTxHash": "GVEY27Z3zCdwhatQpekjK9WS5FMTsGWHb3uDoTp6oEKS",
           "signerPublicKey": "ed25519:987EBqjmigqWyqPQcXnrWsK5J4A87uPN2z9JqnhHKDeZ",
-          "revealTxHash": "GSQZFf6u2yx4VMFtyoKFFG7HT6tzQ4tFzwwHvcRFhKip",
+          "revealTxHash": "2zmG1ofLtVE5j4WuwKs3aXgwZQQWnTgnZMXs9Xcu4LSC",
           "relayed": false,
           "signingMode": "agent_key"
         }
       ],
       "commitTxHashes": {
-        "IdorAgent": "GbKHrDX1CTSvEZkF1XTuTrGRAUEs4v8zurAU3GDwh7Up",
-        "XssAgent": "Hb6brmvJz8pwE5zqcCvRtS5qnMR8TLoZ8sgnajCrozk4",
-        "BusinessLogicAgent": "AEVwTDmr6Z9ynStK8Xsjo8ksCxeGJ2RxVk5ziEkMcTsF",
-        "GeneralistBeta": "Dyzhjfqjk2BCWxixkouBY6MybiPXyqKAr6N3snKpnxN3",
-        "GeneralistAlpha": "6RxBRKVQXjgZqtdqbK6LVH8daJyDKseoasQYhb4RyQyb"
+        "IdorAgent": "2VXXtWfZpJotgcEfxNyAXfMUCmsR5JAV14r5WPM81L3z",
+        "XssAgent": "t9KnyVXSsYUzbHnPvmphDBHNUpqgo3B2qCNDTeqGPAx",
+        "BusinessLogicAgent": "4EbXFMLsquQav4bXVr7NXCSZqGy77NXttFUfhYtvucWF",
+        "GeneralistBeta": "7oH8exrZaCZTsRPrJ4CeHTwT5943UG9hPyivfMJygxtU",
+        "GeneralistAlpha": "GVEY27Z3zCdwhatQpekjK9WS5FMTsGWHb3uDoTp6oEKS"
       },
       "revealTxHashes": {
-        "IdorAgent": "GhfVgZJqh8apAVxQS29KTE2XFABe1QjhwY1tM9m1vhic",
-        "XssAgent": "33x5KF6y4A2osEaWmEJAESpHjui9LA4fvdDNDoBpiXHE",
-        "BusinessLogicAgent": "8EDbC2VVDy228gGqLJ7ANAZb4bhT7MYsLXXUk5XU3iCd",
-        "GeneralistBeta": "51pcQTvZArKAB7Aq7QUTywGMFVynNCDr9nxiWZndq2Ef",
-        "GeneralistAlpha": "GSQZFf6u2yx4VMFtyoKFFG7HT6tzQ4tFzwwHvcRFhKip"
+        "IdorAgent": "7x6rpjBc5gok8nrHeQzPqidYtTf2iRT8J8ZvCd2HL3ET",
+        "XssAgent": "22ugkB85kZaZiGusJLanqZbyMEKFbmrn8bXXkYGyGntw",
+        "BusinessLogicAgent": "FQ8MQUTBZ25NhQanYBWPPPBYqWwU34pNjFY8r3eehM2x",
+        "GeneralistBeta": "6vg3feeZSq8tb4sEFV6D4hU3GqhxEjfAA9ZQQyFhQvvP",
+        "GeneralistAlpha": "2zmG1ofLtVE5j4WuwKs3aXgwZQQWnTgnZMXs9Xcu4LSC"
       },
-      "phaseEnforcement": "not_supported_by_deployed_contract",
-      "settleTxHash": "Aqy7QkSkJbDRGcbrJca7p371CcFmaif8Yj49s4j1PHmt",
-      "payoutStatus": "refunded",
+      "startRevealTxHash": "BvrUMi8vXeibETrDDVVgMRVosHrMFmX7zUvvJm1aDvGG",
+      "phaseEnforcement": "on_chain",
+      "settleTxHash": "Acuj4SszK96mTXU27CVc7KDceccnf4QX6s1ahM4eXM8t",
+      "payoutStatus": "confirmed",
       "operatorKeyModes": {
         "open": "full_access_key",
         "settle": "function_call_key",
         "release": "function_call_key"
       },
-      "proofHash": "c394752bfbf594d70eead04d821587dc55a685827b22c9c58a64caebc4175301",
-      "payoutTxHash": "Dur3WG8nRhQrXgXw43ig6Z26SPLzgyDbnB1maZNRim2J",
-      "proofStoredOnChain": false
+      "mcpAudit": {
+        "approved": true,
+        "source": "near-mcp",
+        "winnerMatches": true,
+        "winnerKeyScoped": true,
+        "reasons": [],
+        "auditedAt": "2026-11-15T07:33:02.046Z",
+        "roundStatus": "Settled",
+        "onChainWinner": "idor.harsha-swarm.testnet",
+        "winnerBidKey": "ed25519:FL23zoLDSGZWHb1WZ5muuRUTJosmsCqg6aVnTkAZfQUE"
+      },
+      "proofHash": "fcd4c3de439e28b1743fe511b51117ab1bcc12ea7197ff1a9f82226dd169be6a",
+      "payoutTxHash": "FYvBekHZapYJnEFQHKbSUde1GwFevXQ4ME6J8iVQe4ZQ",
+      "proofStoredOnChain": true
     },
     {
-      "roundId": "mission-refund-1794726348171-r2",
+      "roundId": "test-mission-1794727842011-r2",
       "taskId": "task-injection",
       "taskName": "Stored XSS (Playwright DOM Injection)",
-      "rewardNear": "0.010971",
+      "rewardNear": "0.010945",
       "bountyPricing": {
         "pricingSource": "near_intents_1click_dry_quote",
         "bountyUsd": 0.03,
-        "escrowYocto": "10971262663782421081898",
-        "escrowNear": "0.010971",
+        "escrowYocto": "10945375994929310529384",
+        "escrowNear": "0.010945",
         "quote": {
-          "amountIn": "10971262663782421081898",
-          "amountInUsd": "0.034340052138",
+          "amountIn": "10945375994929310529384",
+          "amountInUsd": "0.034368480624",
           "amountOut": "30000",
-          "amountOutUsd": "0.029990970000",
+          "amountOutUsd": "0.029990580000",
           "timeEstimateSec": 22,
-          "signature": "ed25519:5d4LxYJ7MZb8naBd5v43D3NacXZzt4LwQKcr4tUCzsUyuCHgJhHeRwGod3jGiXiA779NN2KRTAv69JA4NV4R43BZ",
-          "correlationId": "9523c974-6449-4b64-81b0-b40863d9960b",
-          "timestamp": "2026-11-15T07:06:35.774Z"
+          "signature": "ed25519:3vPEt5ot2PGy5Khi6T5dmK5tjVxZjLQy7SqJ21JRTW7LNN68ypnPVc2ULUWZuxfmEvkpQbtuB93BsutyeCHDQ4v7",
+          "correlationId": "362d5d3e-8353-469c-a5a3-527c945a39c5",
+          "timestamp": "2026-11-15T07:31:29.164Z"
         }
       },
-      "openTxHash": "5v5kB9fiTG7QMixpJqXFkUHfw8ZarpzQH1yhzefZdUXP",
+      "openTxHash": "EL8fb8d5gVET6Pof7bTpDavBHKLV3SLVjgAB2D71rreW",
       "winnerAccount": "xss.harsha-swarm.testnet",
       "winnerAgentId": "XssAgent",
-      "winnerScore": "15840000",
+      "winnerScore": "17820000",
       "winnerSource": "on_chain_settle",
       "allBids": [
         {
@@ -1791,14 +2038,14 @@
           "account": "xss.harsha-swarm.testnet",
           "confidenceBps": 9900,
           "costYocto": "10000000000",
-          "salt": "8d07a2f035bfc40c81f87c8a5c15d6ea11f159cd5655e5eecd5fcb2a83a14293",
+          "salt": "37eb46df9241429788174e73cb90fcabeb7d406cddc3e93271a2e8af17abc311",
           "confidenceSource": "scripted",
-          "reputation": 15,
+          "reputation": 17,
           "revealed": true,
-          "score": 15840000,
-          "commitTxHash": "CNc5qybhP5LR6udBpb9r2oBYMbtLrRMoGb5PJ1gMAhdZ",
+          "score": 17820000,
+          "commitTxHash": "4dXDV4rMVDTgZFbPKhLDo3AUCpWYSVdUR8w1zCGUm9Tq",
           "signerPublicKey": "ed25519:J5cjV1gM4sSmLGy6etyxgJKGMQkEdiPR99fChcqG6Bow",
-          "revealTxHash": "2xp3aBi96hTs1mhXCPg9L6GBJg2HMdm4aAdVmgnteHfi",
+          "revealTxHash": "8rLzs7Ry8WmrZQbHAEugVABocrWj7kSEUBMLFKJex38R",
           "relayed": false,
           "signingMode": "agent_key"
         },
@@ -1807,14 +2054,14 @@
           "account": "idor.harsha-swarm.testnet",
           "confidenceBps": 2000,
           "costYocto": "10000000000",
-          "salt": "9314abcd502dcc4f7ef160d1ff4d84508c30c5f2337a5106eb679a4ac3000946",
+          "salt": "31938721f04a642116bddb2ef9895cc7a1ebe4983cb24f1b47a647f063793863",
           "confidenceSource": "scripted",
           "reputation": 13,
           "revealed": true,
           "score": 2800000,
-          "commitTxHash": "756TdznmKvTkUvt56QuZ3EXigC9vJ2ZUTJT6NhgiqDnk",
+          "commitTxHash": "4T7JjhS4gomHQhNeznWZoZ7yhGXJMSpBZ7njDqh6PPjA",
           "signerPublicKey": "ed25519:FL23zoLDSGZWHb1WZ5muuRUTJosmsCqg6aVnTkAZfQUE",
-          "revealTxHash": "Em3iRjmAUh684Np2KAJLfR9HXuDuFdHAko5GnpdpieXX",
+          "revealTxHash": "FvRoFsJAyiBfKQgxgu2vA8cEbz13YibxTMaozLFAqXhL",
           "relayed": false,
           "signingMode": "agent_key"
         },
@@ -1823,14 +2070,14 @@
           "account": "logic.harsha-swarm.testnet",
           "confidenceBps": 1500,
           "costYocto": "10000000000",
-          "salt": "a18e3f2a6c92d5774a4e8c044f6c27a5fac0fd1dfe7d390aac153c5593f83181",
+          "salt": "d0094ebd69ab845b01881c319e32069a143de3e9f5d29401a48a82c631a9deb1",
           "confidenceSource": "scripted",
-          "reputation": 15,
+          "reputation": 17,
           "revealed": true,
-          "score": 2400000,
-          "commitTxHash": "DwyFFKkmQQaNH14dJHjPd3U16XEaSSdfG7L9HCfYzH1q",
+          "score": 2700000,
+          "commitTxHash": "4RtjkWTe2vNWsyyctTJGgtkSfWtahnmMRK5Tvra4B8QJ",
           "signerPublicKey": "ed25519:3Rt6SfPmV9jMGYDVVFFvtBTukahFNn5XRTnenT89jZym",
-          "revealTxHash": "EvxUyHiRC4UH2VNZitPX4iFjCRATdDwZzgCBf6yBPnT2",
+          "revealTxHash": "FZFqATqzbcEiKNujyHM12gXZZXyjd8q33YBwt25AX1HK",
           "relayed": false,
           "signingMode": "agent_key"
         },
@@ -1839,14 +2086,14 @@
           "account": "gen2.harsha-swarm.testnet",
           "confidenceBps": 5500,
           "costYocto": "6000000000",
-          "salt": "685aa8a86cfe13051a345497d1be663d45d22d87278824430a920c4f94ac105f",
+          "salt": "20426025c667e42f54a81291295b031bf6291986021575bdb07697f7c96b40a5",
           "confidenceSource": "scripted",
           "reputation": 0,
           "revealed": true,
           "score": 916666,
-          "commitTxHash": "2EbZXpHDG4jWew4SPbgZEQks2kRzcVR8vTXnfXXk7B3r",
+          "commitTxHash": "9Rc8yEs3bRLVjEnnuagb4SJ3ErAUPTrS9jPDUnhZPiqf",
           "signerPublicKey": "ed25519:ErHJwHY5UThhvVZUFoUhizYNQXWxCPkJHrR8YziVa2Ff",
-          "revealTxHash": "DSWAjY6rUyyXMm24tw5rBGPDjJ3vQ5s9AEMLXEETahYS",
+          "revealTxHash": "BxzQFm14JpV9uDgjFFVunypHNhdNeD3n6s1Wc1DpiyvX",
           "relayed": false,
           "signingMode": "agent_key"
         },
@@ -1855,34 +2102,35 @@
           "account": "gen1.harsha-swarm.testnet",
           "confidenceBps": 6000,
           "costYocto": "8000000000",
-          "salt": "956d8fc84133a29ba9cf6bb954f89f647e68e2d3219dd6e7f63df942806b85b1",
+          "salt": "2c1ec96816539bdaa0617133c20db8484842e5af86497ab9c8bcdf05c2004061",
           "confidenceSource": "scripted",
           "reputation": 0,
           "revealed": true,
           "score": 750000,
-          "commitTxHash": "9ENfgFezZQqQSXidasPdvg3ercr6dMKuX7b1FRjBMC6C",
+          "commitTxHash": "2Dt9xRCXjryhJtsCUC7XcrdaDE5n1pcMjx2ofkGF9y8K",
           "signerPublicKey": "ed25519:987EBqjmigqWyqPQcXnrWsK5J4A87uPN2z9JqnhHKDeZ",
-          "revealTxHash": "2V1u4GCjFwP67rMbjb5uPZRts68iQwGjgwrZ2imxnchH",
+          "revealTxHash": "DWkK9rf5jVzVADfj98JgYJbwrmbXNy3vneanJGEbq3Gg",
           "relayed": false,
           "signingMode": "agent_key"
         }
       ],
       "commitTxHashes": {
-        "XssAgent": "CNc5qybhP5LR6udBpb9r2oBYMbtLrRMoGb5PJ1gMAhdZ",
-        "IdorAgent": "756TdznmKvTkUvt56QuZ3EXigC9vJ2ZUTJT6NhgiqDnk",
-        "BusinessLogicAgent": "DwyFFKkmQQaNH14dJHjPd3U16XEaSSdfG7L9HCfYzH1q",
-        "GeneralistBeta": "2EbZXpHDG4jWew4SPbgZEQks2kRzcVR8vTXnfXXk7B3r",
-        "GeneralistAlpha": "9ENfgFezZQqQSXidasPdvg3ercr6dMKuX7b1FRjBMC6C"
+        "XssAgent": "4dXDV4rMVDTgZFbPKhLDo3AUCpWYSVdUR8w1zCGUm9Tq",
+        "IdorAgent": "4T7JjhS4gomHQhNeznWZoZ7yhGXJMSpBZ7njDqh6PPjA",
+        "BusinessLogicAgent": "4RtjkWTe2vNWsyyctTJGgtkSfWtahnmMRK5Tvra4B8QJ",
+        "GeneralistBeta": "9Rc8yEs3bRLVjEnnuagb4SJ3ErAUPTrS9jPDUnhZPiqf",
+        "GeneralistAlpha": "2Dt9xRCXjryhJtsCUC7XcrdaDE5n1pcMjx2ofkGF9y8K"
       },
       "revealTxHashes": {
-        "XssAgent": "2xp3aBi96hTs1mhXCPg9L6GBJg2HMdm4aAdVmgnteHfi",
-        "IdorAgent": "Em3iRjmAUh684Np2KAJLfR9HXuDuFdHAko5GnpdpieXX",
-        "BusinessLogicAgent": "EvxUyHiRC4UH2VNZitPX4iFjCRATdDwZzgCBf6yBPnT2",
-        "GeneralistBeta": "DSWAjY6rUyyXMm24tw5rBGPDjJ3vQ5s9AEMLXEETahYS",
-        "GeneralistAlpha": "2V1u4GCjFwP67rMbjb5uPZRts68iQwGjgwrZ2imxnchH"
+        "XssAgent": "8rLzs7Ry8WmrZQbHAEugVABocrWj7kSEUBMLFKJex38R",
+        "IdorAgent": "FvRoFsJAyiBfKQgxgu2vA8cEbz13YibxTMaozLFAqXhL",
+        "BusinessLogicAgent": "FZFqATqzbcEiKNujyHM12gXZZXyjd8q33YBwt25AX1HK",
+        "GeneralistBeta": "BxzQFm14JpV9uDgjFFVunypHNhdNeD3n6s1Wc1DpiyvX",
+        "GeneralistAlpha": "DWkK9rf5jVzVADfj98JgYJbwrmbXNy3vneanJGEbq3Gg"
       },
-      "phaseEnforcement": "not_supported_by_deployed_contract",
-      "settleTxHash": "BTkX4ekXFAMN3gFSSQ4uox8Zc8Ja1z97dnaQdyUPsxoW",
+      "startRevealTxHash": "7ZCFSX1zJhoif2F5XRhmyEaWEivYYsaXPb23RPw5ezDx",
+      "phaseEnforcement": "on_chain",
+      "settleTxHash": "FnnVNeooUG5Z3cm7Ete66jqeRdjZo6Ejs8tumfM7cFaB",
       "payoutStatus": "confirmed",
       "operatorKeyModes": {
         "open": "full_access_key",
@@ -1895,40 +2143,40 @@
         "winnerMatches": true,
         "winnerKeyScoped": true,
         "reasons": [],
-        "auditedAt": "2026-11-15T07:08:06.812Z",
+        "auditedAt": "2026-11-15T07:33:26.964Z",
         "roundStatus": "Settled",
         "onChainWinner": "xss.harsha-swarm.testnet",
         "winnerBidKey": "ed25519:J5cjV1gM4sSmLGy6etyxgJKGMQkEdiPR99fChcqG6Bow"
       },
       "proofHash": "80b00fdcd9e9bdef7770d7920dea9bbcbe8bfc66c996ec27cbe4e228a76f2a48",
-      "payoutTxHash": "4beQyfZRy8R25hRZd8aGu1nB3yjZoa39NPemu99FvKoX",
-      "proofStoredOnChain": false
+      "payoutTxHash": "9xqy4qDwEvxx1mzXdNiaMn8t2aJX7jYV3oUCyrvH3UbU",
+      "proofStoredOnChain": true
     },
     {
-      "roundId": "mission-refund-1794726348171-r3",
+      "roundId": "test-mission-1794727842011-r3",
       "taskId": "task-business-logic",
       "taskName": "Client Price Parameter Tampering",
-      "rewardNear": "0.010970",
+      "rewardNear": "0.010933",
       "bountyPricing": {
         "pricingSource": "near_intents_1click_dry_quote",
         "bountyUsd": 0.03,
-        "escrowYocto": "10970164428281638584430",
-        "escrowNear": "0.010970",
+        "escrowYocto": "10933029129606255055931",
+        "escrowNear": "0.010933",
         "quote": {
-          "amountIn": "10970164428281638584430",
-          "amountInUsd": "0.034336614661",
+          "amountIn": "10933029129606255055931",
+          "amountInUsd": "0.034329711467",
           "amountOut": "30000",
-          "amountOutUsd": "0.029990970000",
+          "amountOutUsd": "0.029990520000",
           "timeEstimateSec": 22,
-          "signature": "ed25519:4jTmZCL7izqRoh4KMF1ih8qf86TXox2Ae3gj4ECNkEsvu8xLoMxF5evF99zDdEhsnzsKCXAkPW1CQGtgXmkWPBed",
-          "correlationId": "1cb60172-2580-4ab9-baab-6c8bf9fd31a0",
-          "timestamp": "2026-11-15T07:07:21.617Z"
+          "signature": "ed25519:35aZwU3yoqZsK3NVuLJKiehEMegcmK8FkxbAJYf2JkwsC2DH3CAwepxErdTYP5j8PA2DvNkfctgPfb7H8edQpq6e",
+          "correlationId": "1263ee3a-de0b-4999-a889-262e6158d3af",
+          "timestamp": "2026-11-15T07:32:16.854Z"
         }
       },
-      "openTxHash": "6vy2oz5qtt7j5sGiG7t2dQfXe4iesZZsBpEE3VXdf9B9",
+      "openTxHash": "5xTZKW6MUNJ7whdh3aSBpjmLRDg6Jx9oaZMEwMt15ipt",
       "winnerAccount": "logic.harsha-swarm.testnet",
       "winnerAgentId": "BusinessLogicAgent",
-      "winnerScore": "15520000",
+      "winnerScore": "17460000",
       "winnerSource": "on_chain_settle",
       "allBids": [
         {
@@ -1936,14 +2184,14 @@
           "account": "logic.harsha-swarm.testnet",
           "confidenceBps": 9700,
           "costYocto": "10000000000",
-          "salt": "2aef1f916351b664cc90220bdfa84d72a52eb9fb0c3e538d4a72f99ea0af2522",
+          "salt": "59757cc7587f6daba3bd8f25d1842b3bc9d97960cced2898ede5e0efbaf29a29",
           "confidenceSource": "scripted",
-          "reputation": 15,
+          "reputation": 17,
           "revealed": true,
-          "score": 15520000,
-          "commitTxHash": "3iqEyWN4qMGZahDjYYnXh9QgoBrUbghksVToAy7mNobK",
+          "score": 17460000,
+          "commitTxHash": "7qYW36tuxMTm54k2WJNq2fqouWbamxyTkYkrhGuAAZcP",
           "signerPublicKey": "ed25519:3Rt6SfPmV9jMGYDVVFFvtBTukahFNn5XRTnenT89jZym",
-          "revealTxHash": "jfg1LtvjGqdRnNHPzX87igMVAtHqwqMGME1sK9C2dpe",
+          "revealTxHash": "CeQXUuiCfgfGbsBfTMS7LsZdwRpCV8qNAAsDg5yapFHf",
           "relayed": false,
           "signingMode": "agent_key"
         },
@@ -1952,14 +2200,14 @@
           "account": "xss.harsha-swarm.testnet",
           "confidenceBps": 2500,
           "costYocto": "10000000000",
-          "salt": "cbf73877e5f5e1d756b6ae4d711ed4c61067b62d40f22503f6c527a56fb3b717",
+          "salt": "3ea05705b2cfdeaad683eb045b78e3461c8eb9749971226360b8614c6a4b5f71",
           "confidenceSource": "scripted",
-          "reputation": 15,
+          "reputation": 17,
           "revealed": true,
-          "score": 4000000,
-          "commitTxHash": "86gsgEzmUmWpeRx7yH1sLVsVfGAqtgQwftcuMaVdYPBB",
+          "score": 4500000,
+          "commitTxHash": "5RqzdK3MrX5Auc8gyNvrEGxda3FkiY9GPKrwzUaVUqkz",
           "signerPublicKey": "ed25519:J5cjV1gM4sSmLGy6etyxgJKGMQkEdiPR99fChcqG6Bow",
-          "revealTxHash": "4doUVePRQFtJ7Mf87FyqJznkeNXViuPohR2C1jcnqKam",
+          "revealTxHash": "8WtXwYTiREKVK1EseQmxix28vmDqdiCpfnZh7EABM8wF",
           "relayed": false,
           "signingMode": "agent_key"
         },
@@ -1968,14 +2216,14 @@
           "account": "idor.harsha-swarm.testnet",
           "confidenceBps": 2000,
           "costYocto": "10000000000",
-          "salt": "7246b2122d051c5bab4b1c88c93abc7e46216f84a6a9dcf115633751d5a36e3b",
+          "salt": "4e4abcacc27cd3224f34e53d86d848759c2ccfd58ffda8213df12f6f7572fe0f",
           "confidenceSource": "scripted",
           "reputation": 13,
           "revealed": true,
           "score": 2800000,
-          "commitTxHash": "CgreFYKXjq1bZcvrWf81JaoRN4BcrSKK8Zhr1CBxmgXq",
+          "commitTxHash": "7pdhG2WQnNpEryzLrYP6ycZC357DfJo7ZfmczUViYW4b",
           "signerPublicKey": "ed25519:FL23zoLDSGZWHb1WZ5muuRUTJosmsCqg6aVnTkAZfQUE",
-          "revealTxHash": "HxZfcoqbXBUYPow5eUSZdcda8qww9CaNhbAmbqivsbfG",
+          "revealTxHash": "Ezne8FmmGKTHty9qL4LrG4FhDxyzD74yBfC8XyKLKeVG",
           "relayed": false,
           "signingMode": "agent_key"
         },
@@ -1984,14 +2232,14 @@
           "account": "gen2.harsha-swarm.testnet",
           "confidenceBps": 5500,
           "costYocto": "6000000000",
-          "salt": "8b89f9a1dd6796d702124d4c57c4ae4fd163eb8a1f49a04741b286de92bc2e6e",
+          "salt": "b54a4641a1117f678d59886b4883478209af12a47ab3e89d0e2082cec7489ac2",
           "confidenceSource": "scripted",
           "reputation": 0,
           "revealed": true,
           "score": 916666,
-          "commitTxHash": "34JpahEQVHPmjXfTKnW9EBbhs5qqkKd4EtmsrCpAFQmB",
+          "commitTxHash": "5ERbXWyAGaMHM9bdzgbSnDVMS9Ai2VG9hnVkJaoUHMRs",
           "signerPublicKey": "ed25519:ErHJwHY5UThhvVZUFoUhizYNQXWxCPkJHrR8YziVa2Ff",
-          "revealTxHash": "CDZNA3hrRdL1GhKRxpxULTNnNTGAmzY3s15MuR2Ddzyk",
+          "revealTxHash": "2LaerrcxhtwWYeBeMeF1C3tba3Qxdogr2fUmGmJY5ngD",
           "relayed": false,
           "signingMode": "agent_key"
         },
@@ -2000,34 +2248,35 @@
           "account": "gen1.harsha-swarm.testnet",
           "confidenceBps": 6000,
           "costYocto": "8000000000",
-          "salt": "26933c40ac6e163cb83b3256a084da7bb329b6e116f284ab55e6dff5d59bf754",
+          "salt": "4e1bf6b0d4ac0e4710307ca594ab95db8542c705e28413c22dc8bcf0534e6a17",
           "confidenceSource": "scripted",
           "reputation": 0,
           "revealed": true,
           "score": 750000,
-          "commitTxHash": "7uBhcDNnkJVrRL577RLBu2sTAZin89x6L5BD2xxwU1Qq",
+          "commitTxHash": "8TpJr7J8iRi6oMcC2fb1mNCCjNcPB2CvrjzN49uz7QSf",
           "signerPublicKey": "ed25519:987EBqjmigqWyqPQcXnrWsK5J4A87uPN2z9JqnhHKDeZ",
-          "revealTxHash": "5uo14esimVt5qAAf5aFm5q13vZ67gVaEdkTKGop8sd4J",
+          "revealTxHash": "DP9rUbHAUTKFdVWwXzQZTS3PDX5AwRCKAGeuMPrhcETe",
           "relayed": false,
           "signingMode": "agent_key"
         }
       ],
       "commitTxHashes": {
-        "BusinessLogicAgent": "3iqEyWN4qMGZahDjYYnXh9QgoBrUbghksVToAy7mNobK",
-        "XssAgent": "86gsgEzmUmWpeRx7yH1sLVsVfGAqtgQwftcuMaVdYPBB",
-        "IdorAgent": "CgreFYKXjq1bZcvrWf81JaoRN4BcrSKK8Zhr1CBxmgXq",
-        "GeneralistBeta": "34JpahEQVHPmjXfTKnW9EBbhs5qqkKd4EtmsrCpAFQmB",
-        "GeneralistAlpha": "7uBhcDNnkJVrRL577RLBu2sTAZin89x6L5BD2xxwU1Qq"
+        "BusinessLogicAgent": "7qYW36tuxMTm54k2WJNq2fqouWbamxyTkYkrhGuAAZcP",
+        "XssAgent": "5RqzdK3MrX5Auc8gyNvrEGxda3FkiY9GPKrwzUaVUqkz",
+        "IdorAgent": "7pdhG2WQnNpEryzLrYP6ycZC357DfJo7ZfmczUViYW4b",
+        "GeneralistBeta": "5ERbXWyAGaMHM9bdzgbSnDVMS9Ai2VG9hnVkJaoUHMRs",
+        "GeneralistAlpha": "8TpJr7J8iRi6oMcC2fb1mNCCjNcPB2CvrjzN49uz7QSf"
       },
       "revealTxHashes": {
-        "BusinessLogicAgent": "jfg1LtvjGqdRnNHPzX87igMVAtHqwqMGME1sK9C2dpe",
-        "XssAgent": "4doUVePRQFtJ7Mf87FyqJznkeNXViuPohR2C1jcnqKam",
-        "IdorAgent": "HxZfcoqbXBUYPow5eUSZdcda8qww9CaNhbAmbqivsbfG",
-        "GeneralistBeta": "CDZNA3hrRdL1GhKRxpxULTNnNTGAmzY3s15MuR2Ddzyk",
-        "GeneralistAlpha": "5uo14esimVt5qAAf5aFm5q13vZ67gVaEdkTKGop8sd4J"
+        "BusinessLogicAgent": "CeQXUuiCfgfGbsBfTMS7LsZdwRpCV8qNAAsDg5yapFHf",
+        "XssAgent": "8WtXwYTiREKVK1EseQmxix28vmDqdiCpfnZh7EABM8wF",
+        "IdorAgent": "Ezne8FmmGKTHty9qL4LrG4FhDxyzD74yBfC8XyKLKeVG",
+        "GeneralistBeta": "2LaerrcxhtwWYeBeMeF1C3tba3Qxdogr2fUmGmJY5ngD",
+        "GeneralistAlpha": "DP9rUbHAUTKFdVWwXzQZTS3PDX5AwRCKAGeuMPrhcETe"
       },
-      "phaseEnforcement": "not_supported_by_deployed_contract",
-      "settleTxHash": "Xwtc2beJ5D9e1eTosA7DSGcvkfVHv16NymQkHNVQEab",
+      "startRevealTxHash": "DgTNc8XcKMWYo4zDVdnaB47BfwZymFH7uSfjBqk6iZbK",
+      "phaseEnforcement": "on_chain",
+      "settleTxHash": "9iBJYw5QH6bo4jrhRa6JB4GcmKuVeyrsLve7ajajxdte",
       "payoutStatus": "confirmed",
       "operatorKeyModes": {
         "open": "full_access_key",
@@ -2040,31 +2289,31 @@
         "winnerMatches": true,
         "winnerKeyScoped": true,
         "reasons": [],
-        "auditedAt": "2026-11-15T07:08:30.502Z",
+        "auditedAt": "2026-11-15T07:33:50.026Z",
         "roundStatus": "Settled",
         "onChainWinner": "logic.harsha-swarm.testnet",
         "winnerBidKey": "ed25519:3Rt6SfPmV9jMGYDVVFFvtBTukahFNn5XRTnenT89jZym"
       },
       "proofHash": "323f9d9a32195407f03a6cba822b05cdb0695237d8a155434442793f6c5b6c8c",
-      "payoutTxHash": "HxXQsiEjkiJ8oPCkUhPDW4g5gX7DfVFQw4ckCFyWAWfq",
-      "proofStoredOnChain": false
+      "payoutTxHash": "EQRgu6TAQr3uBxjmj8oKgEys4Yx5Z2ibamscSfqCtLgo",
+      "proofStoredOnChain": true
     }
   ],
   "nearAttestation": {
     "status": "confirmed",
     "contractId": "harsha-swarm.testnet",
     "networkId": "testnet",
-    "missionId": "mission-refund-1794726348171",
-    "resultHash": "9364c1d500400d921a335eff8f443b4cc391e20e4b82339997011d967538cc22",
-    "findingsHash": "f067b618085759135a61400783ce4d1957d3621ef392d452f551b8907cae777a",
-    "verifiedFindingCount": 2,
-    "missionTxHash": "544jKbms359rQVBrEw1JZUMhrAn9iYj2HMV1AzhggMyL",
+    "missionId": "test-mission-1794727842011",
+    "resultHash": "f53858d9fb3d51c2b71af115338da6744da3921b08db1143a0f2644f7666dbf4",
+    "findingsHash": "fad393c96d1cb0a62d5d2bdd19d9deacd574e059933616ad066ab36ae6ce11e5",
+    "verifiedFindingCount": 3,
+    "missionTxHash": "CX7D3FXQrc1Cr6HB8yd6ujtERPCCG5Ap2hRVA1BqDVK3",
     "missionTxStatus": "confirmed",
     "contributionTxHashes": [
-      "GjBLRnSQyuynhhox2XkSBDiSg9cupk7rsKE8VbKCpEX5",
-      "Hpyb1mLuYSTEJ8FYkx81saYDB5ozsZnAhJ49mvAbXe8A",
-      "EBJP8y8kUiwoAfv77grtXr28RzJfrwkVCA8DNUiPMKVb",
-      "G4UQa2nJEZJXboWqhe759TaPSJTfJetmc3J3A3gnowkN"
+      "FqrwG8M5A4jPQn8wJkNo2wqVj4ofEwJsNgvFhiWXsKbC",
+      "4NpBaPVwyzaH2tUgFv3K7juMfRCELAbCPkGpMEKuwNsQ",
+      "CAHD2FyGsnkzHDZVHVcMqsQufWdmQVKCJj68fRK8hQww",
+      "rzJ1QtiEN89AKabgDVwWg9XohEbav5h4b6Xmh5T1opK"
     ],
     "contributionTxStatuses": [
       "confirmed",
@@ -2072,7 +2321,7 @@
       "confirmed",
       "confirmed"
     ],
-    "explorerUrl": "https://testnet.nearblocks.io/txns/544jKbms359rQVBrEw1JZUMhrAn9iYj2HMV1AzhggMyL",
-    "attestedAt": "2026-11-15T07:09:12.433Z"
+    "explorerUrl": "https://testnet.nearblocks.io/txns/CX7D3FXQrc1Cr6HB8yd6ujtERPCCG5Ap2hRVA1BqDVK3",
+    "attestedAt": "2026-11-15T07:34:22.679Z"
   }
 }

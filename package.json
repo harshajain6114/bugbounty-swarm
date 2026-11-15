@@ -17,6 +17,8 @@
     "test:near-ai": "npm --prefix apps/server run test:near-ai",
     "test:orchestrator": "cd apps/server && node node_modules/tsx/dist/cli.mjs tests/mission-orchestrator.test.ts",
     "demo:refund": "npm --prefix apps/server run demo:refund",
+    "demo:phases": "npm --prefix apps/server run demo:phases",
+    "deploy:market": "node scripts/deploy-market.js",
     "proof:generate": "node scripts/generate-proof.js",
     "provision:agents": "node scripts/provision-agents.js",
     "build:web": "cd apps/web && npm run build"

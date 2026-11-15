@@ -43,6 +43,10 @@ export interface MarketRound {
   }
   mcpAudit?: { approved: boolean; roundStatus?: string; winnerKeyScoped: boolean; reasons: string[] }
   operatorKeyModes?: { open?: string; settle?: string; release?: string }
+  phaseEnforcement?: 'on_chain' | 'not_supported_by_deployed_contract' | 'local_simulation'
+  startRevealTxHash?: string
+  proofHash?: string
+  proofStoredOnChain?: boolean
 }
 
 const PAYOUT_TONE: Record<string, { color: string; border: string }> = {
@@ -792,6 +796,20 @@ function BountyMarket({
                     ok={round.mcpAudit.approved}
                     label={round.mcpAudit.approved ? 'NEAR MCP audit approved' : 'NEAR MCP audit rejected'}
                     title={round.mcpAudit.reasons.join('; ') || `round ${round.mcpAudit.roundStatus}, winner key scoped`}
+                  />
+                )}
+                {round.phaseEnforcement && round.phaseEnforcement !== 'local_simulation' && (
+                  <ProofChip
+                    ok={round.phaseEnforcement === 'on_chain'}
+                    label={round.phaseEnforcement === 'on_chain' ? 'commit phase closed on-chain' : 'no on-chain phases'}
+                    title={round.startRevealTxHash ? `start_reveal tx ${round.startRevealTxHash}` : undefined}
+                  />
+                )}
+                {round.proofHash && (
+                  <ProofChip
+                    ok={round.proofStoredOnChain}
+                    label={`proof ${round.proofHash.slice(0, 8)}… ${round.proofStoredOnChain ? 'stored on-chain' : 'not on-chain'}`}
+                    title={round.proofHash}
                   />
                 )}
                 {round.operatorKeyModes?.settle && (

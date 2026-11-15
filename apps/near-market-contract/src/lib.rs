@@ -87,12 +87,19 @@ impl BountyMarketContract {
     }
 
     /// Phase 1: Submit commit hash = sha256(agentId|taskId|confidence_bps|cost_yocto|salt)
+    /// Only allowed while the round is in its COMMIT phase (before start_reveal).
     pub fn commit_bid(&mut self, round_id: String, commitment: String) {
         let round = self.rounds.get(&round_id).expect("Round not found");
         assert_eq!(round.status, RoundStatus::Open, "Round is not open");
+        assert!(!Self::reveal_started(&round_id), "Commit phase closed");
+        assert!(
+            commitment.len() == 64 && commitment.chars().all(|c| c.is_ascii_hexdigit()),
+            "Commitment must be 64 hex chars (sha256)"
+        );
         let bidder = env::predecessor_account_id();
 
         let mut bids = self.round_bids.get(&round_id).unwrap_or_default();
+        assert!(bids.len() < MAX_BIDS_PER_ROUND, "Round is full");
         assert!(!bids.iter().any(|b| b.bidder == bidder), "Bidder already committed");
 
         bids.push(Bid {
@@ -117,6 +124,7 @@ impl BountyMarketContract {
     ) {
         let round = self.rounds.get(&round_id).expect("Round not found");
         assert_eq!(round.status, RoundStatus::Open, "Round is not open");
+        assert!(Self::reveal_started(&round_id), "Reveal phase not open");
         assert!(confidence_bps <= 10000, "Confidence bps max 10000");
         assert!(cost_yocto > 0, "Cost must be > 0");
 
@@ -141,12 +149,23 @@ impl BountyMarketContract {
         self.round_bids.insert(&round_id, &bids);
     }
 
+    /// Phase 2a: Close commits and open reveals. After this no new commitment
+    /// can be added, so a bidder cannot commit after seeing others' reveals.
+    pub fn start_reveal(&mut self, round_id: String) {
+        self.assert_operator();
+        let round = self.rounds.get(&round_id).expect("Round not found");
+        assert_eq!(round.status, RoundStatus::Open, "Round not open");
+        assert!(!Self::reveal_started(&round_id), "Reveal already started");
+        env::storage_write(&Self::phase_key(&round_id), &env::block_timestamp_ms().to_le_bytes());
+    }
+
     /// Phase 3: Deterministically settles round using formula:
     /// score = (confidence_bps * (1 + reputation)) / cost_yocto
     pub fn settle_round(&mut self, round_id: String) -> AccountId {
         self.assert_operator();
         let mut round = self.rounds.get(&round_id).expect("Round not found");
         assert_eq!(round.status, RoundStatus::Open, "Round not open");
+        assert!(Self::reveal_started(&round_id), "Reveal phase not started");
 
         let bids = self.round_bids.get(&round_id).expect("No bids");
         let revealed_bids: Vec<&Bid> = bids.iter().filter(|b| b.revealed).collect();
@@ -184,14 +203,19 @@ impl BountyMarketContract {
     }
 
     /// Phase 4: Gated payout executed only after finding confirmation.
-    pub fn payout(&mut self, round_id: String) -> Promise {
+    /// `proof_hash` = sha256 of the independently replay-verified finding(s);
+    /// it is stored on-chain permanently (see get_round_proof) so the payout
+    /// is bound to a specific verification record anyone can re-hash.
+    pub fn payout(&mut self, round_id: String, proof_hash: String) -> Promise {
         self.assert_operator();
+        Self::assert_proof_hash(&proof_hash);
         let mut round = self.rounds.get(&round_id).expect("Round not found");
         assert_eq!(round.status, RoundStatus::Settled, "Round must be settled before payout");
         let winner = round.winner.clone().expect("No winner set");
 
         round.status = RoundStatus::Paid;
         self.rounds.insert(&round_id, &round);
+        env::storage_write(&Self::proof_key(&round_id), proof_hash.as_bytes());
 
         // Increment winner's reputation
         let current_rep = self.agent_reputation.get(&winner).unwrap_or(0);
@@ -203,13 +227,16 @@ impl BountyMarketContract {
 
     /// Phase 4b: Refund round to operator when independent finding verification fails.
     /// Returns the escrowed reward back to operator without modifying agent reputation.
-    pub fn refund_round(&mut self, round_id: String) -> Promise {
+    /// `proof_hash` = sha256 of the replay-verification rejection record.
+    pub fn refund_round(&mut self, round_id: String, proof_hash: String) -> Promise {
         self.assert_operator();
+        Self::assert_proof_hash(&proof_hash);
         let mut round = self.rounds.get(&round_id).expect("Round not found");
         assert_eq!(round.status, RoundStatus::Settled, "Round must be settled before refund");
 
         round.status = RoundStatus::Refunded;
         self.rounds.insert(&round_id, &round);
+        env::storage_write(&Self::proof_key(&round_id), proof_hash.as_bytes());
 
         // Refund escrow back to operator
         Promise::new(self.operator.clone()).transfer(round.reward)
@@ -233,10 +260,43 @@ impl BountyMarketContract {
         self.operator.clone()
     }
 
+    /// Verification proof hash recorded at payout / refund, if any.
+    pub fn get_round_proof(&self, round_id: String) -> Option<String> {
+        env::storage_read(&Self::proof_key(&round_id)).map(|b| String::from_utf8(b).unwrap_or_default())
+    }
+
+    /// "commit" until start_reveal is called, then "reveal".
+    pub fn get_round_phase(&self, round_id: String) -> String {
+        if Self::reveal_started(&round_id) { "reveal".to_string() } else { "commit".to_string() }
+    }
+
     fn assert_operator(&self) {
         assert_eq!(env::predecessor_account_id(), self.operator, "Operator only");
     }
+
+    // Phase flags and proofs live under raw storage keys (not new struct
+    // fields) so the contract upgrades in place without a state migration.
+    fn phase_key(round_id: &str) -> Vec<u8> {
+        [b"ph:".as_slice(), round_id.as_bytes()].concat()
+    }
+
+    fn proof_key(round_id: &str) -> Vec<u8> {
+        [b"pf:".as_slice(), round_id.as_bytes()].concat()
+    }
+
+    fn reveal_started(round_id: &str) -> bool {
+        env::storage_has_key(&Self::phase_key(round_id))
+    }
+
+    fn assert_proof_hash(proof_hash: &str) {
+        assert!(
+            proof_hash.len() == 64 && proof_hash.chars().all(|c| c.is_ascii_hexdigit()),
+            "proof_hash must be 64 hex chars (sha256)"
+        );
+    }
 }
+
+const MAX_BIDS_PER_ROUND: usize = 16;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Unit tests
@@ -247,6 +307,8 @@ mod tests {
     use super::*;
     use near_sdk::test_utils::{accounts, VMContextBuilder};
     use near_sdk::testing_env;
+
+    const PROOF: &str = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
     fn get_context(predecessor: AccountId, deposit: NearToken) -> VMContextBuilder {
         let mut builder = VMContextBuilder::new();
@@ -288,6 +350,9 @@ mod tests {
         // Reveals
         context = get_context(bidder1.clone(), NearToken::from_yoctonear(0));
         testing_env!(context.build());
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.start_reveal("round-1".to_string());
+        testing_env!(context.build());
         contract.reveal_bid("round-1".to_string(), 9000, 1000000000, salt1);
 
         context = get_context(bidder2.clone(), NearToken::from_yoctonear(0));
@@ -304,7 +369,7 @@ mod tests {
         assert_eq!(winner, bidder2);
 
         // Payout to winner
-        let _ = contract.payout("round-1".to_string());
+        let _ = contract.payout("round-1".to_string(), PROOF.to_string());
         assert_eq!(contract.get_agent_reputation(bidder2), 1);
     }
 
@@ -320,12 +385,15 @@ mod tests {
         let mut contract = BountyMarketContract::new(operator);
         contract.open_round("round-2".to_string(), "task-injection".to_string());
 
-        let commit = "deadbeef".to_string();
+        let commit = "ab".repeat(32); // well-formed sha256 hex that matches no preimage
         context = get_context(bidder1.clone(), NearToken::from_yoctonear(0));
         testing_env!(context.build());
         contract.commit_bid("round-2".to_string(), commit);
 
         // Attempt invalid reveal
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.start_reveal("round-2".to_string());
+        testing_env!(context.build());
         contract.reveal_bid("round-2".to_string(), 9000, 100, "wrong-salt".to_string());
     }
 
@@ -350,6 +418,9 @@ mod tests {
         context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
         testing_env!(context.build());
         contract.commit_bid("round-nop".to_string(), commit);
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.start_reveal("round-nop".to_string());
+        testing_env!(context.build());
         contract.reveal_bid("round-nop".to_string(), 9000, 1000000000, salt);
 
         // Settle as operator
@@ -360,7 +431,7 @@ mod tests {
         // Attempt payout as non-operator -> MUST PANIC
         context = get_context(non_operator, NearToken::from_yoctonear(0));
         testing_env!(context.build());
-        let _ = contract.payout("round-nop".to_string());
+        let _ = contract.payout("round-nop".to_string(), PROOF.to_string());
     }
 
     #[test]
@@ -382,6 +453,9 @@ mod tests {
         context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
         testing_env!(context.build());
         contract.commit_bid("round-dup".to_string(), commit);
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.start_reveal("round-dup".to_string());
+        testing_env!(context.build());
         contract.reveal_bid("round-dup".to_string(), 9000, 1000000000, salt);
 
         // Settle as operator
@@ -390,10 +464,10 @@ mod tests {
         contract.settle_round("round-dup".to_string());
 
         // First payout succeeds
-        let _ = contract.payout("round-dup".to_string());
+        let _ = contract.payout("round-dup".to_string(), PROOF.to_string());
 
         // Duplicate payout -> MUST PANIC
-        let _ = contract.payout("round-dup".to_string());
+        let _ = contract.payout("round-dup".to_string(), PROOF.to_string());
     }
 
     #[test]
@@ -416,6 +490,9 @@ mod tests {
         context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
         testing_env!(context.build());
         contract.commit_bid("round-rep".to_string(), commit);
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.start_reveal("round-rep".to_string());
+        testing_env!(context.build());
         contract.reveal_bid("round-rep".to_string(), 9000, 1000000000, salt);
 
         // Settle as operator
@@ -424,7 +501,7 @@ mod tests {
         contract.settle_round("round-rep".to_string());
 
         // Payout increments reputation
-        let _ = contract.payout("round-rep".to_string());
+        let _ = contract.payout("round-rep".to_string(), PROOF.to_string());
         assert_eq!(contract.get_agent_reputation(bidder.clone()), 1);
     }
 
@@ -447,6 +524,9 @@ mod tests {
         context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
         testing_env!(context.build());
         contract.commit_bid("round-ref-once".to_string(), commit);
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.start_reveal("round-ref-once".to_string());
+        testing_env!(context.build());
         contract.reveal_bid("round-ref-once".to_string(), 9000, 1000000000, salt);
 
         context = get_context(operator.clone(), NearToken::from_yoctonear(0));
@@ -454,11 +534,11 @@ mod tests {
         contract.settle_round("round-ref-once".to_string());
 
         // First refund succeeds
-        let _ = contract.refund_round("round-ref-once".to_string());
+        let _ = contract.refund_round("round-ref-once".to_string(), PROOF.to_string());
         assert_eq!(contract.get_round("round-ref-once".to_string()).unwrap().status, RoundStatus::Refunded);
 
         // Duplicate refund -> MUST PANIC
-        let _ = contract.refund_round("round-ref-once".to_string());
+        let _ = contract.refund_round("round-ref-once".to_string(), PROOF.to_string());
     }
 
     #[test]
@@ -480,6 +560,9 @@ mod tests {
         context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
         testing_env!(context.build());
         contract.commit_bid("round-pay-then-ref".to_string(), commit);
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.start_reveal("round-pay-then-ref".to_string());
+        testing_env!(context.build());
         contract.reveal_bid("round-pay-then-ref".to_string(), 9000, 1000000000, salt);
 
         context = get_context(operator.clone(), NearToken::from_yoctonear(0));
@@ -487,10 +570,10 @@ mod tests {
         contract.settle_round("round-pay-then-ref".to_string());
 
         // Payout succeeds
-        let _ = contract.payout("round-pay-then-ref".to_string());
+        let _ = contract.payout("round-pay-then-ref".to_string(), PROOF.to_string());
 
         // Attempt refund after payout -> MUST PANIC
-        let _ = contract.refund_round("round-pay-then-ref".to_string());
+        let _ = contract.refund_round("round-pay-then-ref".to_string(), PROOF.to_string());
     }
 
     #[test]
@@ -512,6 +595,9 @@ mod tests {
         context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
         testing_env!(context.build());
         contract.commit_bid("round-ref-then-pay".to_string(), commit);
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.start_reveal("round-ref-then-pay".to_string());
+        testing_env!(context.build());
         contract.reveal_bid("round-ref-then-pay".to_string(), 9000, 1000000000, salt);
 
         context = get_context(operator.clone(), NearToken::from_yoctonear(0));
@@ -519,10 +605,10 @@ mod tests {
         contract.settle_round("round-ref-then-pay".to_string());
 
         // Refund succeeds
-        let _ = contract.refund_round("round-ref-then-pay".to_string());
+        let _ = contract.refund_round("round-ref-then-pay".to_string(), PROOF.to_string());
 
         // Attempt payout after refund -> MUST PANIC
-        let _ = contract.payout("round-ref-then-pay".to_string());
+        let _ = contract.payout("round-ref-then-pay".to_string(), PROOF.to_string());
     }
 
     #[test]
@@ -545,6 +631,9 @@ mod tests {
         context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
         testing_env!(context.build());
         contract.commit_bid("round-nonop-ref".to_string(), commit);
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.start_reveal("round-nonop-ref".to_string());
+        testing_env!(context.build());
         contract.reveal_bid("round-nonop-ref".to_string(), 9000, 1000000000, salt);
 
         context = get_context(operator, NearToken::from_yoctonear(0));
@@ -554,7 +643,7 @@ mod tests {
         // Attempt refund as non-operator -> MUST PANIC
         context = get_context(non_operator, NearToken::from_yoctonear(0));
         testing_env!(context.build());
-        let _ = contract.refund_round("round-nonop-ref".to_string());
+        let _ = contract.refund_round("round-nonop-ref".to_string(), PROOF.to_string());
     }
 
     #[test]
@@ -577,6 +666,9 @@ mod tests {
         context = get_context(bidder.clone(), NearToken::from_yoctonear(0));
         testing_env!(context.build());
         contract.commit_bid("round-rep-unchanged".to_string(), commit);
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.start_reveal("round-rep-unchanged".to_string());
+        testing_env!(context.build());
         contract.reveal_bid("round-rep-unchanged".to_string(), 9000, 1000000000, salt);
 
         // Settle as operator
@@ -585,10 +677,97 @@ mod tests {
         contract.settle_round("round-rep-unchanged".to_string());
 
         // Refund round
-        let _ = contract.refund_round("round-rep-unchanged".to_string());
+        let _ = contract.refund_round("round-rep-unchanged".to_string(), PROOF.to_string());
 
         // Reputation must still be 0
         assert_eq!(contract.get_agent_reputation(bidder.clone()), 0);
         assert_eq!(contract.get_round("round-rep-unchanged".to_string()).unwrap().status, RoundStatus::Refunded);
     }
-}
+
+    /// Opens a round and commits one valid bid for `bidder`; returns the salt.
+    fn setup_committed(contract: &mut BountyMarketContract, round: &str, bidder: &AccountId) -> String {
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(10_000_000_000_000_000_000_000)).build());
+        contract.open_round(round.to_string(), "task-test".to_string());
+        let salt = "s".repeat(64);
+        let pre = format!("{}|task-test|9000|1000000000|{}", bidder, salt);
+        testing_env!(get_context(bidder.clone(), NearToken::from_yoctonear(0)).build());
+        contract.commit_bid(round.to_string(), hex::encode(near_sdk::env::sha256(pre.as_bytes())));
+        salt
+    }
+
+    #[test]
+    #[should_panic(expected = "Commit phase closed")]
+    fn test_commit_after_reveal_started_rejected() {
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        let mut contract = BountyMarketContract::new(accounts(0));
+        setup_committed(&mut contract, "r-late", &accounts(1));
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.start_reveal("r-late".to_string());
+        // A second bidder tries to commit after reveals opened -> MUST PANIC
+        testing_env!(get_context(accounts(2), NearToken::from_yoctonear(0)).build());
+        contract.commit_bid("r-late".to_string(), "cd".repeat(32));
+    }
+
+    #[test]
+    #[should_panic(expected = "Reveal phase not open")]
+    fn test_reveal_before_phase_rejected() {
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        let mut contract = BountyMarketContract::new(accounts(0));
+        let salt = setup_committed(&mut contract, "r-early", &accounts(1));
+        contract.reveal_bid("r-early".to_string(), 9000, 1000000000, salt);
+    }
+
+    #[test]
+    #[should_panic(expected = "Reveal phase not started")]
+    fn test_settle_before_reveal_rejected() {
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        let mut contract = BountyMarketContract::new(accounts(0));
+        setup_committed(&mut contract, "r-settle", &accounts(1));
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.settle_round("r-settle".to_string());
+    }
+
+    #[test]
+    #[should_panic(expected = "Commitment must be 64 hex chars")]
+    fn test_malformed_commitment_rejected() {
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(10_000_000_000_000_000_000_000)).build());
+        let mut contract = BountyMarketContract::new(accounts(0));
+        contract.open_round("r-bad".to_string(), "task-test".to_string());
+        testing_env!(get_context(accounts(1), NearToken::from_yoctonear(0)).build());
+        contract.commit_bid("r-bad".to_string(), "x".repeat(5000));
+    }
+
+    #[test]
+    fn test_proof_hash_recorded_and_phase_reported() {
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        let mut contract = BountyMarketContract::new(accounts(0));
+        let bidder = accounts(1);
+        let salt = setup_committed(&mut contract, "r-proof", &bidder);
+        assert_eq!(contract.get_round_phase("r-proof".to_string()), "commit");
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.start_reveal("r-proof".to_string());
+        assert_eq!(contract.get_round_phase("r-proof".to_string()), "reveal");
+        testing_env!(get_context(bidder.clone(), NearToken::from_yoctonear(0)).build());
+        contract.reveal_bid("r-proof".to_string(), 9000, 1000000000, salt);
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.settle_round("r-proof".to_string());
+        assert_eq!(contract.get_round_proof("r-proof".to_string()), None);
+        let _ = contract.payout("r-proof".to_string(), PROOF.to_string());
+        assert_eq!(contract.get_round_proof("r-proof".to_string()), Some(PROOF.to_string()));
+    }
+
+    #[test]
+    #[should_panic(expected = "proof_hash must be 64 hex chars")]
+    fn test_payout_requires_proof_hash() {
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        let mut contract = BountyMarketContract::new(accounts(0));
+        let salt = setup_committed(&mut contract, "r-noproof", &accounts(1));
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.start_reveal("r-noproof".to_string());
+        testing_env!(get_context(accounts(1), NearToken::from_yoctonear(0)).build());
+        contract.reveal_bid("r-noproof".to_string(), 9000, 1000000000, salt);
+        testing_env!(get_context(accounts(0), NearToken::from_yoctonear(0)).build());
+        contract.settle_round("r-noproof".to_string());
+        let _ = contract.payout("r-noproof".to_string(), "".to_string());
+    }
+}

@@ -21,5 +21,5 @@
   "testPassed": true,
   "vulnerabilityReproduced": true,
   "details": "POST /shop/api/checkout accepts the \"price\" field from the client payload without validating it against the server-side product catalog. The order was created with priceAtPurchase=1 (client-supplied) instead of 7999 (catalog). Fix: ignore the client price field; derive price from server-side product record.",
-  "testedAt": "2026-11-14T19:51:48.210Z"
+  "testedAt": "2026-11-15T06:41:16.945Z"
 }

@@ -167,6 +167,33 @@ export class MarketCoordinator {
   }
 
   /**
+   * Returns the operator account signing with its FunctionCall key scoped to
+   * settle_round / payout / refund_round on the market (provisioned by
+   * scripts/provision-agents.js). Falls back to the full-access key from .env
+   * only if no scoped key is provisioned; the mode is recorded on the round.
+   */
+  private loadOperatorScopedAccount(
+    provider: unknown,
+    nearApi: typeof import("near-api-js"),
+    fullAccessAccount: unknown
+  ): { account: any; mode: "function_call_key" | "full_access_key" } {
+    const { KeyPair, KeyPairSigner, Account } = nearApi;
+    for (const f of [path.resolve(process.cwd(), ".agent-keys.json"), path.resolve(process.cwd(), "../../.agent-keys.json")]) {
+      if (!fs.existsSync(f)) continue;
+      try {
+        const op = JSON.parse(fs.readFileSync(f, "utf8")).__operator__;
+        if (op?.privateKey && op.accountId === OPERATOR_ACCOUNT && op.contractId === MARKET_CONTRACT) {
+          const signer = new KeyPairSigner(KeyPair.fromString(op.privateKey));
+          return { account: new Account(OPERATOR_ACCOUNT, provider as any, signer), mode: "function_call_key" };
+        }
+      } catch {
+        // ignore malformed key file
+      }
+    }
+    return { account: fullAccessAccount, mode: "full_access_key" };
+  }
+
+  /**
    * Read-only view call against the market contract (no gas, no signing).
    * Returns null on any RPC/parse error.
    */
@@ -267,6 +294,9 @@ export class MarketCoordinator {
     let winnerScore = previewWinner.score;
     let winnerSource: MarketRoundResult["winnerSource"] = nearClient ? "unsettled" : "local_simulation";
     const errors: string[] = [];
+    const operatorKeyModes: NonNullable<MarketRoundResult["operatorKeyModes"]> = {
+      open: nearClient ? "full_access_key" : undefined,
+    };
     const commitTxHashes: Record<string, string> = {};
     const revealTxHashes: Record<string, string> = {};
 
@@ -383,9 +413,11 @@ export class MarketCoordinator {
           }
         }
 
-        // Phase 3: Settle round as operator
-        console.log(`  [MARKET] Submitting settle_round transaction as operator…`);
-        const settleTx = await operatorAccount.callFunctionRaw({
+        // Phase 3: Settle round as operator, signed with the scoped FunctionCall key
+        const scopedOp = this.loadOperatorScopedAccount(provider, api, operatorAccount);
+        operatorKeyModes.settle = scopedOp.mode;
+        console.log(`  [MARKET] Submitting settle_round as operator (${scopedOp.mode})…`);
+        const settleTx = await scopedOp.account.callFunctionRaw({
           contractId: MARKET_CONTRACT,
           methodName: "settle_round",
           args: { round_id: roundId },
@@ -451,6 +483,7 @@ export class MarketCoordinator {
         ? "simulated"
         : openTxHash && winnerSource === "on_chain_settle" ? "pending" : "failed",
       errors: errors.length > 0 ? errors : undefined,
+      operatorKeyModes: nearClient ? operatorKeyModes : undefined,
     };
 
     this.marketState.push(roundResult);
@@ -484,7 +517,10 @@ export class MarketCoordinator {
       const keyPair = KeyPair.fromString(config.privateKey as `ed25519:${string}`);
       const signer = new KeyPairSigner(keyPair);
       const provider = new JsonRpcProvider({ url: config.rpcUrl });
-      const account = new Account(config.accountId, provider, signer);
+      const fullAccess = new Account(config.accountId, provider, signer);
+      const scoped = this.loadOperatorScopedAccount(provider, api, fullAccess);
+      round.operatorKeyModes = { ...round.operatorKeyModes, release: scoped.mode };
+      const account = scoped.account;
 
       const payoutTx = await account.callFunctionRaw({
         contractId: MARKET_CONTRACT,
@@ -542,7 +578,10 @@ export class MarketCoordinator {
       const keyPair = KeyPair.fromString(config.privateKey as `ed25519:${string}`);
       const signer = new KeyPairSigner(keyPair);
       const provider = new JsonRpcProvider({ url: config.rpcUrl });
-      const account = new Account(config.accountId, provider, signer);
+      const fullAccess = new Account(config.accountId, provider, signer);
+      const scoped = this.loadOperatorScopedAccount(provider, api, fullAccess);
+      round.operatorKeyModes = { ...round.operatorKeyModes, release: scoped.mode };
+      const account = scoped.account;
 
       const refundTx = await account.callFunctionRaw({
         contractId: MARKET_CONTRACT,

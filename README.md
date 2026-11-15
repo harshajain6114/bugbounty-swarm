@@ -69,43 +69,52 @@ All smart contracts and mission transactions are permanently deployed and confir
 ### Smart Contracts
 - **Primary Attestation Contract**: [`harsha-swarm.testnet`](https://testnet.nearblocks.io/address/harsha-swarm.testnet)
 - **Swarm Bounty Market Contract**: [`market.harsha-swarm.testnet`](https://testnet.nearblocks.io/address/market.harsha-swarm.testnet)
-- **Deployment Transaction**: [`FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8`](https://testnet.nearblocks.io/txns/FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8)
+- **Attestation Contract Deploy** (`DeployContract` + init on `harsha-swarm.testnet`): [`FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8`](https://testnet.nearblocks.io/txns/FVvpikhEnsY2sYaEhRdzwGKL6pzFAjANVjY4nbzA4zx8). For proof that the code *currently* deployed on both accounts is this source, run `npm run verify:deployment` (below).
 
 ### Live Mission & Market Transactions
-Mission `mission-refund-1794721485135` (`npm run demo:refund`) exercises **both** escrow outcomes in one run. The IDOR bug is patched for this demo, so replay verification fails and round 1 is refunded; rounds 2 and 3 are paid. Every winner below was read back from the contract (`get_round`) after `settle_round`, and every bid was signed by the agent's own sub-account function-call key. The full per-bid list is in [docs/near-proof.md](docs/near-proof.md).
+Mission `mission-refund-1794725357805` (`npm run demo:refund`) shows **both** escrow outcomes in one run. The IDOR bug is patched for this demo, so replay verification fails and round 1 is refunded; rounds 2 and 3 pass the NEAR MCP audit and are paid. In every round:
+- each escrow was set from a live 1Click quote ($0.03 ≈ 0.0109 NEAR);
+- all 5 bids were signed by each agent's own sub-account function-call key;
+- the winner was read back from the contract (`get_round`);
+- `settle_round` and `payout`/`refund_round` were signed by the operator's function-call key scoped to those three methods. You can check the signer public key on any of those transactions.
 
-- **NEAR MCP-audited mission** `test-mission-1794722221081`: all three rounds passed the MCP pre-payout audit, then paid. Payouts: [`BzSrhfQF…`](https://testnet.nearblocks.io/txns/BzSrhfQFHzirWe4XeEty5Tds5XQMbeGFzpYw29JqCrXq) · [`HifsvhH2…`](https://testnet.nearblocks.io/txns/HifsvhH2nHjNfLSbjMCPd87eyyA8fDh7aDyANqK7DpSx) · [`29WbVuNx…`](https://testnet.nearblocks.io/txns/29WbVuNxgppAz9tKYXYfSHLUMMycpzeQrSwzD3ewtB9X); attestation [`HRYHqy1W…`](https://testnet.nearblocks.io/txns/HRYHqy1WYHR7XdD99z9jiJsiz1TjUs1Zvkf28mSGdUN2). The `mcpAudit` record is in `apps/server/tests/results/mission-test-mission-1794722221081.json`.
-- **Master Mission Attestation** (refund-demo mission): [`Hq8kCU5rzpNeDHnE5xHzMFxt2jzyQRhYYXLtn52XUvj`](https://testnet.nearblocks.io/txns/Hq8kCU5rzpNeDHnE5xHzMFxt2jzyQRhYYXLtn52XUvj)
+Per-bid detail is in [docs/near-proof.md](docs/near-proof.md) and `apps/server/tests/results/mission-mission-refund-1794725357805.json`.
+
+- **Master Mission Attestation**: [`9ndGZJ2F…`](https://testnet.nearblocks.io/txns/9ndGZJ2F8sWAQTgTnkzPgMKbtgs5upbQwQKtabLLvGhm)
 - **Round 1 (`task-access-control`) → REFUNDED** (on-chain winner `idor.harsha-swarm.testnet`, finding not reproducible):
-  - Open: [`74B5m8DH…`](https://testnet.nearblocks.io/txns/74B5m8DHrDk6Z81krqVLnf6ZnEKUw1naWMvifqxYQfrZ) · Settle: [`9G6DexMs…`](https://testnet.nearblocks.io/txns/9G6DexMskd28K2RUr7eFopLocceE7tapACTQDrCZ82He) · `refund_round`: [`5e1J9yZn…`](https://testnet.nearblocks.io/txns/5e1J9yZneCNSpt35Yokvgt1o3ox2mNZVVsnYDjEJkhWC)
+  - Open: [`2hdy69cY…`](https://testnet.nearblocks.io/txns/2hdy69cYDvrXHrcCGRcs1cq18L2MGy4tcdzSjJqWQosU) · Settle: [`AX34UMTg…`](https://testnet.nearblocks.io/txns/AX34UMTg7dYAnu4RfLYVD9Wzk6oZEFf6HKyy4ymkqjxp) · `refund_round`: [`4VfpiRVz…`](https://testnet.nearblocks.io/txns/4VfpiRVzLVm18Aa1nvFoeWzLX5BvqNF9c19pnof5Vtqn)
 - **Round 2 (`task-injection`) → PAID** to `xss.harsha-swarm.testnet`:
-  - Open: [`8PbLZnDz…`](https://testnet.nearblocks.io/txns/8PbLZnDzTymfwLiWqbH4vwgD2nBpoQsHQiYdLdc5jgpy) · Settle: [`E1RT2mBr…`](https://testnet.nearblocks.io/txns/E1RT2mBrwhFYWLm2dnpnecLvwvd6WKdUMm4U5m8HrmGp) · `payout`: [`26KMPvPS…`](https://testnet.nearblocks.io/txns/26KMPvPSqC7oD7wN3kfbQwxmYhkDkG4LvSxr2B24688U)
+  - Open: [`9uoi9WTe…`](https://testnet.nearblocks.io/txns/9uoi9WTeSwAftwTTdsPn2SthABiLnkNLbXjFDgVrh645) · Settle: [`DTBMEf31…`](https://testnet.nearblocks.io/txns/DTBMEf31TUbbxRBaZ6PvKRvCrrc6H71hGAVuChuj187G) · `payout`: [`94gHiyzs…`](https://testnet.nearblocks.io/txns/94gHiyzsayCnmNChdZPiEhx61GkqVQVuBySFRUyALqrM)
 - **Round 3 (`task-business-logic`) → PAID** to `logic.harsha-swarm.testnet`:
-  - Open: [`Ehxcpg4X…`](https://testnet.nearblocks.io/txns/Ehxcpg4XfruFTscXWyUMaGJXCpVLDz43Gvgqjg1NFbBx) · Settle: [`79KJVtGQ…`](https://testnet.nearblocks.io/txns/79KJVtGQ4zEvPX5fdhnBWJRfxbGkhH2oPiQ4iNNna8AT) · `payout`: [`4fiKDzQV…`](https://testnet.nearblocks.io/txns/4fiKDzQV3NS5zpqNCFwNBBeS2BgHyBZu86P79w2pxonj)
+  - Open: [`AXnC2oT4…`](https://testnet.nearblocks.io/txns/AXnC2oT4Te5jgnxQxe5B3DaxXtwCNN99bP9XcC8LbWQq) · Settle: [`C2hHwGQ5…`](https://testnet.nearblocks.io/txns/C2hHwGQ5m7oY78gsVBuppPR3AdJxBT2BpepqS2CtkaW8) · `payout`: [`9jqqdAhy…`](https://testnet.nearblocks.io/txns/9jqqdAhyL98AAPG9mHX2sUW3dDKgbMoutb2mAx6UtXcF)
 
 ### Zero-Gas Read-Only Verification
-Anyone can verify all on-chain states directly from NEAR testnet without private keys or gas:
+Anyone can verify on-chain state without private keys or gas:
 ```bash
-# Verify master attestation, contributions, and reputation
-npm run verify:near
-
-# Verify market rounds, sealed/revealed bids, and escrow payouts
-npm run verify:market
+npm run verify:near         # master attestation, contributions, reputation
+npm run verify:market       # market rounds, sealed/revealed bids, escrow outcomes
+npm run verify:deployment   # rebuilds both contracts from source; sha256 must equal on-chain code_hash
 ```
+`verify:deployment` currently reports **MATCH** for both contracts (market `f2e3d93a…`, attestation `cf50e9bb…`). The code running on testnet is exactly this repository's source.
 
 ---
 
 ## 4. Test Verification Suites
 
+- **One command for everything that needs no signing key** (12 suites, about 3.5 minutes; read-only network use):
+  ```bash
+  npm test
+  ```
+  It runs the contract unit tests, the exploit tests, all four agent tests, the fabricated-finding rejection test, the NEAR AI signature test, the 1Click pricing test, the MCP audit test and the server typecheck, then prints a pass/fail summary.
 - Run smart contract unit tests:
   ```bash
   npm run test:contract        # 13/13 passing in apps/near-contract
   npm run test:market-contract # 10/10 passing in apps/near-market-contract
   ```
-- Run agent & exploitation test suites:
+- Run agent & exploitation test suites individually:
   ```bash
-  npm run test:server          # Unit tests for recon, IDOR, XSS, and price logic
-  npm run test:orchestrator    # End-to-end swarm mission pipeline
+  npm run test:server          # Exploit reproduction: IDOR/BOLA, stored XSS (Chromium), price tampering
+  npm run test:orchestrator    # End-to-end swarm mission on testnet (needs .env + provisioned keys)
   npm run test:fabricated      # Proves replay verifier REJECTS fabricated findings
   npm run test:mcp             # Read-only: NEAR MCP audit rejects paid / wrong-winner / missing rounds
   npm run test:intents         # Live 1Click dry quote → escrow amount (no funds move)
@@ -125,13 +134,14 @@ npm run verify:market
 
 ## 5. Known Limitations & Honest Disclosures
 
-1. **Scripted Bidding Parameters**: Specialist and generalist agents submit bids based on predetermined confidence intervals and scripted cost units rather than live reinforcement learning or external financial models.
-2. **Generalist Agents Have No Exploit Code**: `gen1` and `gen2` are real sub-accounts that really commit and reveal bids, but they implement no exploits. The orchestrator always runs the task's specialist. If a generalist ever won a round, no verified finding would come from the winner, so the round would be **refunded**, not paid (`mission-orchestrator.ts`, Stage 3b).
-3. **NEAR Testnet Only**: All contracts and sub-accounts are deployed exclusively on NEAR Protocol Testnet (`harsha-swarm.testnet`, `market.harsha-swarm.testnet`). No mainnet deployment or real financial value is involved.
+1. **Cost Units Are Scripted**: Each agent's bid *cost* is a fixed per-agent value. Bid *confidence* comes from the agent's verified NEAR AI reasoning when `NEAR_AI_API_KEY` is set, and from scripted defaults otherwise (see 5).
+2. **Generalist Agents Have No Exploit Code**: `gen1` and `gen2` are real sub-accounts that really commit and reveal bids, but they implement no exploits. **Winning grants execution**: a specialist runs only if the contract selected it as the round winner (`assertAwarded` in `mission-orchestrator.ts`). If a generalist won, no task would run, nothing would be verified, and the escrow would be **refunded**.
+3. **Testnet Only for Funds**: All contracts, accounts and transactions are on NEAR testnet; no mainnet transaction is ever signed. The only mainnet contact is the read-only 1Click price quote (see 4).
 4. **NEAR Intents is used for pricing only, not settlement; the Agent API is not used**: Per the NEAR Intents docs, *"There is no testnet version of NEAR Intents or the Agent API"*. The project calls the live 1Click quote API (dry, no funds moved) to set each escrow, but pays out with native testnet NEAR transfers from the market contract. See [docs/JUDGES.md §4](docs/JUDGES.md) for why the custom market contract does something the Agent API does not offer.
-7. **AI Is Optional and Limited to Bidding**: Without `NEAR_AI_API_KEY`, all bids use scripted confidences, and `confidenceSource: "scripted"` says so on every bid. The AI never decides whether a finding is real or whether anyone gets paid.
+5. **AI Is Optional and Limited to Bidding**: Without `NEAR_AI_API_KEY`, all bids use scripted confidences, and `confidenceSource: "scripted"` says so on every bid. The AI never decides whether a finding is real or whether anyone gets paid. The NEAR AI path is implemented against the NEAR AI Cloud docs, and its signer recovery is unit-tested offline. The recorded missions in this repo ran **without** a key, so all their bids are `scripted`.
 6. **Agent Sub-Accounts Also Hold a Full-Access Key**: Each agent sub-account was created with a full-access key, which stays in the owner's local `~/.near-credentials` and is used only by `provision:agents` to add the scoped key. The agent runtime loads and signs with the scoped function-call key from `.agent-keys.json`, and the MCP audit checks that this exact key is the scoped one.
-5. **Operator Role**: Only the operator account (`harsha-swarm.testnet`, full-access key from `.env`) calls `open_round` (which needs an attached deposit, so a function-call key cannot do it), `settle_round`, `payout` and `refund_round`. Bids are **never** signed by the operator. An agent with no provisioned function-call key simply does not bid (`signingMode: "missing_key"`).
+7. **Operator Keys**: The operator (`harsha-swarm.testnet`) uses its full-access key from `.env` only for `open_round` (it attaches the escrow deposit, which a function-call key cannot do) and for attestation writes. `settle_round`, `payout` and `refund_round` are signed with a **function-call key scoped to exactly those three methods on the market**, added by `npm run provision:agents`; each round records this in `operatorKeyModes`. Bids are **never** signed by the operator. An agent with no provisioned key simply does not bid (`signingMode: "missing_key"`).
+8. **Account Provisioning**: `npm run provision:agents` creates any missing agent sub-account (0.5 NEAR each, from the operator) and adds every scoped key. It is idempotent; the recorded runs reused existing accounts.
 
 For an exhaustive audit and line-by-line verification guide, see [docs/JUDGES.md](docs/JUDGES.md).
 

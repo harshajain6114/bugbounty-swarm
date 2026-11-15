@@ -68,6 +68,16 @@ export interface MarketRoundResult {
     reasons: string[];
     auditedAt: string;
   };
+  /**
+   * Which operator key signed each step. open_round attaches a deposit, so it
+   * needs the full-access key; settle/payout/refund use a FunctionCall key
+   * scoped to those methods on the market when provisioned.
+   */
+  operatorKeyModes?: {
+    open?: "full_access_key";
+    settle?: "function_call_key" | "full_access_key";
+    release?: "function_call_key" | "full_access_key";
+  };
   payoutStatus: "not_configured" | "simulated" | "pending" | "confirmed" | "failed" | "refunded";
   errors?: string[];
 }

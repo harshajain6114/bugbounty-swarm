@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node scripts/start-all.js",
+    "test": "node scripts/test-all.js",
+    "verify:deployment": "node scripts/verify-deployment.js",
     "verify:near": "node scripts/verify-near.js",
     "verify:market": "node scripts/verify-market.js",
     "test:contract": "cargo test --manifest-path apps/near-contract/Cargo.toml",

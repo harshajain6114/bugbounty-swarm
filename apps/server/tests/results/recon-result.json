@@ -1,5 +1,5 @@
 {
-  "missionId": "test-mission-1794723291069-recon",
+  "missionId": "mission-refund-1794725357805-recon",
   "target": "http://localhost:4000/shop",
   "status": "completed",
   "summary": {
@@ -7,7 +7,7 @@
     "endpointsDiscovered": 13,
     "formsDiscovered": 7,
     "authenticatedPages": 1,
-    "crawlDurationMs": 19641
+    "crawlDurationMs": 14729
   },
   "pages": [
     {
@@ -23,7 +23,7 @@
         "http://localhost:4000/shop/checkout"
       ],
       "formsDiscovered": 1,
-      "discoveredAt": "2026-11-15T06:15:09.639Z"
+      "discoveredAt": "2026-11-15T06:49:32.076Z"
     },
     {
       "url": "http://localhost:4000/shop/products",
@@ -42,7 +42,7 @@
         "http://localhost:4000/shop/products/prod-004"
       ],
       "formsDiscovered": 0,
-      "discoveredAt": "2026-11-15T06:15:09.748Z"
+      "discoveredAt": "2026-11-15T06:49:32.125Z"
     },
     {
       "url": "http://localhost:4000/shop/orders",
@@ -57,7 +57,7 @@
         "http://localhost:4000/shop/checkout"
       ],
       "formsDiscovered": 1,
-      "discoveredAt": "2026-11-15T06:15:09.822Z"
+      "discoveredAt": "2026-11-15T06:49:32.163Z"
     },
     {
       "url": "http://localhost:4000/shop/checkout",
@@ -72,7 +72,7 @@
         "http://localhost:4000/shop/checkout"
       ],
       "formsDiscovered": 0,
-      "discoveredAt": "2026-11-15T06:15:09.970Z"
+      "discoveredAt": "2026-11-15T06:49:32.194Z"
     },
     {
       "url": "http://localhost:4000/shop/products/prod-001",
@@ -87,7 +87,7 @@
         "http://localhost:4000/shop/checkout"
       ],
       "formsDiscovered": 1,
-      "discoveredAt": "2026-11-15T06:15:10.077Z"
+      "discoveredAt": "2026-11-15T06:49:32.239Z"
     },
     {
       "url": "http://localhost:4000/shop/products/prod-002",
@@ -102,7 +102,7 @@
         "http://localhost:4000/shop/checkout"
       ],
       "formsDiscovered": 1,
-      "discoveredAt": "2026-11-15T06:15:10.170Z"
+      "discoveredAt": "2026-11-15T06:49:32.273Z"
     },
     {
       "url": "http://localhost:4000/shop/products/prod-003",
@@ -117,7 +117,7 @@
         "http://localhost:4000/shop/checkout"
       ],
       "formsDiscovered": 1,
-      "discoveredAt": "2026-11-15T06:15:10.247Z"
+      "discoveredAt": "2026-11-15T06:49:32.303Z"
     },
     {
       "url": "http://localhost:4000/shop/products/prod-004",
@@ -132,7 +132,7 @@
         "http://localhost:4000/shop/checkout"
       ],
       "formsDiscovered": 1,
-      "discoveredAt": "2026-11-15T06:15:10.325Z"
+      "discoveredAt": "2026-11-15T06:49:32.334Z"
     }
   ],
   "endpoints": [
@@ -471,7 +471,7 @@
   "metadata": {
     "agentName": "ReconAgent",
     "agentVersion": "1.0.0",
-    "completedAt": "2026-11-15T06:15:10.725Z",
+    "completedAt": "2026-11-15T06:49:32.548Z",
     "externalOriginsVisited": []
   }
 }

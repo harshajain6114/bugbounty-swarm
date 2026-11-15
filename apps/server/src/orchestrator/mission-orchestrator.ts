@@ -35,6 +35,20 @@ import type {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+/** Thrown when a specialist did not win its task's auction round. */
+class NotAwardedError extends Error {}
+
+/**
+ * Winning the auction is what grants execution: a specialist runs its task
+ * only if the market contract selected it as the round winner.
+ */
+function assertAwarded(round: { winnerAgentId?: string; winnerAccount: string; roundId: string }, agentId: string): void {
+  if (round.winnerAgentId !== agentId) {
+    console.warn(`  ⚠ ${agentId} did not win ${round.roundId} (winner: ${round.winnerAccount}); task not executed.`);
+    throw new NotAwardedError(`${agentId} was not awarded ${round.roundId}; winner was ${round.winnerAccount}`);
+  }
+}
+
 export class MissionOrchestrator {
   private static instance: MissionOrchestrator;
   private isMissionRunning = false;
@@ -202,7 +216,7 @@ export class MissionOrchestrator {
           startedAt: reconStartedAt,
           completedAt: new Date().toISOString(),
           durationMs: Date.now() - reconStart,
-          status: "failed",
+          status: err instanceof NotAwardedError ? "skipped" : "failed",
           findingsCount: 0,
           error: String(err),
         });
@@ -235,6 +249,7 @@ export class MissionOrchestrator {
       const idorStart = Date.now();
       const idorStartedAt = new Date().toISOString();
       try {
+        assertAwarded(idorRound, "IdorAgent");
         idorResult = await runIdorMission(reconResult, `${missionId}-idor`, {
           targetScope: targetUrl,
         });
@@ -256,7 +271,7 @@ export class MissionOrchestrator {
           startedAt: idorStartedAt,
           completedAt: new Date().toISOString(),
           durationMs: Date.now() - idorStart,
-          status: "failed",
+          status: err instanceof NotAwardedError ? "skipped" : "failed",
           findingsCount: 0,
           error: String(err),
         });
@@ -269,6 +284,7 @@ export class MissionOrchestrator {
       const xssStart = Date.now();
       const xssStartedAt = new Date().toISOString();
       try {
+        assertAwarded(xssRound, "XssAgent");
         xssResult = await runXssMission(reconResult, `${missionId}-xss`, {
           targetScope: targetUrl,
           headless: options?.headless !== false,
@@ -291,7 +307,7 @@ export class MissionOrchestrator {
           startedAt: xssStartedAt,
           completedAt: new Date().toISOString(),
           durationMs: Date.now() - xssStart,
-          status: "failed",
+          status: err instanceof NotAwardedError ? "skipped" : "failed",
           findingsCount: 0,
           error: String(err),
         });
@@ -304,6 +320,7 @@ export class MissionOrchestrator {
       const bizStart = Date.now();
       const bizStartedAt = new Date().toISOString();
       try {
+        assertAwarded(logicRound, "BusinessLogicAgent");
         bizlogicResult = await runBusinessLogicMission(
           reconResult,
           `${missionId}-bizlogic`,
@@ -332,7 +349,7 @@ export class MissionOrchestrator {
           startedAt: bizStartedAt,
           completedAt: new Date().toISOString(),
           durationMs: Date.now() - bizStart,
-          status: "failed",
+          status: err instanceof NotAwardedError ? "skipped" : "failed",
           findingsCount: 0,
           error: String(err),
         });
@@ -412,7 +429,8 @@ export class MissionOrchestrator {
         totalTestedInputs += vf.testedInputsCount || 1;
       }
 
-      const allAgentsSucceeded = agentsExecuted.every((a) => a.status === "completed");
+      // An agent that was not awarded its task (skipped) is not a failure.
+      const allAgentsSucceeded = agentsExecuted.every((a) => a.status !== "failed");
 
       const missionResult: MissionResult = {
         missionId,

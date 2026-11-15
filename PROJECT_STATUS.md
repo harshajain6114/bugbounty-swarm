@@ -32,7 +32,7 @@ Status: Complete Hackathon Submission (All Tracks Verified On-Chain)
 ### Attestation Smart Contract on NEAR Testnet
 - **Attestation Contract** (`apps/near-contract/`): Rust contract with 13/13 passing unit tests.
 - **Live Deployment**: Deployed and active at `harsha-swarm.testnet`.
-- **Master Attestation**: Live transaction `9QB5BV2djmmy7u1cazFqzh9GKFGa47kNuSP8gVHbFF6R` storing root mission hash, finding count, and timestamp.
+- **Master Attestation**: Live transaction `9ndGZJ2F8sWAQTgTnkzPgMKbtgs5upbQwQKtabLLvGhm` (mission `mission-refund-1794725357805`) storing root mission hash, finding count, and timestamp.
 
 ### Web Dashboard & Demo System
 - **React + Vite UI** (`apps/web/`):
@@ -54,10 +54,13 @@ npm run verify:market
 # 2. Read-only master attestation verification
 npm run verify:near
 
-# 3. Unit test suites
-npm run test:server
-npm run test:orchestrator
-npm run test:contract
+# 3. Deployed contracts match this source (sha256 == on-chain code_hash)
+npm run verify:deployment
+
+# 4. Test suites
+npm test                    # 12 suites, no signing key needed
+npm run test:orchestrator   # full testnet mission
+npm run demo:refund         # testnet refund path
 npm run build:web
 ```
 
@@ -65,5 +68,5 @@ npm run build:web
 
 ## 3. Scope & Safety Guardrails
 - **Scope Restriction**: Hardcoded to `http://localhost:4000/shop`. Out-of-scope targets are strictly rejected.
-- **NEAR Testnet Only**: Strictly restricted to testnet; zero mainnet interactions or real funds.
+- **NEAR Testnet Only for Funds**: Every signed transaction is on testnet. The only mainnet contact is a read-only 1Click dry price quote (no funds move).
 - **Key Security**: No private keys or `.env` files are tracked in git or printed in logs.

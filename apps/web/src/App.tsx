@@ -20,6 +20,7 @@ export interface MarketRound {
   openTxHash?: string
   winnerAccount: string
   winnerScore: string
+  winnerSource?: 'on_chain_settle' | 'unsettled' | 'local_simulation'
   allBids: {
     agentId: string
     account: string
@@ -27,10 +28,38 @@ export interface MarketRound {
     costYocto: string
     revealed: boolean
     score: number
+    signingMode?: 'agent_key' | 'missing_key' | 'local_simulation'
+    confidenceSource?: 'near_ai_tee_verified' | 'scripted'
+    commitTxHash?: string
   }[]
   settleTxHash?: string
   payoutTxHash?: string
   payoutStatus: string
+  bountyPricing?: {
+    pricingSource: 'near_intents_1click_dry_quote' | 'fixed_fallback'
+    bountyUsd: number
+    escrowNear: string
+    quote?: { correlationId?: string }
+  }
+  mcpAudit?: { approved: boolean; roundStatus?: string; winnerKeyScoped: boolean; reasons: string[] }
+  operatorKeyModes?: { open?: string; settle?: string; release?: string }
+}
+
+const PAYOUT_TONE: Record<string, { color: string; border: string }> = {
+  confirmed: { color: '#B6FF5C', border: '#B6FF5C' },
+  refunded: { color: '#ffd166', border: '#ffd166' },
+  failed: { color: '#ff6b6b', border: '#ff6b6b' },
+  pending: { color: '#8fa08e', border: '#3a463c' },
+  simulated: { color: '#8fa08e', border: '#3a463c' },
+}
+
+function ProofChip({ ok, label, title }: { ok: boolean | undefined; label: string; title?: string }) {
+  const tone = ok === undefined ? '#778477' : ok ? '#B6FF5C' : '#ff6b6b'
+  return (
+    <span title={title} style={{ fontSize: '10px', fontFamily: 'monospace', color: tone, border: `1px solid ${tone}`, borderRadius: '4px', padding: '2px 6px', whiteSpace: 'nowrap' }}>
+      {ok === undefined ? '○' : ok ? '✓' : '✕'} {label}
+    </span>
+  )
 }
 
 interface MissionData {
@@ -719,8 +748,14 @@ function BountyMarket({
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <span className="verify verified" style={{ fontSize: '11px' }}>
-                    <ShieldCheck size={14} /> Payout: {round.payoutStatus.toUpperCase()}
+                  <span
+                    style={{
+                      fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '4px',
+                      color: (PAYOUT_TONE[round.payoutStatus] ?? PAYOUT_TONE.pending).color,
+                      border: `1px solid ${(PAYOUT_TONE[round.payoutStatus] ?? PAYOUT_TONE.pending).border}`,
+                    }}
+                  >
+                    <ShieldCheck size={14} /> {round.payoutStatus === 'refunded' ? 'Escrow' : 'Payout'}: {round.payoutStatus.toUpperCase()}
                   </span>
                   {round.payoutTxHash && (
                     <a
@@ -736,12 +771,44 @@ function BountyMarket({
                 </div>
               </div>
 
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px' }}>
+                <ProofChip
+                  ok={round.winnerSource === 'local_simulation' ? undefined : round.winnerSource === 'on_chain_settle'}
+                  label={round.winnerSource === 'local_simulation' ? 'local simulation (no chain)' : 'winner read from get_round'}
+                />
+                {round.bountyPricing && (
+                  <ProofChip
+                    ok={round.bountyPricing.pricingSource === 'near_intents_1click_dry_quote'}
+                    label={
+                      round.bountyPricing.pricingSource === 'near_intents_1click_dry_quote'
+                        ? `1Click quote: $${round.bountyPricing.bountyUsd} ≈ ${round.bountyPricing.escrowNear} NEAR`
+                        : `fixed escrow ${round.bountyPricing.escrowNear} NEAR (quote unavailable)`
+                    }
+                    title={round.bountyPricing.quote?.correlationId ? `1Click correlationId ${round.bountyPricing.quote.correlationId}` : undefined}
+                  />
+                )}
+                {round.mcpAudit && (
+                  <ProofChip
+                    ok={round.mcpAudit.approved}
+                    label={round.mcpAudit.approved ? 'NEAR MCP audit approved' : 'NEAR MCP audit rejected'}
+                    title={round.mcpAudit.reasons.join('; ') || `round ${round.mcpAudit.roundStatus}, winner key scoped`}
+                  />
+                )}
+                {round.operatorKeyModes?.settle && (
+                  <ProofChip
+                    ok={round.operatorKeyModes.settle === 'function_call_key'}
+                    label={`settle signed: ${round.operatorKeyModes.settle.replace(/_/g, ' ')}`}
+                  />
+                )}
+              </div>
+
               <div className="table-wrap" style={{ marginTop: '12px' }}>
                 <table>
                   <thead>
                     <tr>
                       <th>BIDDER AGENT</th>
                       <th>TESTNET SUB-ACCOUNT</th>
+                      <th>SIGNED WITH</th>
                       <th>CONFIDENCE</th>
                       <th>SCRIPTED COST UNITS</th>
                       <th>AUCTION SCORE</th>
@@ -757,10 +824,24 @@ function BountyMarket({
                             <strong>{b.agentId}</strong>
                           </td>
                           <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>{b.account}</td>
+                          <td style={{ fontSize: '11px' }}>
+                            {b.signingMode === 'agent_key' && b.commitTxHash ? (
+                              <a href={`https://testnet.nearblocks.io/txns/${b.commitTxHash}`} target="_blank" rel="noreferrer" style={{ color: '#B6FF5C' }}>
+                                own FC key ↗
+                              </a>
+                            ) : b.signingMode === 'missing_key' ? (
+                              <span style={{ color: '#ff6b6b' }}>no key: not submitted</span>
+                            ) : (
+                              <span style={{ color: '#778477' }}>{b.signingMode === 'local_simulation' ? 'local only' : '—'}</span>
+                            )}
+                          </td>
                           <td>
                             <span style={{ color: isWinner ? '#B6FF5C' : '#a5afa3', fontWeight: isWinner ? 700 : 400 }}>
                               {(b.confidenceBps / 100).toFixed(0)}%
                             </span>
+                            <div style={{ fontSize: '9px', color: b.confidenceSource === 'near_ai_tee_verified' ? '#B6FF5C' : '#778477' }}>
+                              {b.confidenceSource === 'near_ai_tee_verified' ? 'NEAR AI (TEE-verified)' : 'scripted'}
+                            </div>
                           </td>
                           <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>
                             {b.costYocto} units
@@ -975,7 +1056,14 @@ function App() {
   }
 
   useEffect(() => {
-    fetchMissionData()
+    // Load after mount (async), and ignore the result if unmounted first.
+    let cancelled = false
+    Promise.resolve().then(() => {
+      if (!cancelled) fetchMissionData()
+    })
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const handleStartMission = async () => {

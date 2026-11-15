@@ -1,7 +1,7 @@
 {
   "suiteLabel": "BugBounty Swarm — VulnShop Security Audit",
   "target": "http://localhost:4000/shop",
-  "testedAt": "2026-11-14T19:51:48.230Z",
+  "testedAt": "2026-11-15T06:41:16.967Z",
   "summary": {
     "totalTests": 3,
     "testsPassed": 3,
@@ -18,7 +18,7 @@
       "exitCode": 0,
       "testPassed": true,
       "vulnerabilityReproduced": true,
-      "durationMs": 1239,
+      "durationMs": 1177,
       "finding": {
         "testName": "IDOR-001",
         "vulnerability": "Insecure Direct Object Reference (IDOR / BOLA)",
@@ -72,7 +72,7 @@
         "testPassed": true,
         "vulnerabilityReproduced": true,
         "details": "GET /shop/api/orders/:id returns order data without verifying ownership. Alice (user-alice) retrieved Bob's order (order-bob-001, userId=user-bob) using only her own Bearer token. Fix: add \"if (order.userId !== req.userId) return res.status(403).json(...)\" before returning.",
-        "testedAt": "2026-11-14T19:51:30.803Z"
+        "testedAt": "2026-11-15T06:40:59.743Z"
       }
     },
     {
@@ -85,7 +85,7 @@
       "payloadStored": true,
       "dangerousSinkDetected": true,
       "javascriptExecuted": true,
-      "durationMs": 16286,
+      "durationMs": 16021,
       "finding": {
         "testName": "XSS-001",
         "vulnerability": "Stored Cross-Site Scripting (Stored XSS)",
@@ -142,7 +142,7 @@
         "testPassed": true,
         "vulnerabilityReproduced": true,
         "details": "Review content is accepted and stored without server-side sanitization. The product page renders it via \"innerHTML = <content>\" — a dangerous unescaped sink. Playwright Chromium automation confirmed that the injected onerror handler executed, setting window.__bugbounty_xss_test to \"EXECUTED\". Remediation: escape HTML entities before storage and use textContent instead of innerHTML.",
-        "testedAt": "2026-11-14T19:51:47.088Z"
+        "testedAt": "2026-11-15T06:41:15.760Z"
       }
     },
     {
@@ -152,7 +152,7 @@
       "exitCode": 0,
       "testPassed": true,
       "vulnerabilityReproduced": true,
-      "durationMs": 1120,
+      "durationMs": 1183,
       "finding": {
         "testName": "PRICE-001",
         "vulnerability": "Client-Side Price Manipulation (Improper Input Validation)",
@@ -176,7 +176,7 @@
         "testPassed": true,
         "vulnerabilityReproduced": true,
         "details": "POST /shop/api/checkout accepts the \"price\" field from the client payload without validating it against the server-side product catalog. The order was created with priceAtPurchase=1 (client-supplied) instead of 7999 (catalog). Fix: ignore the client price field; derive price from server-side product record.",
-        "testedAt": "2026-11-14T19:51:48.210Z"
+        "testedAt": "2026-11-15T06:41:16.945Z"
       }
     }
   ]
